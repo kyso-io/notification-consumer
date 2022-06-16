@@ -1,0 +1,1 @@
+{"version":"0.0.1","name":"notification-consumer","dependencies":{"@nestjs/common":{"version":"8.4.7"},"@nestjs/core":{"version":"8.4.7"},"@nestjs/platform-express":{"version":"8.4.7"},"reflect-metadata":{"version":"0.1.13"},"rimraf":{"version":"3.0.2"},"rxjs":{"version":"7.5.5"}}}

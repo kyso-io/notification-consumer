@@ -1,0 +1,4 @@
+export enum Constants {
+    DATABASE_CONNECTION = 'DATABASE_CONNECTION',
+    DATABASE_COLLECTION_KYSO_SETTINGS = 'KysoSettings',
+}
