@@ -11,6 +11,8 @@ import { CommentsModule } from './comments/comments.module'
 import { Constants } from './constants'
 import { DatabaseModule } from './database/database.module'
 import { DiscussionsModule } from './discussions/discussions.module'
+import { FeedbackModule } from './feedback/feedback.module'
+import { InvitationsModule } from './invitations/invitations.module'
 import { ReportsModule } from './reports/reports.module'
 import { UsersModule } from './users/users.module'
 
@@ -22,6 +24,8 @@ import { UsersModule } from './users/users.module'
             isGlobal: true,
         }),
         DiscussionsModule,
+        FeedbackModule,
+        InvitationsModule,
         MailerModule.forRootAsync({
             imports: [DatabaseModule],
             inject: [Constants.DATABASE_CONNECTION],

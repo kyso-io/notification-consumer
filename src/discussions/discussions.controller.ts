@@ -1,4 +1,13 @@
-import { KysoDiscussionsAssigneeEvent, KysoDiscussionsCreateEvent, KysoDiscussionsDeleteEvent, KysoDiscussionsUpdateEvent, KysoEvent } from '@kyso-io/kyso-model'
+import {
+    KysoDiscussionsAssigneeEvent,
+    KysoDiscussionsCreateEvent,
+    KysoDiscussionsDeleteEvent,
+    KysoDiscussionsMentionsEvent,
+    KysoDiscussionsNewMentionEvent,
+    KysoDiscussionsUpdateEvent,
+    KysoEvent,
+    User,
+} from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -138,6 +147,55 @@ export class DiscussionsController {
             })
             .catch((err) => {
                 Logger.error(`An error occurrend sending report mail to ${Array.isArray(to) ? to.join(', ') : to}`, err, DiscussionsController.name)
+            })
+    }
+
+    @EventPattern(KysoEvent.DISCUSSIONS_NEW_MENTION)
+    async handleDiscussionsNewMention(kysoDiscussionsNewMentionEvent: KysoDiscussionsNewMentionEvent) {
+        const { to, creator, organization, team, discussion, frontendUrl } = kysoDiscussionsNewMentionEvent
+        this.mailerService
+            .sendMail({
+                to,
+                subject: 'You have been mentioned in a discussion',
+                template: 'discussion-mention',
+                context: {
+                    creator,
+                    organization,
+                    team,
+                    discussion,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Mention in discussion mail ${messageInfo.messageId} sent to ${to}`, DiscussionsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending mention in discussion mail to ${to}`, err, DiscussionsController.name)
+            })
+    }
+
+    @EventPattern(KysoEvent.DISCUSSIONS_MENTIONS)
+    async handleDiscussionsMentions(kysoDiscussionsMentionsEvent: KysoDiscussionsMentionsEvent) {
+        const { to, creator, users, organization, team, discussion, frontendUrl } = kysoDiscussionsMentionsEvent
+        this.mailerService
+            .sendMail({
+                to,
+                subject: 'Mentions in a discussion',
+                template: 'discussion-mentions',
+                context: {
+                    creator,
+                    users: users.map((u: User) => u.display_name).join(','),
+                    organization,
+                    team,
+                    discussion,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Mention in discussion mail ${messageInfo.messageId} sent to ${Array.isArray(to) ? to.join(', ') : to}`, DiscussionsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending mention in discussion mail to ${Array.isArray(to) ? to.join(', ') : to}`, err, DiscussionsController.name)
             })
     }
 }
