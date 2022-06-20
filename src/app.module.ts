@@ -7,16 +7,21 @@ import { Db } from 'mongodb'
 import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { CommentsModule } from './comments/comments.module'
 import { Constants } from './constants'
 import { DatabaseModule } from './database/database.module'
+import { DiscussionsModule } from './discussions/discussions.module'
 import { ReportsModule } from './reports/reports.module'
+import { UsersModule } from './users/users.module'
 
 @Module({
     imports: [
+        CommentsModule,
         ConfigModule.forRoot({
             envFilePath: '.env',
             isGlobal: true,
         }),
+        DiscussionsModule,
         MailerModule.forRootAsync({
             imports: [DatabaseModule],
             inject: [Constants.DATABASE_CONNECTION],
@@ -39,6 +44,7 @@ import { ReportsModule } from './reports/reports.module'
             },
         }),
         ReportsModule,
+        UsersModule,
     ],
     controllers: [AppController],
     providers: [AppService],

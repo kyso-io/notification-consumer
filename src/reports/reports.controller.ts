@@ -74,4 +74,21 @@ export class ReportsController {
     async handleReportsDelete(report: Report) {
         console.log(KysoEvent.REPORTS_DELETE, report)
     }
+
+    @EventPattern(KysoEvent.REPORTS_CREATE_NO_PERMISSIONS)
+    async handleReportsCreateNoPermissions(kysoReportsCreateEvent: KysoReportsCreateEvent) {
+        const { user } = kysoReportsCreateEvent
+        this.mailerService
+            .sendMail({
+                to: user.email,
+                subject: 'Error creating report',
+                template: 'report-error-permissions',
+            })
+            .then(() => {
+                Logger.log(`Mail 'Invalid permissions for creating report' sent to ${user.display_name}`, ReportsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`Error sending mail 'Invalid permissions for creating report' to ${user.display_name}`, err, ReportsController.name)
+            })
+    }
 }
