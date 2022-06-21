@@ -15,6 +15,7 @@ import { FeedbackModule } from './feedback/feedback.module'
 import { InvitationsModule } from './invitations/invitations.module'
 import { OrganizationsModule } from './organizations/organizations.module'
 import { ReportsModule } from './reports/reports.module'
+import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -50,6 +51,7 @@ import { UsersModule } from './users/users.module'
         }),
         OrganizationsModule,
         ReportsModule,
+        TeamsModule,
         UsersModule,
     ],
     controllers: [AppController],
