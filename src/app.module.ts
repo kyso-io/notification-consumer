@@ -18,11 +18,16 @@ import { ReportsModule } from './reports/reports.module'
 import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
 
+let envFilePath = '.env'
+if (process.env.DOTENV_FILE) {
+  envFilePath = process.env.DOTENV_FILE
+}
+
 @Module({
     imports: [
         CommentsModule,
         ConfigModule.forRoot({
-            envFilePath: '.env',
+            envFilePath: envFilePath,
             isGlobal: true,
         }),
         DiscussionsModule,
