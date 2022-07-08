@@ -4,6 +4,7 @@ include:
     file: '/templates/npm-dockerfile-build.yml'
 
 # Update docker_build's before_script to update the public/v.html file
+# FIXME: Does the v.html file make sense here?
 docker-build:
   before_script:
   - !reference [.docker-config, before_script]

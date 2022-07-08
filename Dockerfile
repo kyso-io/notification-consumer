@@ -25,8 +25,12 @@ ENV NODE_ENV=${NODE_ENV}
 USER node
 ### Change the working directory to /app
 WORKDIR /app
-## Copy the complete /app builder dir --- FIXME(sto): We have to check that!!!
-COPY --chown=node:node --from=builder /app/. ./
+## Copy the relevant files & dirs from the /app builder dir
+COPY --chown=node:node --from=builder /app/*.json ./
+COPY --chown=node:node --from=builder /app/dist ./dist
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/public ./public
+COPY --chown=node:node --from=builder /app/templates ./templates
 ## Disable next telemetry usage
 ENV NEXT_TELEMETRY_DISABLED 1
 ## Run the compiled version
