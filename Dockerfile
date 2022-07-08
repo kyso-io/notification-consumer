@@ -1,7 +1,7 @@
 # Global Dockerfile Arguments (in our CI can be overriden in ./.build-args)
 ARG BUILDER_IMG=registry.kyso.io/kyso-io/consumers/notification-consumer
 ARG BUILDER_TAG=builder
-ARG SERVICE_IMG=registry.kyso.io/docker/node
+ARG SERVICE_IMG=registry.kyso.io/docker/node-service
 ARG SERVICE_TAG=latest
 
 # Builder image
