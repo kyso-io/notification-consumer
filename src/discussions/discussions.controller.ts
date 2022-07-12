@@ -152,10 +152,10 @@ export class DiscussionsController {
 
     @EventPattern(KysoEvent.DISCUSSIONS_NEW_MENTION)
     async handleDiscussionsNewMention(kysoDiscussionsNewMentionEvent: KysoDiscussionsNewMentionEvent) {
-        const { to, creator, organization, team, discussion, frontendUrl } = kysoDiscussionsNewMentionEvent
+        const { user, creator, organization, team, discussion, frontendUrl } = kysoDiscussionsNewMentionEvent
         this.mailerService
             .sendMail({
-                to,
+                to: user.email,
                 subject: 'You have been mentioned in a discussion',
                 template: 'discussion-mention',
                 context: {
@@ -167,10 +167,10 @@ export class DiscussionsController {
                 },
             })
             .then((messageInfo) => {
-                Logger.log(`Mention in discussion mail ${messageInfo.messageId} sent to ${to}`, DiscussionsController.name)
+                Logger.log(`Mention in discussion mail ${messageInfo.messageId} sent to ${user.email}`, DiscussionsController.name)
             })
             .catch((err) => {
-                Logger.error(`An error occurrend sending mention in discussion mail to ${to}`, err, DiscussionsController.name)
+                Logger.error(`An error occurrend sending mention in discussion mail to ${user.email}`, err, DiscussionsController.name)
             })
     }
 
