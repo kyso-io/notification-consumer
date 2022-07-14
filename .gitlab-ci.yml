@@ -23,7 +23,7 @@ docker-build:
       -e "s%__GIT_SHA__%$CI_COMMIT_SHA%g" \
       -e "s%__REF_TYPE__%$REF_TYPE%g" \
       -e "s%__GIT_REF__%$GIT_REF%g" \
-      version.txt
+      release.txt
 
 variables:
   DOCKER_BUILDKIT: 1
