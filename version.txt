@@ -1,0 +1,4 @@
+Container release information:
+- Build date: '__BUILD_DATE__'
+- Commit: '__GIT_SHA__'
+- __REF_TYPE__: '__GIT_REF__'
