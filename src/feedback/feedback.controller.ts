@@ -1,4 +1,4 @@
-import { KysoEvent, KysoFeedbackCreateEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoFeedbackCreateEvent } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -13,8 +13,11 @@ export class FeedbackController {
         private readonly mailerService: MailerService,
     ) {}
 
-    @EventPattern(KysoEvent.FEEDBACK_CREATE)
+    @EventPattern(KysoEventEnum.FEEDBACK_CREATE)
     async handleReportsCreate(kysoFeedbackCreateEvent: KysoFeedbackCreateEvent) {
+        Logger.log(KysoEventEnum.FEEDBACK_CREATE, FeedbackController.name)
+        Logger.debug(kysoFeedbackCreateEvent, FeedbackController.name)
+
         const { user, feedbackDto, serviceDeskEmail } = kysoFeedbackCreateEvent
         this.mailerService
             .sendMail({

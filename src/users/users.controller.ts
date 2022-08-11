@@ -1,4 +1,4 @@
-import { KysoEvent, KysoUsersCreateEvent, KysoUsersDeleteEvent, KysoUsersRecoveryPasswordEvent, KysoUsersUpdateEvent, KysoUsersVerificationEmailEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoUsersCreateEvent, KysoUsersDeleteEvent, KysoUsersRecoveryPasswordEvent, KysoUsersUpdateEvent, KysoUsersVerificationEmailEvent } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -13,8 +13,11 @@ export class UsersController {
         private db: Db,
     ) {}
 
-    @EventPattern(KysoEvent.USERS_CREATE)
+    @EventPattern(KysoEventEnum.USERS_CREATE)
     async handleUsersCreated(kysoUsersCreateEvent: KysoUsersCreateEvent) {
+        Logger.log(KysoEventEnum.USERS_CREATE, UsersController.name)
+        Logger.debug(kysoUsersCreateEvent, UsersController.name)
+
         const { user } = kysoUsersCreateEvent
         this.mailerService
             .sendMail({
@@ -33,14 +36,17 @@ export class UsersController {
             })
     }
 
-    @EventPattern(KysoEvent.USERS_UPDATE)
+    @EventPattern(KysoEventEnum.USERS_UPDATE)
     async handleUsersUpdated(kysoUsersUpdateEvent: KysoUsersUpdateEvent) {}
 
-    @EventPattern(KysoEvent.USERS_DELETE)
+    @EventPattern(KysoEventEnum.USERS_DELETE)
     async handleUsersDeleted(kysoUsersDeleteEvent: KysoUsersDeleteEvent) {}
 
-    @EventPattern(KysoEvent.USERS_VERIFICATION_EMAIL)
+    @EventPattern(KysoEventEnum.USERS_VERIFICATION_EMAIL)
     async handleUsersVerificationEmail(kysoUsersVerificationEmailEvent: KysoUsersVerificationEmailEvent) {
+        Logger.log(KysoEventEnum.USERS_VERIFICATION_EMAIL, UsersController.name)
+        Logger.debug(kysoUsersVerificationEmailEvent, UsersController.name)
+
         const { user, userVerification, frontendUrl } = kysoUsersVerificationEmailEvent
         this.mailerService
             .sendMail({
@@ -61,8 +67,11 @@ export class UsersController {
             })
     }
 
-    @EventPattern(KysoEvent.USERS_RECOVERY_PASSWORD)
+    @EventPattern(KysoEventEnum.USERS_RECOVERY_PASSWORD)
     async handleUsersRecoveryPassword(kysoUsersRecoveryPasswordEvent: KysoUsersRecoveryPasswordEvent) {
+        Logger.log(KysoEventEnum.USERS_RECOVERY_PASSWORD, UsersController.name)
+        Logger.debug(kysoUsersRecoveryPasswordEvent, UsersController.name)
+
         const { user, userForgotPassword, frontendUrl } = kysoUsersRecoveryPasswordEvent
         this.mailerService
             .sendMail({

@@ -1,4 +1,4 @@
-import { KysoEvent, KysoInvitationsTeamCreateEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoInvitationsTeamCreateEvent } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -13,8 +13,11 @@ export class InvitationsController {
         private readonly mailerService: MailerService,
     ) {}
 
-    @EventPattern(KysoEvent.INVITATIONS_TEAM_CREATE)
+    @EventPattern(KysoEventEnum.INVITATIONS_TEAM_CREATE)
     async handleDiscussionsCreated(kysoInvitationsTeamCreateEvent: KysoInvitationsTeamCreateEvent) {
+        Logger.log(KysoEventEnum.INVITATIONS_TEAM_CREATE, InvitationsController.name)
+        Logger.debug(kysoInvitationsTeamCreateEvent, InvitationsController.name)
+
         const { user, roles, organization, team, invitation, frontendUrl } = kysoInvitationsTeamCreateEvent
         this.mailerService
             .sendMail({

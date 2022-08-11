@@ -1,4 +1,4 @@
-import { KysoEvent, KysoTeamsAddMemberEvent, KysoTeamsRemoveMemberEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsRemoveMemberEvent } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -13,8 +13,11 @@ export class TeamsController {
         private db: Db,
     ) {}
 
-    @EventPattern(KysoEvent.TEAMS_ADD_MEMBER)
+    @EventPattern(KysoEventEnum.TEAMS_ADD_MEMBER)
     async handleCommentsCreated(kysoTeamsAddMemberEvent: KysoTeamsAddMemberEvent) {
+        Logger.log(KysoEventEnum.TEAMS_ADD_MEMBER, TeamsController.name)
+        Logger.debug(kysoTeamsAddMemberEvent, TeamsController.name)
+
         const { user, organization, team, emailsCentralized, roles, frontendUrl } = kysoTeamsAddMemberEvent
         this.mailerService
             .sendMail({
@@ -58,8 +61,11 @@ export class TeamsController {
         }
     }
 
-    @EventPattern(KysoEvent.TEAMS_REMOVE_MEMBER)
+    @EventPattern(KysoEventEnum.TEAMS_REMOVE_MEMBER)
     async handleCommentsUpdated(kysoTeamsRemoveMemberEvent: KysoTeamsRemoveMemberEvent) {
+        Logger.log(KysoEventEnum.TEAMS_REMOVE_MEMBER, TeamsController.name)
+        Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
+
         const { user, organization, team, emailsCentralized, frontendUrl } = kysoTeamsRemoveMemberEvent
         this.mailerService
             .sendMail({
