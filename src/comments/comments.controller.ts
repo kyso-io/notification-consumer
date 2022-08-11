@@ -1,4 +1,4 @@
-import { KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEvent } from '@kyso-io/kyso-model'
+import { KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum } from '@kyso-io/kyso-model'
 import { Controller, Inject } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
@@ -11,12 +11,12 @@ export class CommentsController {
         private db: Db,
     ) {}
 
-    @EventPattern(KysoEvent.COMMENTS_CREATE)
+    @EventPattern(KysoEventEnum.COMMENTS_CREATE)
     async handleCommentsCreated(kysoCommentsCreateEvent: KysoCommentsCreateEvent) {}
 
-    @EventPattern(KysoEvent.COMMENTS_UPDATE)
+    @EventPattern(KysoEventEnum.COMMENTS_UPDATE)
     async handleCommentsUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent) {}
 
-    @EventPattern(KysoEvent.COMMENTS_DELETE)
+    @EventPattern(KysoEventEnum.COMMENTS_DELETE)
     async handleCommentsDeleted(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent) {}
 }

@@ -5,7 +5,7 @@ import {
     KysoDiscussionsMentionsEvent,
     KysoDiscussionsNewMentionEvent,
     KysoDiscussionsUpdateEvent,
-    KysoEvent,
+    KysoEventEnum,
     User,
 } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
@@ -22,8 +22,11 @@ export class DiscussionsController {
         private readonly mailerService: MailerService,
     ) {}
 
-    @EventPattern(KysoEvent.DISCUSSIONS_CREATE)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_CREATE)
     async handleDiscussionsCreated(kysoDiscussionsCreateEvent: KysoDiscussionsCreateEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_CREATE, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsCreateEvent, DiscussionsController.name)
+
         const { frontendUrl, organization, team, discussion, user } = kysoDiscussionsCreateEvent
 
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
@@ -50,14 +53,17 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_UPDATE)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_UPDATE)
     async handleDiscussionsUpdated(kysoDiscussionsUpdateEvent: KysoDiscussionsUpdateEvent) {}
 
-    @EventPattern(KysoEvent.DISCUSSIONS_DELETE)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_DELETE)
     async handleDiscussionsDeleted(kysoDiscussionsDeleteEvent: KysoDiscussionsDeleteEvent) {}
 
-    @EventPattern(KysoEvent.DISCUSSIONS_NEW_ASSIGNEE)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_NEW_ASSIGNEE)
     async handleDiscussionsNewAssignee(kysoDiscussionsAssigneeEvent: KysoDiscussionsAssigneeEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_NEW_ASSIGNEE, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsAssigneeEvent, DiscussionsController.name)
+
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
@@ -79,9 +85,12 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_REMOVE_ASSIGNEE)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_REMOVE_ASSIGNEE)
     async handleDiscussionsRemoveAssignee(kysoDiscussionsAssigneeEvent: KysoDiscussionsAssigneeEvent) {
-        const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
+        Logger.log(KysoEventEnum.DISCUSSIONS_REMOVE_ASSIGNEE, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsAssigneeEvent, DiscussionsController.name)
+
+        const { to, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
                 to,
@@ -102,8 +111,11 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_USER_ASSIGNED)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_USER_ASSIGNED)
     async handleDiscussionsUserAssigned(kysoDiscussionsAssigneeEvent: KysoDiscussionsAssigneeEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_USER_ASSIGNED, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsAssigneeEvent, DiscussionsController.name)
+
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
@@ -126,8 +138,11 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_USER_UNASSIGNED)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_USER_UNASSIGNED)
     async handleDiscussionsUserUnassigned(kysoDiscussionsAssigneeEvent: KysoDiscussionsAssigneeEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_USER_UNASSIGNED, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsAssigneeEvent, DiscussionsController.name)
+
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
@@ -150,8 +165,11 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_NEW_MENTION)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_NEW_MENTION)
     async handleDiscussionsNewMention(kysoDiscussionsNewMentionEvent: KysoDiscussionsNewMentionEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_NEW_MENTION, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsNewMentionEvent, DiscussionsController.name)
+
         const { user, creator, organization, team, discussion, frontendUrl } = kysoDiscussionsNewMentionEvent
         this.mailerService
             .sendMail({
@@ -174,8 +192,11 @@ export class DiscussionsController {
             })
     }
 
-    @EventPattern(KysoEvent.DISCUSSIONS_MENTIONS)
+    @EventPattern(KysoEventEnum.DISCUSSIONS_MENTIONS)
     async handleDiscussionsMentions(kysoDiscussionsMentionsEvent: KysoDiscussionsMentionsEvent) {
+        Logger.log(KysoEventEnum.DISCUSSIONS_MENTIONS, DiscussionsController.name)
+        Logger.debug(kysoDiscussionsMentionsEvent, DiscussionsController.name)
+
         const { to, creator, users, organization, team, discussion, frontendUrl } = kysoDiscussionsMentionsEvent
         this.mailerService
             .sendMail({

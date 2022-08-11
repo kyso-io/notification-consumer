@@ -1,4 +1,4 @@
-import { KysoEvent, KysoReportsCreateEvent, KysoReportsNewVersionEvent, Report } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsNewVersionEvent, Report } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -13,8 +13,11 @@ export class ReportsController {
         private readonly mailerService: MailerService,
     ) {}
 
-    @EventPattern(KysoEvent.REPORTS_CREATE)
+    @EventPattern(KysoEventEnum.REPORTS_CREATE)
     async handleReportsCreate(kysoReportsCreateEvent: KysoReportsCreateEvent) {
+        Logger.log(KysoEventEnum.REPORTS_CREATE, ReportsController.name)
+        Logger.debug(kysoReportsCreateEvent, ReportsController.name)
+
         const { user, organization, team, report, frontendUrl } = kysoReportsCreateEvent
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
@@ -39,13 +42,16 @@ export class ReportsController {
             })
     }
 
-    @EventPattern(KysoEvent.REPORTS_UPDATE)
+    @EventPattern(KysoEventEnum.REPORTS_UPDATE)
     async handleReportsUpdate(report: Report) {
-        console.log(KysoEvent.REPORTS_UPDATE, report)
+        console.log(KysoEventEnum.REPORTS_UPDATE, report)
     }
 
-    @EventPattern(KysoEvent.REPORTS_NEW_VERSION)
+    @EventPattern(KysoEventEnum.REPORTS_NEW_VERSION)
     async handleReportsNewVersion(kysoReportsNewVersionEvent: KysoReportsNewVersionEvent) {
+        Logger.log(KysoEventEnum.REPORTS_NEW_VERSION, ReportsController.name)
+        Logger.debug(kysoReportsNewVersionEvent, ReportsController.name)
+
         const { user, organization, team, report, frontendUrl } = kysoReportsNewVersionEvent
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
@@ -70,13 +76,17 @@ export class ReportsController {
             })
     }
 
-    @EventPattern(KysoEvent.REPORTS_DELETE)
+    @EventPattern(KysoEventEnum.REPORTS_DELETE)
     async handleReportsDelete(report: Report) {
-        console.log(KysoEvent.REPORTS_DELETE, report)
+        Logger.log(KysoEventEnum.REPORTS_DELETE, ReportsController.name)
+        Logger.debug(report, ReportsController.name)
     }
 
-    @EventPattern(KysoEvent.REPORTS_CREATE_NO_PERMISSIONS)
+    @EventPattern(KysoEventEnum.REPORTS_CREATE_NO_PERMISSIONS)
     async handleReportsCreateNoPermissions(kysoReportsCreateEvent: KysoReportsCreateEvent) {
+        Logger.log(KysoEventEnum.REPORTS_CREATE_NO_PERMISSIONS, ReportsController.name)
+        Logger.debug(kysoReportsCreateEvent, ReportsController.name)
+
         const { user } = kysoReportsCreateEvent
         this.mailerService
             .sendMail({
