@@ -1,4 +1,4 @@
-import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsNewVersionEvent, Report } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsMentionsEvent, KysoReportsNewMentionEvent, KysoReportsNewVersionEvent, Report, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -44,7 +44,8 @@ export class ReportsController {
 
     @EventPattern(KysoEventEnum.REPORTS_UPDATE)
     async handleReportsUpdate(report: Report) {
-        console.log(KysoEventEnum.REPORTS_UPDATE, report)
+        Logger.log(KysoEventEnum.REPORTS_UPDATE, ReportsController.name)
+        Logger.debug(report, ReportsController.name)
     }
 
     @EventPattern(KysoEventEnum.REPORTS_NEW_VERSION)
@@ -99,6 +100,61 @@ export class ReportsController {
             })
             .catch((err) => {
                 Logger.error(`Error sending mail 'Invalid permissions for creating report' to ${user.display_name}`, err, ReportsController.name)
+            })
+    }
+
+    @EventPattern(KysoEventEnum.REPORTS_NEW_MENTION)
+    async handleDiscussionsNewMention(kysoReportsNewMentionEvent: KysoReportsNewMentionEvent) {
+        Logger.log(KysoEventEnum.REPORTS_NEW_MENTION, ReportsController.name)
+        Logger.debug(kysoReportsNewMentionEvent, ReportsController.name)
+
+        const { user, creator, organization, team, report, frontendUrl } = kysoReportsNewMentionEvent
+        this.mailerService
+            .sendMail({
+                to: user.email,
+                subject: 'You have been mentioned in a report',
+                template: 'report-mention',
+                context: {
+                    creator,
+                    organization,
+                    team,
+                    report,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Mention in report mail ${messageInfo.messageId} sent to ${user.email}`, ReportsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending mention in report mail to ${user.email}`, err, ReportsController.name)
+            })
+    }
+
+    @EventPattern(KysoEventEnum.REPORTS_MENTIONS)
+    async handleReportsMentions(kysoReportsMentionsEvent: KysoReportsMentionsEvent) {
+        Logger.log(KysoEventEnum.REPORTS_MENTIONS, ReportsController.name)
+        Logger.debug(kysoReportsMentionsEvent, ReportsController.name)
+
+        const { to, creator, users, organization, team, report, frontendUrl } = kysoReportsMentionsEvent
+        this.mailerService
+            .sendMail({
+                to,
+                subject: 'Mentions in a report',
+                template: 'report-mentions',
+                context: {
+                    creator,
+                    users: users.map((u: User) => u.display_name).join(','),
+                    organization,
+                    team,
+                    report,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Mention in report mail ${messageInfo.messageId} sent to ${Array.isArray(to) ? to.join(', ') : to}`, ReportsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending mention in report mail to ${Array.isArray(to) ? to.join(', ') : to}`, err, ReportsController.name)
             })
     }
 }
