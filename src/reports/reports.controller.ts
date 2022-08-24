@@ -1,8 +1,8 @@
-import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsMentionsEvent, KysoReportsNewMentionEvent, KysoReportsNewVersionEvent, Report, User } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsDeleteEvent, KysoReportsMentionsEvent, KysoReportsNewMentionEvent, KysoReportsNewVersionEvent, Report, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
-import { Db } from 'mongodb'
+import { Db, FindCursor } from 'mongodb'
 import { Constants } from '../constants'
 
 @Controller()
@@ -18,10 +18,24 @@ export class ReportsController {
         Logger.log(KysoEventEnum.REPORTS_CREATE, ReportsController.name)
         Logger.debug(kysoReportsCreateEvent, ReportsController.name)
 
-        const { user, organization, team, report, frontendUrl } = kysoReportsCreateEvent
+        const { organization, team, report, frontendUrl } = kysoReportsCreateEvent
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
-        const to: string | string[] = centralizedMails && emails.length > 0 ? emails : user.email
+        let to: string[] = []
+        if (centralizedMails && emails.length > 0) {
+            to = emails
+        } else {
+            const cursor: FindCursor<User> = (await this.db.collection(Constants.DATABASE_COLLECTION_USER).find({
+                id: {
+                    $in: report.author_ids,
+                },
+            })) as any
+            to = (await cursor.toArray()).map((user: User) => user.email)
+        }
+        if (to.length === 0) {
+            Logger.error(`No authors found for report ${report.id} ${report.sluglified_name}`, ReportsController.name)
+            return
+        }
         this.mailerService
             .sendMail({
                 to,
@@ -53,10 +67,24 @@ export class ReportsController {
         Logger.log(KysoEventEnum.REPORTS_NEW_VERSION, ReportsController.name)
         Logger.debug(kysoReportsNewVersionEvent, ReportsController.name)
 
-        const { user, organization, team, report, frontendUrl } = kysoReportsNewVersionEvent
+        const { organization, team, report, frontendUrl } = kysoReportsNewVersionEvent
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
-        const to: string | string[] = centralizedMails && emails.length > 0 ? emails : user.email
+        let to: string[] = []
+        if (centralizedMails && emails.length > 0) {
+            to = emails
+        } else {
+            const cursor: FindCursor<User> = (await this.db.collection(Constants.DATABASE_COLLECTION_USER).find({
+                id: {
+                    $in: report.author_ids,
+                },
+            })) as any
+            to = (await cursor.toArray()).map((user: User) => user.email)
+        }
+        if (to.length === 0) {
+            Logger.error(`No authors found for report ${report.id} ${report.sluglified_name}`, ReportsController.name)
+            return
+        }
         this.mailerService
             .sendMail({
                 to,
@@ -78,9 +106,46 @@ export class ReportsController {
     }
 
     @EventPattern(KysoEventEnum.REPORTS_DELETE)
-    async handleReportsDelete(report: Report) {
+    async handleReportsDelete(kysoReportsDeleteEvent: KysoReportsDeleteEvent) {
         Logger.log(KysoEventEnum.REPORTS_DELETE, ReportsController.name)
-        Logger.debug(report, ReportsController.name)
+        Logger.debug(kysoReportsDeleteEvent, ReportsController.name)
+
+        const { organization, team, report, frontendUrl } = kysoReportsDeleteEvent
+        const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
+        const emails: string[] = organization?.options?.notifications?.emails || []
+        let to: string[] = []
+        if (centralizedMails && emails.length > 0) {
+            to = emails
+        } else {
+            const cursor: FindCursor<User> = (await this.db.collection(Constants.DATABASE_COLLECTION_USER).find({
+                id: {
+                    $in: report.author_ids,
+                },
+            })) as any
+            to = (await cursor.toArray()).map((user: User) => user.email)
+        }
+        if (to.length === 0) {
+            Logger.error(`No authors found for report ${report.id} ${report.sluglified_name}`, ReportsController.name)
+            return
+        }
+        this.mailerService
+            .sendMail({
+                to,
+                subject: `Existing report '${report.title}' deleted`,
+                template: 'report-delete',
+                context: {
+                    organization,
+                    team,
+                    report,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Report mail ${messageInfo.messageId} sent to ${Array.isArray(to) ? to.join(', ') : to}`, ReportsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending report mail to ${Array.isArray(to) ? to.join(', ') : to}`, err, ReportsController.name)
+            })
     }
 
     @EventPattern(KysoEventEnum.REPORTS_CREATE_NO_PERMISSIONS)
