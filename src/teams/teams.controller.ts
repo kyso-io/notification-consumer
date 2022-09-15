@@ -1,4 +1,4 @@
-import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsRemoveMemberEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -103,6 +103,54 @@ export class TeamsController {
                 })
                 .catch((err) => {
                     Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+                })
+        }
+    }
+
+    @EventPattern(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES)
+    async handle(kysoTeamsUpdateMemberRolesEvent: KysoTeamsUpdateMemberRolesEvent) {
+        Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, TeamsController.name)
+        Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
+
+        const { user, organization, team, emailsCentralized, frontendUrl, currentRoles } = kysoTeamsUpdateMemberRolesEvent
+        this.mailerService
+            .sendMail({
+                to: user.email,
+                subject: `You role in ${team.display_name} team has changed`,
+                template: 'team-user-role-changed',
+                context: {
+                    user,
+                    organization,
+                    team,
+                    frontendUrl,
+                    role: currentRoles[0],
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending role changed mail to ${user.email}`, err, TeamsController.name)
+            })
+        if (emailsCentralized.length > 0) {
+            this.mailerService
+                .sendMail({
+                    to: emailsCentralized,
+                    subject: `A member's role has changed in ${team.display_name} team`,
+                    template: 'team-member-role-changed',
+                    context: {
+                        user,
+                        organization,
+                        team,
+                        frontendUrl,
+                        role: currentRoles[0],
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Role changed mail ${messageInfo.messageId} sent to ${emailsCentralized.join(', ')}`, TeamsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurrend sending role changed mail to ${emailsCentralized.join(', ')}`, err, TeamsController.name)
                 })
         }
     }
