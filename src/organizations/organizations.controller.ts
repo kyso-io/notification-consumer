@@ -103,4 +103,50 @@ export class OrganizationsController {
                 })
         }
     }
+
+    @EventPattern(KysoEventEnum.ORGANIZATIONS_UPDATE_MEMBER_ROLE)
+    async handleTeamsUpdateMemberRoles(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent) {
+        Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, OrganizationsController.name)
+        Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
+
+        const { user, organization, emailsCentralized, frontendUrl, role } = kysoOrganizationsAddMemberEvent
+        this.mailerService
+            .sendMail({
+                to: user.email,
+                subject: `Your role in ${organization.display_name} organization has changed`,
+                template: 'organization-user-role-changed',
+                context: {
+                    user,
+                    organization,
+                    frontendUrl,
+                    role,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Organization role changed mail ${messageInfo.messageId} sent to ${user.email}`, OrganizationsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurred sending organization role changed mail to ${user.email}`, err, OrganizationsController.name)
+            })
+        if (emailsCentralized.length > 0) {
+            this.mailerService
+                .sendMail({
+                    to: emailsCentralized,
+                    subject: `A member's role has changed in ${organization.display_name} organization`,
+                    template: 'organization-member-role-changed',
+                    context: {
+                        user,
+                        organization,
+                        frontendUrl,
+                        role,
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Organization role changed mail ${messageInfo.messageId} sent to ${emailsCentralized.join(', ')}`, OrganizationsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurred sending organization role changed mail to ${emailsCentralized.join(', ')}`, err, OrganizationsController.name)
+                })
+        }
+    }
 }

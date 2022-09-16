@@ -108,7 +108,7 @@ export class TeamsController {
     }
 
     @EventPattern(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES)
-    async handle(kysoTeamsUpdateMemberRolesEvent: KysoTeamsUpdateMemberRolesEvent) {
+    async handleTeamsUpdateMemberRoles(kysoTeamsUpdateMemberRolesEvent: KysoTeamsUpdateMemberRolesEvent) {
         Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, TeamsController.name)
         Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
 
@@ -116,7 +116,7 @@ export class TeamsController {
         this.mailerService
             .sendMail({
                 to: user.email,
-                subject: `You role in ${team.display_name} team has changed`,
+                subject: `Your role in ${team.display_name} team has changed`,
                 template: 'team-user-role-changed',
                 context: {
                     user,
@@ -127,10 +127,10 @@ export class TeamsController {
                 },
             })
             .then((messageInfo) => {
-                Logger.log(`Role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
             })
             .catch((err) => {
-                Logger.error(`An error occurrend sending role changed mail to ${user.email}`, err, TeamsController.name)
+                Logger.error(`An error occurred sending team role changed mail to ${user.email}`, err, TeamsController.name)
             })
         if (emailsCentralized.length > 0) {
             this.mailerService
@@ -147,10 +147,10 @@ export class TeamsController {
                     },
                 })
                 .then((messageInfo) => {
-                    Logger.log(`Role changed mail ${messageInfo.messageId} sent to ${emailsCentralized.join(', ')}`, TeamsController.name)
+                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${emailsCentralized.join(', ')}`, TeamsController.name)
                 })
                 .catch((err) => {
-                    Logger.error(`An error occurrend sending role changed mail to ${emailsCentralized.join(', ')}`, err, TeamsController.name)
+                    Logger.error(`An error occurred sending team role changed mail to ${emailsCentralized.join(', ')}`, err, TeamsController.name)
                 })
         }
     }
