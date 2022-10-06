@@ -106,7 +106,7 @@ export class OrganizationsController {
 
     @EventPattern(KysoEventEnum.ORGANIZATIONS_UPDATE_MEMBER_ROLE)
     async handleTeamsUpdateMemberRoles(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent) {
-        Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, OrganizationsController.name)
+        Logger.log(KysoEventEnum.ORGANIZATIONS_UPDATE_MEMBER_ROLE, OrganizationsController.name)
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
 
         const { user, organization, emailsCentralized, frontendUrl, role } = kysoOrganizationsAddMemberEvent
