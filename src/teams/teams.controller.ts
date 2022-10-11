@@ -22,7 +22,7 @@ export class TeamsController {
         this.mailerService
             .sendMail({
                 to: user.email,
-                subject: `You were added to ${team.display_name} team`,
+                subject: `You were added to ${team.display_name} channel`,
                 template: 'team-you-were-added',
                 context: {
                     addedUser: user,
@@ -70,7 +70,7 @@ export class TeamsController {
         this.mailerService
             .sendMail({
                 to: user.email,
-                subject: `You were removed to ${team.display_name} team`,
+                subject: `You were removed to ${team.display_name} channel`,
                 template: 'team-you-were-removed',
                 context: {
                     removedUser: user,
