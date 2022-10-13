@@ -1,4 +1,13 @@
-import { KysoEventEnum, KysoOrganizationsAddMemberEvent, KysoOrganizationsRemoveMemberEvent } from '@kyso-io/kyso-model'
+import {
+    KysoEventEnum,
+    KysoOrganizationsAddMemberEvent,
+    KysoOrganizationsRemoveMemberEvent,
+    KysoOrganizationsUpdateEvent,
+    KysoSetting,
+    KysoSettingsEnum,
+    OrganizationMemberJoin,
+    User,
+} from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -146,6 +155,59 @@ export class OrganizationsController {
                 })
                 .catch((err) => {
                     Logger.error(`An error occurred sending organization role changed mail to ${emailsCentralized.join(', ')}`, err, OrganizationsController.name)
+                })
+        }
+    }
+
+    @EventPattern(KysoEventEnum.ORGANIZATIONS_UPDATE_OPTIONS)
+    async handleOrganizationUpdateOptions(kysoOrganizationsUpdateEvent: KysoOrganizationsUpdateEvent) {
+        // Logger.log(KysoEventEnum.ORGANIZATIONS_UPDATE_OPTIONS, OrganizationsController.name)
+        // Logger.debug(kysoOrganizationsUpdateEvent, OrganizationsController.name)
+    }
+
+    @EventPattern(KysoEventEnum.ORGANIZATIONS_UPDATE_CENTRALIZED_COMMUNICATIONS)
+    async handleOrganizationUpdateCentralizedCommunications(kysoOrganizationsUpdateEvent: KysoOrganizationsUpdateEvent) {
+        Logger.log(KysoEventEnum.ORGANIZATIONS_UPDATE_CENTRALIZED_COMMUNICATIONS, OrganizationsController.name)
+        Logger.debug(kysoOrganizationsUpdateEvent, OrganizationsController.name)
+        const { user, organization } = kysoOrganizationsUpdateEvent
+        const organizationMembersJoin: OrganizationMemberJoin[] = (await this.db
+            .collection('OrganizationMember')
+            .find({
+                organization_id: organization.id,
+                role_names: { $in: ['organization-admin'] },
+            })
+            .toArray()) as any[]
+        if (organizationMembersJoin.length === 0) {
+            return
+        }
+        if (organization.options.notifications.emails.length === 0) {
+            return
+        }
+        const emailsNotifications: string = organization.options.notifications.emails.join(', ')
+        const kysoSetting: KysoSetting = (await this.db.collection('KysoSettings').findOne({ key: KysoSettingsEnum.FRONTEND_URL })) as any
+        const adminUsers: User[] = (await this.db
+            .collection('User')
+            .find({ id: { $in: organizationMembersJoin.map((om: OrganizationMemberJoin) => om.member_id) } })
+            .toArray()) as any[]
+        for (const adminUser of adminUsers) {
+            this.mailerService
+                .sendMail({
+                    to: adminUser.email,
+                    subject: `Centralized notifications were updated for ${organization.display_name} organization`,
+                    template: 'organization-centralized-notifications',
+                    context: {
+                        receiver: adminUser,
+                        user,
+                        organization,
+                        frontendUrl: kysoSetting.value,
+                        emailsNotifications,
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Mail ${messageInfo.messageId} of centralized notifications for the organization ${organization.sluglified_name} sent to ${user.email}`, OrganizationsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurred sending centralized notifications organization  mail to ${user.email}`, err, OrganizationsController.name)
                 })
         }
     }
