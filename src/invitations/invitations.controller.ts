@@ -22,7 +22,7 @@ export class InvitationsController {
         this.mailerService
             .sendMail({
                 to: invitation.email,
-                subject: `Kyso: New invitation to join team ${team.sluglified_name}`,
+                subject: `Kyso: New invitation to join into channel ${team.sluglified_name}`,
                 template: 'invitation-team',
                 context: {
                     user,

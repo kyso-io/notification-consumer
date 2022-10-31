@@ -42,7 +42,7 @@ export class TeamsController {
             this.mailerService
                 .sendMail({
                     to: emailsCentralized,
-                    subject: `A member was added from ${team.display_name} team`,
+                    subject: `A member was added from ${team.display_name} channel`,
                     template: 'team-new-member',
                     context: {
                         addedUser: user,
@@ -89,7 +89,7 @@ export class TeamsController {
             this.mailerService
                 .sendMail({
                     to: emailsCentralized,
-                    subject: `A member was removed from ${team.display_name} team`,
+                    subject: `A member was removed from ${team.display_name} channel`,
                     template: 'team-removed-member',
                     context: {
                         removedUser: user,
@@ -116,7 +116,7 @@ export class TeamsController {
         this.mailerService
             .sendMail({
                 to: user.email,
-                subject: `Your role in ${team.display_name} team has changed`,
+                subject: `Your role in ${team.display_name} channel has changed`,
                 template: 'team-user-role-changed',
                 context: {
                     user,
@@ -136,7 +136,7 @@ export class TeamsController {
             this.mailerService
                 .sendMail({
                     to: emailsCentralized,
-                    subject: `A member's role has changed in ${team.display_name} team`,
+                    subject: `A member's role has changed in ${team.display_name} channel`,
                     template: 'team-member-role-changed',
                     context: {
                         user,
