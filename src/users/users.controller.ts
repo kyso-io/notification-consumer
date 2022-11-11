@@ -55,7 +55,10 @@ export class UsersController {
                 template: 'verify-email',
                 context: {
                     user,
-                    userVerification,
+                    userVerification: {
+                        ...userVerification,
+                        email: encodeURIComponent(user.email),
+                    },
                     frontendUrl,
                 },
             })
