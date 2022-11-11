@@ -1,4 +1,4 @@
-import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsDeleteEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -152,6 +152,38 @@ export class TeamsController {
                 .catch((err) => {
                     Logger.error(`An error occurred sending team role changed mail to ${emailsCentralized.join(', ')}`, err, TeamsController.name)
                 })
+        }
+    }
+
+    @EventPattern(KysoEventEnum.TEAMS_DELETE)
+    async handleOrganizationsDelete(kysoTeamsDeleteEvent: KysoTeamsDeleteEvent) {
+        Logger.log(KysoEventEnum.TEAMS_DELETE, TeamsController.name)
+        Logger.debug(kysoTeamsDeleteEvent, TeamsController.name)
+        const { organization, team, user, user_ids } = kysoTeamsDeleteEvent
+        const teamUsers: User[] = (await this.db
+            .collection('User')
+            .find({
+                id: {
+                    $in: user_ids,
+                },
+            })
+            .toArray()) as any[]
+        for (const teamUser of teamUsers) {
+            try {
+                await this.mailerService.sendMail({
+                    to: teamUser.email,
+                    subject: `Team ${team.display_name} was removed`,
+                    template: 'team-deleted',
+                    context: {
+                        user,
+                        organization,
+                        team,
+                    },
+                })
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending team removed mail to ${teamUser.id} ${teamUser.email}`, e, TeamsController.name)
+            }
         }
     }
 }

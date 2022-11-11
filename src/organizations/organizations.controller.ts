@@ -1,6 +1,7 @@
 import {
     KysoEventEnum,
     KysoOrganizationsAddMemberEvent,
+    KysoOrganizationsDeleteEvent,
     KysoOrganizationsRemoveMemberEvent,
     KysoOrganizationsUpdateEvent,
     KysoSetting,
@@ -209,6 +210,37 @@ export class OrganizationsController {
                 .catch((err) => {
                     Logger.error(`An error occurred sending centralized notifications organization  mail to ${user.email}`, err, OrganizationsController.name)
                 })
+        }
+    }
+
+    @EventPattern(KysoEventEnum.ORGANIZATIONS_DELETE)
+    async handleOrganizationsDelete(kysoOrganizationsDeleteEvent: KysoOrganizationsDeleteEvent) {
+        Logger.log(KysoEventEnum.ORGANIZATIONS_DELETE, OrganizationsController.name)
+        Logger.debug(kysoOrganizationsDeleteEvent, OrganizationsController.name)
+        const { organization, user, user_ids } = kysoOrganizationsDeleteEvent
+        const organizationUsers: User[] = (await this.db
+            .collection('User')
+            .find({
+                id: {
+                    $in: user_ids,
+                },
+            })
+            .toArray()) as any[]
+        for (const organizationUser of organizationUsers) {
+            try {
+                await this.mailerService.sendMail({
+                    to: organizationUser.email,
+                    subject: `Organization ${organization.display_name} was removed`,
+                    template: 'organization-deleted',
+                    context: {
+                        user,
+                        organization,
+                    },
+                })
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending organization removed mail to ${organizationUser.id} ${organizationUser.email}`, e, OrganizationsController.name)
+            }
         }
     }
 }
