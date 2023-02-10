@@ -23,12 +23,28 @@ export class OrganizationsController {
         private readonly mailerService: MailerService,
     ) {}
 
+    private getTextForEmail(role: string): string {
+        switch (role) {
+            case 'organization-admin':
+                return 'You can admin the organization.'
+            case 'team-admin':
+                return `You can admin all public and protected channels of the organization.`
+            case 'team-contributor':
+                return `You can contribute creating reports across all public and protected channels of the organization.`
+            case 'team-reader':
+                return 'You can read and comment across all public and protected channels of the organization.'
+            default:
+                return ''
+        }
+    }
+
     @EventPattern(KysoEventEnum.ORGANIZATIONS_ADD_MEMBER)
     async handleOrganizationsAddMember(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent) {
         Logger.log(KysoEventEnum.ORGANIZATIONS_ADD_MEMBER, OrganizationsController.name)
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
 
         const { user, organization, emailsCentralized, role, frontendUrl } = kysoOrganizationsAddMemberEvent
+        const text = `Recently you were added to the <a href="${frontendUrl}/${organization.sluglified_name}">${organization.display_name}</a> organization. <strong>${this.getTextForEmail(role)}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -37,7 +53,7 @@ export class OrganizationsController {
                 context: {
                     addedUser: user,
                     organization,
-                    role,
+                    text,
                     frontendUrl,
                 },
             })
@@ -120,6 +136,7 @@ export class OrganizationsController {
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
 
         const { user, organization, emailsCentralized, frontendUrl, role } = kysoOrganizationsAddMemberEvent
+        const text = `Recently you role in <a href="${frontendUrl}/${organization.sluglified_name}">${organization.display_name}</a> organization has change. <strong>${this.getTextForEmail(role)}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -129,7 +146,7 @@ export class OrganizationsController {
                     user,
                     organization,
                     frontendUrl,
-                    role,
+                    text,
                 },
             })
             .then((messageInfo) => {

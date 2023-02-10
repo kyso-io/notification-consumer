@@ -13,12 +13,28 @@ export class TeamsController {
         private db: Db,
     ) {}
 
+    private getTextForEmail(role: string): string {
+        switch (role) {
+            case 'team-admin':
+                return `You can admin this channel.`
+            case 'team-contributor':
+                return `You can contribute creating reports in this channel.`
+            case 'team-reader':
+                return 'You can read and comment all reports in this channel.'
+            default:
+                return ''
+        }
+    }
+
     @EventPattern(KysoEventEnum.TEAMS_ADD_MEMBER)
     async handleCommentsCreated(kysoTeamsAddMemberEvent: KysoTeamsAddMemberEvent) {
         Logger.log(KysoEventEnum.TEAMS_ADD_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsAddMemberEvent, TeamsController.name)
 
         const { user, organization, team, emailsCentralized, roles, frontendUrl } = kysoTeamsAddMemberEvent
+        const text = `Recently you were added to the <a href='${frontendUrl}/${organization.sluglified_name}/${team.sluglified_name}'>${team.display_name}</a> channel. <strong>${this.getTextForEmail(
+            roles[0],
+        )}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -29,7 +45,7 @@ export class TeamsController {
                     organization,
                     team,
                     frontendUrl,
-                    role: roles,
+                    text,
                 },
             })
             .then((messageInfo) => {
@@ -113,6 +129,9 @@ export class TeamsController {
         Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
 
         const { user, organization, team, emailsCentralized, frontendUrl, currentRoles } = kysoTeamsUpdateMemberRolesEvent
+        const text = `Recently your role in <a href='${frontendUrl}/${organization.sluglified_name}/${team.sluglified_name}'>${team.display_name}</a> channel has changed. <strong>${this.getTextForEmail(
+            currentRoles[0],
+        )}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -123,7 +142,7 @@ export class TeamsController {
                     organization,
                     team,
                     frontendUrl,
-                    role: currentRoles[0],
+                    text,
                 },
             })
             .then((messageInfo) => {
