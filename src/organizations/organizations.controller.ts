@@ -44,7 +44,6 @@ export class OrganizationsController {
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
 
         const { user, organization, emailsCentralized, role, frontendUrl } = kysoOrganizationsAddMemberEvent
-        const text = `Recently you were added to the <a href="${frontendUrl}/${organization.sluglified_name}">${organization.display_name}</a> organization. <strong>${this.getTextForEmail(role)}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -53,7 +52,7 @@ export class OrganizationsController {
                 context: {
                     addedUser: user,
                     organization,
-                    text,
+                    text: this.getTextForEmail(role),
                     frontendUrl,
                 },
             })
@@ -136,7 +135,6 @@ export class OrganizationsController {
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
 
         const { user, organization, emailsCentralized, frontendUrl, role } = kysoOrganizationsAddMemberEvent
-        const text = `Recently you role in <a href="${frontendUrl}/${organization.sluglified_name}">${organization.display_name}</a> organization has change. <strong>${this.getTextForEmail(role)}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -146,7 +144,7 @@ export class OrganizationsController {
                     user,
                     organization,
                     frontendUrl,
-                    text,
+                    text: this.getTextForEmail(role),
                 },
             })
             .then((messageInfo) => {
