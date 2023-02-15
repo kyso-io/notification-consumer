@@ -32,9 +32,6 @@ export class TeamsController {
         Logger.debug(kysoTeamsAddMemberEvent, TeamsController.name)
 
         const { user, organization, team, emailsCentralized, roles, frontendUrl } = kysoTeamsAddMemberEvent
-        const text = `Recently you were added to the <a href='${frontendUrl}/${organization.sluglified_name}/${team.sluglified_name}'>${team.display_name}</a> channel. <strong>${this.getTextForEmail(
-            roles[0],
-        )}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -45,7 +42,7 @@ export class TeamsController {
                     organization,
                     team,
                     frontendUrl,
-                    text,
+                    text: this.getTextForEmail(roles[0]),
                 },
             })
             .then((messageInfo) => {
@@ -129,9 +126,6 @@ export class TeamsController {
         Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
 
         const { user, organization, team, emailsCentralized, frontendUrl, currentRoles } = kysoTeamsUpdateMemberRolesEvent
-        const text = `Recently your role in <a href='${frontendUrl}/${organization.sluglified_name}/${team.sluglified_name}'>${team.display_name}</a> channel has changed. <strong>${this.getTextForEmail(
-            currentRoles[0],
-        )}</strong>`
         this.mailerService
             .sendMail({
                 to: user.email,
@@ -142,7 +136,7 @@ export class TeamsController {
                     organization,
                     team,
                     frontendUrl,
-                    text,
+                    text: this.getTextForEmail(currentRoles[0]),
                 },
             })
             .then((messageInfo) => {
