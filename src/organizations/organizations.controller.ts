@@ -258,4 +258,41 @@ export class OrganizationsController {
             }
         }
     }
+
+    @EventPattern(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED)
+    async handleRequestAccessCreated(kysoOrganizationRequestAccessCreatedEvent: any) {
+        Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED, OrganizationsController.name)
+        Logger.debug(kysoOrganizationRequestAccessCreatedEvent, OrganizationsController.name)
+        
+        const { organization, user, user_ids } = kysoOrganizationRequestAccessCreatedEvent
+        
+        // Search every organization admin in the organization
+
+        // For each organization admin, send an email
+
+        const organizationUsers: User[] = (await this.db
+            .collection('User')
+            .find({
+                id: {
+                    $in: user_ids,
+                },
+            })
+            .toArray()) as any[]
+        for (const organizationUser of organizationUsers) {
+            try {
+                await this.mailerService.sendMail({
+                    to: organizationUser.email,
+                    subject: `Organization ${organization.display_name} was removed`,
+                    template: 'organization-deleted',
+                    context: {
+                        user,
+                        organization,
+                    },
+                })
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending organization removed mail to ${organizationUser.id} ${organizationUser.email}`, e, OrganizationsController.name)
+            }
+        }
+    }
 }
