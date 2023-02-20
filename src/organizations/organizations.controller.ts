@@ -264,34 +264,26 @@ export class OrganizationsController {
         Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED, OrganizationsController.name)
         Logger.debug(kysoOrganizationRequestAccessCreatedEvent, OrganizationsController.name)
         
-        const { organization, user, user_ids } = kysoOrganizationRequestAccessCreatedEvent
+        const { organization, organizationAdmins, requesterUser, request, frontendUrl } = kysoOrganizationRequestAccessCreatedEvent;
         
-        // Search every organization admin in the organization
-
-        // For each organization admin, send an email
-
-        const organizationUsers: User[] = (await this.db
-            .collection('User')
-            .find({
-                id: {
-                    $in: user_ids,
-                },
-            })
-            .toArray()) as any[]
-        for (const organizationUser of organizationUsers) {
+        for (const admin of organizationAdmins) {
             try {
                 await this.mailerService.sendMail({
-                    to: organizationUser.email,
-                    subject: `Organization ${organization.display_name} was removed`,
-                    template: 'organization-deleted',
+                    to: admin.email,
+                    subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
+                    template: 'organization-request-access-created',
                     context: {
-                        user,
+                        admin,
                         organization,
+                        requesterUser,
+                        frontendUrl,
+                        request
                     },
-                })
+                });
+
                 await new Promise((resolve) => setTimeout(resolve, 200))
             } catch (e) {
-                Logger.error(`An error occurred sending organization removed mail to ${organizationUser.id} ${organizationUser.email}`, e, OrganizationsController.name)
+                Logger.error(`An error occurred sending created request access to organization ${organization.displa_name} to user ${admin.email}`, e, OrganizationsController.name)
             }
         }
     }
