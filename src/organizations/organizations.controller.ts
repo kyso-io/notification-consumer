@@ -258,4 +258,33 @@ export class OrganizationsController {
             }
         }
     }
+
+    @EventPattern(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED)
+    async handleRequestAccessCreated(kysoOrganizationRequestAccessCreatedEvent: any) {
+        Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED, OrganizationsController.name)
+        Logger.debug(kysoOrganizationRequestAccessCreatedEvent, OrganizationsController.name)
+        
+        const { organization, organizationAdmins, requesterUser, request, frontendUrl } = kysoOrganizationRequestAccessCreatedEvent;
+        
+        for (const admin of organizationAdmins) {
+            try {
+                await this.mailerService.sendMail({
+                    to: admin.email,
+                    subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
+                    template: 'organization-request-access-created',
+                    context: {
+                        admin,
+                        organization,
+                        requesterUser,
+                        frontendUrl,
+                        request
+                    },
+                });
+
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending created request access to organization ${organization.displa_name} to user ${admin.email}`, e, OrganizationsController.name)
+            }
+        }
+    }
 }
