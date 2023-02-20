@@ -268,6 +268,8 @@ export class OrganizationsController {
         
         for (const admin of organizationAdmins) {
             try {
+                console.log(admin);
+                
                 await this.mailerService.sendMail({
                     to: admin.email,
                     subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
@@ -283,7 +285,7 @@ export class OrganizationsController {
 
                 await new Promise((resolve) => setTimeout(resolve, 200))
             } catch (e) {
-                Logger.error(`An error occurred sending created request access to organization ${organization.displa_name} to user ${admin.email}`, e, OrganizationsController.name)
+                Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
             }
         }
     }
