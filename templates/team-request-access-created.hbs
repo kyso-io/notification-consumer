@@ -188,7 +188,7 @@
                                                                                     <td style="line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <a style="text-decoration:none;color:#151515;font-size:22px;">
-                                                                                            {{requester_user_display_name}} is requesting access to {{team.display_name}}
+                                                                                            {{requesterUser.display_name}} is requesting access to {{team.display_name}}
                                                                                         </a>
                                                                                     </td>
                                                                                 </tr>
@@ -208,21 +208,21 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            Hi {{team_admin_user_display_name}}, <br/><br/>
+                                                                                            Hi {{admin.display_name}}, <br/><br/>
                                                                                             
-                                                                                            The user {{requester_user_display_name}} has requested access to the team <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a>, that belong to the organization <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> <br /><br />
+                                                                                            The user {{requesterUser.display_name}} has requested access to the team <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a>, that belong to the organization <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> <br /><br />
                                                                                             
                                                                                             Please, as team administrator, take action and choose one of the following options:
                                                                                             
                                                                                             <div id="buttons">
-                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_READER" target="_blank" class="btn kyso">Accept as a READER</a>
-                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_CONTRIBUTOR" target="_blank" class="btn kyso">Accept as a CONTRIBUTOR</a>
-                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/REJECTED" target="_blank" class="btn red">REJECT</a>
+                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_READER" target="_blank" class="btn kyso">Accept as a READER</a>
+                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_CONTRIBUTOR" target="_blank" class="btn kyso">Accept as a CONTRIBUTOR</a>
+                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/REJECTED" target="_blank" class="btn red">REJECT</a>
                                                                                             </div>
                                                                                             
-                                                                                            <div style="color: darkred; font-weight: 900; margin-bottom: 10px">IMPORTANT: Accepting the request implies the addition of {{requester_user_display_name}} as member of the organization {{organization.display_name}} with the role READER</div>
+                                                                                            <div style="color: darkred; font-weight: 900; margin-bottom: 10px">IMPORTANT: Accepting the request implies the addition of {{requesterUser.display_name}} as member of the organization {{organization.display_name}} with the role READER</div>
 
-                                                                                            Remember that adding {{requester_user_display_name}} to your organization will give her/him access to all the <b>protected channels</b> of your organizations.<br/><br/>
+                                                                                            Remember that adding {{requesterUser.display_name}} to your organization will give her/him access to all the <b>protected channels</b> of your organizations.<br/><br/>
 
                                                                                             If you want to learn more about the permission system at Kyso, please read the <a href="https://docs.kyso.io/settings-and-administration/permissions-system" target="_blank">docs</a> or ask for help to <a href="mailto:support@kyso.io">support@kyso.io</a>
                                                                                         </p>

@@ -209,24 +209,26 @@ export class TeamsController {
         const { organization, team, organizationAdmins, requesterUser, request, frontendUrl } = kysoTeamRequestAccessCreatedEvent;
         
         for (const admin of organizationAdmins) {
-            try {
-                await this.mailerService.sendMail({
-                    to: admin.email,
-                    subject: `${requesterUser.display_name} requested access for team ${team.display_name}`,
-                    template: 'team-request-access-created',
-                    context: {
-                        admin,
-                        organization,
-                        team, 
-                        requesterUser,
-                        frontendUrl,
-                        request
-                    },
-                });
-
-                await new Promise((resolve) => setTimeout(resolve, 200))
-            } catch (e) {
-                Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
+            if(admin) {
+                try {
+                    await this.mailerService.sendMail({
+                        to: admin.email,
+                        subject: `${requesterUser.display_name} requested access for team ${team.display_name}`,
+                        template: 'team-request-access-created',
+                        context: {
+                            admin,
+                            organization,
+                            team, 
+                            requesterUser,
+                            frontendUrl,
+                            request
+                        },
+                    });
+    
+                    await new Promise((resolve) => setTimeout(resolve, 200))
+                } catch (e) {
+                    Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
+                }
             }
         }
     }

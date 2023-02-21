@@ -267,25 +267,25 @@ export class OrganizationsController {
         const { organization, organizationAdmins, requesterUser, request, frontendUrl } = kysoOrganizationRequestAccessCreatedEvent;
         
         for (const admin of organizationAdmins) {
-            try {
-                console.log(admin);
-                
-                await this.mailerService.sendMail({
-                    to: admin.email,
-                    subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
-                    template: 'organization-request-access-created',
-                    context: {
-                        admin,
-                        organization,
-                        requesterUser,
-                        frontendUrl,
-                        request
-                    },
-                });
-
-                await new Promise((resolve) => setTimeout(resolve, 200))
-            } catch (e) {
-                Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
+            if(admin) {
+                try {
+                    await this.mailerService.sendMail({
+                        to: admin.email,
+                        subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
+                        template: 'organization-request-access-created',
+                        context: {
+                            admin,
+                            organization,
+                            requesterUser,
+                            frontendUrl,
+                            request
+                        },
+                    });
+    
+                    await new Promise((resolve) => setTimeout(resolve, 200))
+                } catch (e) {
+                    Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
+                }
             }
         }
     }
