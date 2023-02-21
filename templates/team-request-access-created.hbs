@@ -44,8 +44,9 @@
     background-color: #48E68B;
     }
 
+    
     .red {
-    background-color: #e74c3c;
+    background-color: #C81E1E;
     box-shadow: 0px 5px 0px 0px #CE3323;
     }
 
@@ -53,14 +54,15 @@
     background-color: #FF6656;
     }
 
-    .purple {
-    background-color: #9b59b6;
-    box-shadow: 0px 5px 0px 0px #82409D;
+    .kyso {
+    background-color: #244362;
+    box-shadow: 0px 5px 0px 0px #24436F;
     }
 
-    .purple:hover {
-    background-color: #B573D0;
+    .kyso:hover {
+    background-color: #24436F;
     }
+
 
     .orange {
     background-color: #e67e22;
@@ -213,8 +215,8 @@
                                                                                             Please, as team administrator, take action and choose one of the following options:
                                                                                             
                                                                                             <div id="buttons">
-                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_READER" target="_blank" class="btn purple">Accept as a READER</a>
-                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_CONTRIBUTOR" target="_blank" class="btn purple">Accept as a CONTRIBUTOR</a>
+                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_READER" target="_blank" class="btn kyso">Accept as a READER</a>
+                                                                                                <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/ACCEPTED_AS_CONTRIBUTOR" target="_blank" class="btn kyso">Accept as a CONTRIBUTOR</a>
                                                                                                 <a href="{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request_access_id}}/{{request_access_secret}}/{{organization_admin_user_id}}/REJECTED" target="_blank" class="btn red">REJECT</a>
                                                                                             </div>
                                                                                             
