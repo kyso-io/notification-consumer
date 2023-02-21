@@ -316,6 +316,5 @@ export class OrganizationsController {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, OrganizationsController.name)
             }
         }
-        
     }
 }

@@ -232,4 +232,33 @@ export class TeamsController {
             }
         }
     }
+
+    @EventPattern(KysoEventEnum.TEAMS_REQUEST_ACCESS_REJECTED)
+    async handleRequestAccessRejected(kysoTeamRequestAccessRejectedEvent: any) {
+        Logger.log(KysoEventEnum.TEAMS_REQUEST_ACCESS_REJECTED, TeamsController.name)
+        Logger.debug(kysoTeamRequestAccessRejectedEvent, TeamsController.name)
+        
+        const { organization, team, rejecterUser, requesterUser, frontendUrl } = kysoTeamRequestAccessRejectedEvent;
+        
+        if(requesterUser && requesterUser.email && requesterUser.display_name) {
+            try {
+                await this.mailerService.sendMail({
+                    to: requesterUser.email,
+                    subject: `Your access request to team ${team.display_name} has been rejected`,
+                    template: 'team-request-access-rejected',
+                    context: {
+                        rejecterUser,
+                        organization,
+                        team,
+                        requesterUser,
+                        frontendUrl
+                    },
+                });
+
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, OrganizationsController.name)
+            }
+        }
+    }
 }

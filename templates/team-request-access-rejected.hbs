@@ -44,6 +44,7 @@
     background-color: #48E68B;
     }
 
+    
     .red {
     background-color: #C81E1E;
     box-shadow: 0px 5px 0px 0px #CE3323;
@@ -61,6 +62,7 @@
     .kyso:hover {
     background-color: #24436F;
     }
+
 
     .orange {
     background-color: #e67e22;
@@ -186,7 +188,7 @@
                                                                                     <td style="line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <a style="text-decoration:none;color:#151515;font-size:22px;">
-                                                                                            Your access request to {{organization.display_name}} has been rejected
+                                                                                            Your access request to {{team.display_name}} has ben rejected
                                                                                         </a>
                                                                                     </td>
                                                                                 </tr>
@@ -208,9 +210,9 @@
                                                                                         <p>
                                                                                             Hi {{requesterUser.display_name}}, <br/><br/>
                                                                                             
-                                                                                            We are sorry to say that the administrator {{rejecterUser.display_name}} rejected your access request to the organization <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>. <br /><br />
+                                                                                            We are sorry to say that the administrator {{rejecterUser.display_name}} rejected your access request to the channel to the channel <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a>, that belong to the organization <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> <br /><br />
                                                                                             
-                                                                                            All the best, <br/>
+                                                                                            All the best,<br/>
                                                                                             Kyso
                                                                                         </p>
                                                                                     </td>
