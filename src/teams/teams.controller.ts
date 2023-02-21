@@ -257,7 +257,7 @@ export class TeamsController {
 
                 await new Promise((resolve) => setTimeout(resolve, 200))
             } catch (e) {
-                Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, OrganizationsController.name)
+                Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, TeamsController.name)
             }
         }
     }
