@@ -289,4 +289,33 @@ export class OrganizationsController {
             }
         }
     }
+
+    @EventPattern(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_REJECTED)
+    async handleRequestAccessRejected(kysoOrganizationRequestAccessRejectedEvent: any) {
+        Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_REJECTED, OrganizationsController.name)
+        Logger.debug(kysoOrganizationRequestAccessRejectedEvent, OrganizationsController.name)
+        
+        const { organization, rejecterUser, requesterUser, frontendUrl } = kysoOrganizationRequestAccessRejectedEvent;
+        
+        if(requesterUser && requesterUser.email && requesterUser.display_name) {
+            try {
+                await this.mailerService.sendMail({
+                    to: requesterUser.email,
+                    subject: `Your access request to organization ${organization.display_name} has been rejected`,
+                    template: 'organization-request-access-rejected',
+                    context: {
+                        rejecterUser,
+                        organization,
+                        requesterUser,
+                        frontendUrl
+                    },
+                });
+
+                await new Promise((resolve) => setTimeout(resolve, 200))
+            } catch (e) {
+                Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
+            }
+        }
+        
+    }
 }
