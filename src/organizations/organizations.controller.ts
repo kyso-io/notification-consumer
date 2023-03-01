@@ -1,5 +1,6 @@
 import {
     KysoEventEnum,
+    KysoOrganizationRequestAccessCreatedEvent,
     KysoOrganizationsAddMemberEvent,
     KysoOrganizationsDeleteEvent,
     KysoOrganizationsRemoveMemberEvent,
@@ -260,14 +261,14 @@ export class OrganizationsController {
     }
 
     @EventPattern(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED)
-    async handleRequestAccessCreated(kysoOrganizationRequestAccessCreatedEvent: any) {
+    async handleRequestAccessCreated(kysoOrganizationRequestAccessCreatedEvent: KysoOrganizationRequestAccessCreatedEvent) {
         Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_CREATED, OrganizationsController.name)
         Logger.debug(kysoOrganizationRequestAccessCreatedEvent, OrganizationsController.name)
-        
-        const { organization, organizationAdmins, requesterUser, request, frontendUrl } = kysoOrganizationRequestAccessCreatedEvent;
-        
+
+        const { organization, organizationAdmins, requesterUser, request, frontendUrl } = kysoOrganizationRequestAccessCreatedEvent
+
         for (const admin of organizationAdmins) {
-            if(admin) {
+            if (admin) {
                 try {
                     await this.mailerService.sendMail({
                         to: admin.email,
@@ -278,10 +279,10 @@ export class OrganizationsController {
                             organization,
                             requesterUser,
                             frontendUrl,
-                            request
+                            request,
                         },
-                    });
-    
+                    })
+
                     await new Promise((resolve) => setTimeout(resolve, 200))
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
@@ -294,10 +295,10 @@ export class OrganizationsController {
     async handleRequestAccessRejected(kysoOrganizationRequestAccessRejectedEvent: any) {
         Logger.log(KysoEventEnum.ORGANIZATION_REQUEST_ACCESS_REJECTED, OrganizationsController.name)
         Logger.debug(kysoOrganizationRequestAccessRejectedEvent, OrganizationsController.name)
-        
-        const { organization, rejecterUser, requesterUser, frontendUrl } = kysoOrganizationRequestAccessRejectedEvent;
-        
-        if(requesterUser && requesterUser.email && requesterUser.display_name) {
+
+        const { organization, rejecterUser, requesterUser, frontendUrl } = kysoOrganizationRequestAccessRejectedEvent
+
+        if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.mailerService.sendMail({
                     to: requesterUser.email,
@@ -307,9 +308,9 @@ export class OrganizationsController {
                         rejecterUser,
                         organization,
                         requesterUser,
-                        frontendUrl
+                        frontendUrl,
                     },
-                });
+                })
 
                 await new Promise((resolve) => setTimeout(resolve, 200))
             } catch (e) {
