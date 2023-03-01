@@ -1,4 +1,4 @@
-import { KysoEventEnum, KysoTeamsAddMemberEvent, KysoTeamsDeleteEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent, User } from '@kyso-io/kyso-model'
+import { KysoEventEnum, KysoTeamRequestAccessCreatedEvent, KysoTeamsAddMemberEvent, KysoTeamsDeleteEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -200,16 +200,15 @@ export class TeamsController {
         }
     }
 
-
     @EventPattern(KysoEventEnum.TEAMS_REQUEST_ACCESS_CREATED)
-    async handleRequestAccessCreated(kysoTeamRequestAccessCreatedEvent: any) {
+    async handleRequestAccessCreated(kysoTeamRequestAccessCreatedEvent: KysoTeamRequestAccessCreatedEvent) {
         Logger.log(KysoEventEnum.TEAMS_REQUEST_ACCESS_CREATED, TeamsController.name)
         Logger.debug(kysoTeamRequestAccessCreatedEvent, TeamsController.name)
-        
-        const { organization, team, organizationAdmins, requesterUser, request, frontendUrl } = kysoTeamRequestAccessCreatedEvent;
-        
+
+        const { organization, team, organizationAdmins, requesterUser, request, frontendUrl } = kysoTeamRequestAccessCreatedEvent
+
         for (const admin of organizationAdmins) {
-            if(admin) {
+            if (admin) {
                 try {
                     await this.mailerService.sendMail({
                         to: admin.email,
@@ -218,13 +217,13 @@ export class TeamsController {
                         context: {
                             admin,
                             organization,
-                            team, 
+                            team,
                             requesterUser,
                             frontendUrl,
-                            request
+                            request,
                         },
-                    });
-    
+                    })
+
                     await new Promise((resolve) => setTimeout(resolve, 200))
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
@@ -237,10 +236,10 @@ export class TeamsController {
     async handleRequestAccessRejected(kysoTeamRequestAccessRejectedEvent: any) {
         Logger.log(KysoEventEnum.TEAMS_REQUEST_ACCESS_REJECTED, TeamsController.name)
         Logger.debug(kysoTeamRequestAccessRejectedEvent, TeamsController.name)
-        
-        const { organization, team, rejecterUser, requesterUser, frontendUrl } = kysoTeamRequestAccessRejectedEvent;
-        
-        if(requesterUser && requesterUser.email && requesterUser.display_name) {
+
+        const { organization, team, rejecterUser, requesterUser, frontendUrl } = kysoTeamRequestAccessRejectedEvent
+
+        if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.mailerService.sendMail({
                     to: requesterUser.email,
@@ -251,9 +250,9 @@ export class TeamsController {
                         organization,
                         team,
                         requesterUser,
-                        frontendUrl
+                        frontendUrl,
                     },
-                });
+                })
 
                 await new Promise((resolve) => setTimeout(resolve, 200))
             } catch (e) {
