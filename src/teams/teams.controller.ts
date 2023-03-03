@@ -1,9 +1,22 @@
-import { KysoEventEnum, KysoTeamRequestAccessCreatedEvent, KysoTeamsAddMemberEvent, KysoTeamsDeleteEvent, KysoTeamsRemoveMemberEvent, KysoTeamsUpdateMemberRolesEvent, User } from '@kyso-io/kyso-model'
+import {
+    KysoEventEnum,
+    KysoTeamRequestAccessCreatedEvent,
+    KysoTeamsAddMemberEvent,
+    KysoTeamsCreateEvent,
+    KysoTeamsDeleteEvent,
+    KysoTeamsRemoveMemberEvent,
+    KysoTeamsUpdateMemberRolesEvent,
+    OrganizationMemberJoin,
+    TeamVisibilityEnum,
+    User,
+} from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
+import { SentMessageInfo } from 'nodemailer'
 import { Constants } from '../constants'
+import { UtilsService } from '../shared/utils.service'
 
 @Controller()
 export class TeamsController {
@@ -11,6 +24,7 @@ export class TeamsController {
         private mailerService: MailerService,
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
+        private readonly utilsService: UtilsService,
     ) {}
 
     private getTextForEmail(role: string): string {
@@ -26,31 +40,68 @@ export class TeamsController {
         }
     }
 
+    @EventPattern(KysoEventEnum.TEAMS_CREATE)
+    async handleTeamsCreate(kysoTeamsCreateEvent: KysoTeamsCreateEvent) {
+        Logger.log(KysoEventEnum.TEAMS_CREATE, TeamsController.name)
+        Logger.debug(kysoTeamsCreateEvent, TeamsController.name)
+        if (kysoTeamsCreateEvent.team.visibility === TeamVisibilityEnum.PRIVATE) {
+            return
+        }
+        const organizationMembersJoin: OrganizationMemberJoin[] = await this.db.collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER).find({}).toArray()
+        for (const organizationMemberJoin of organizationMembersJoin) {
+            const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: organizationMemberJoin.id })
+            if (!user) {
+                continue
+            }
+            const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_channel', kysoTeamsCreateEvent.organization.id, kysoTeamsCreateEvent.team.id)
+            if (sendNotification) {
+                try {
+                    const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        to: user.email,
+                        subject: `New ${kysoTeamsCreateEvent.team.display_name} channel`,
+                        template: 'new-team',
+                        context: {
+                            user: kysoTeamsCreateEvent.user,
+                            organization: kysoTeamsCreateEvent.organization,
+                            team: kysoTeamsCreateEvent.team,
+                            frontendUrl: kysoTeamsCreateEvent.frontendUrl,
+                        },
+                    })
+                    Logger.log(`New team mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending new team mail to ${user.email}`, e, TeamsController.name)
+                }
+            }
+        }
+    }
+
     @EventPattern(KysoEventEnum.TEAMS_ADD_MEMBER)
     async handleCommentsCreated(kysoTeamsAddMemberEvent: KysoTeamsAddMemberEvent) {
         Logger.log(KysoEventEnum.TEAMS_ADD_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsAddMemberEvent, TeamsController.name)
-
         const { user, organization, team, emailsCentralized, roles, frontendUrl } = kysoTeamsAddMemberEvent
-        this.mailerService
-            .sendMail({
-                to: user.email,
-                subject: `You were added to ${team.display_name} channel`,
-                template: 'team-you-were-added',
-                context: {
-                    addedUser: user,
-                    organization,
-                    team,
-                    frontendUrl,
-                    text: this.getTextForEmail(roles[0]),
-                },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-            })
-            .catch((err) => {
-                Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
-            })
+        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_member_channel', organization.id, team.id)
+        if (sendNotification) {
+            this.mailerService
+                .sendMail({
+                    to: user.email,
+                    subject: `You were added to ${team.display_name} channel`,
+                    template: 'team-you-were-added',
+                    context: {
+                        addedUser: user,
+                        organization,
+                        team,
+                        frontendUrl,
+                        text: this.getTextForEmail(roles[0]),
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+                })
+        }
         if (emailsCentralized.length > 0) {
             this.mailerService
                 .sendMail({
@@ -78,26 +129,28 @@ export class TeamsController {
     async handleCommentsUpdated(kysoTeamsRemoveMemberEvent: KysoTeamsRemoveMemberEvent) {
         Logger.log(KysoEventEnum.TEAMS_REMOVE_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
-
         const { user, organization, team, emailsCentralized, frontendUrl } = kysoTeamsRemoveMemberEvent
-        this.mailerService
-            .sendMail({
-                to: user.email,
-                subject: `You were removed to ${team.display_name} channel`,
-                template: 'team-you-were-removed',
-                context: {
-                    removedUser: user,
-                    organization,
-                    team,
-                    frontendUrl,
-                },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-            })
-            .catch((err) => {
-                Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
-            })
+        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'removed_member_in_channel', organization.id, team.id)
+        if (sendNotification) {
+            this.mailerService
+                .sendMail({
+                    to: user.email,
+                    subject: `You were removed to ${team.display_name} channel`,
+                    template: 'team-you-were-removed',
+                    context: {
+                        removedUser: user,
+                        organization,
+                        team,
+                        frontendUrl,
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+                })
+        }
         if (emailsCentralized.length > 0) {
             this.mailerService
                 .sendMail({
@@ -124,27 +177,29 @@ export class TeamsController {
     async handleTeamsUpdateMemberRoles(kysoTeamsUpdateMemberRolesEvent: KysoTeamsUpdateMemberRolesEvent) {
         Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, TeamsController.name)
         Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
-
         const { user, organization, team, emailsCentralized, frontendUrl, currentRoles } = kysoTeamsUpdateMemberRolesEvent
-        this.mailerService
-            .sendMail({
-                to: user.email,
-                subject: `Your role in ${team.display_name} channel has changed`,
-                template: 'team-user-role-changed',
-                context: {
-                    user,
-                    organization,
-                    team,
-                    frontendUrl,
-                    text: this.getTextForEmail(currentRoles[0]),
-                },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-            })
-            .catch((err) => {
-                Logger.error(`An error occurred sending team role changed mail to ${user.email}`, err, TeamsController.name)
-            })
+        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'updated_role_in_channel', organization.id, team.id)
+        if (sendNotification) {
+            this.mailerService
+                .sendMail({
+                    to: user.email,
+                    subject: `Your role in ${team.display_name} channel has changed`,
+                    template: 'team-user-role-changed',
+                    context: {
+                        user,
+                        organization,
+                        team,
+                        frontendUrl,
+                        text: this.getTextForEmail(currentRoles[0]),
+                    },
+                })
+                .then((messageInfo) => {
+                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                })
+                .catch((err) => {
+                    Logger.error(`An error occurred sending team role changed mail to ${user.email}`, err, TeamsController.name)
+                })
+        }
         if (emailsCentralized.length > 0) {
             this.mailerService
                 .sendMail({
@@ -173,15 +228,19 @@ export class TeamsController {
         Logger.log(KysoEventEnum.TEAMS_DELETE, TeamsController.name)
         Logger.debug(kysoTeamsDeleteEvent, TeamsController.name)
         const { organization, team, user, user_ids } = kysoTeamsDeleteEvent
-        const teamUsers: User[] = (await this.db
-            .collection('User')
+        const teamUsers: User[] = await this.db
+            .collection<User>(Constants.DATABASE_COLLECTION_USER)
             .find({
                 id: {
                     $in: user_ids,
                 },
             })
-            .toArray()) as any[]
+            .toArray()
         for (const teamUser of teamUsers) {
+            const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(teamUser.id, 'channel_removed', organization.id, team.id)
+            if (!sendNotification) {
+                continue
+            }
             try {
                 await this.mailerService.sendMail({
                     to: teamUser.email,
@@ -193,7 +252,7 @@ export class TeamsController {
                         team,
                     },
                 })
-                await new Promise((resolve) => setTimeout(resolve, 200))
+                await this.utilsService.sleep(200)
             } catch (e) {
                 Logger.error(`An error occurred sending team removed mail to ${teamUser.id} ${teamUser.email}`, e, TeamsController.name)
             }
@@ -224,7 +283,7 @@ export class TeamsController {
                         },
                     })
 
-                    await new Promise((resolve) => setTimeout(resolve, 200))
+                    await this.utilsService.sleep(200)
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
                 }
@@ -254,7 +313,7 @@ export class TeamsController {
                     },
                 })
 
-                await new Promise((resolve) => setTimeout(resolve, 200))
+                await this.utilsService.sleep(200)
             } catch (e) {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, TeamsController.name)
             }
