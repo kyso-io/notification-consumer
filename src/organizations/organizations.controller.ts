@@ -94,6 +94,22 @@ export class OrganizationsController {
                 await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, email)
                 await this.utilsService.sleep(200)
             }
+        } else {
+            const organizationMembers: OrganizationMemberJoin[] = await this.db
+                .collection<OrganizationMemberJoin>('OrganizationMember')
+                .find({ organization_id: organization.id, role_names: { $in: ['organization-admin'] } })
+                .toArray()
+            for (const organizationMember of organizationMembers) {
+                const user: User = await this.db.collection<User>('User').findOne({ id: organizationMember.member_id })
+                if (!user) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(organizationMember.member_id, 'new_member_organization', organization.id)
+                if (sendNotification) {
+                    await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, user.email)
+                    await this.utilsService.sleep(200)
+                }
+            }
         }
     }
 
