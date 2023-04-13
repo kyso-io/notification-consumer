@@ -47,9 +47,14 @@ export class TeamsController {
         if (kysoTeamsCreateEvent.team.visibility === TeamVisibilityEnum.PRIVATE) {
             return
         }
-        const organizationMembersJoin: OrganizationMemberJoin[] = await this.db.collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER).find({}).toArray()
+        const organizationMembersJoin: OrganizationMemberJoin[] = await this.db
+            .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
+            .find({
+                organization_id: kysoTeamsCreateEvent.organization.id,
+            })
+            .toArray()
         for (const organizationMemberJoin of organizationMembersJoin) {
-            const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: organizationMemberJoin.id })
+            const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: organizationMemberJoin.member_id })
             if (!user) {
                 continue
             }
