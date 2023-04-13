@@ -249,7 +249,7 @@ export class TeamsController {
             try {
                 await this.mailerService.sendMail({
                     to: teamUser.email,
-                    subject: `Team ${team.display_name} was removed`,
+                    subject: `Channel ${team.display_name} was removed`,
                     template: 'team-deleted',
                     context: {
                         user,
