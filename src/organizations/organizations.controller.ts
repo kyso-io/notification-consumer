@@ -70,7 +70,7 @@ export class OrganizationsController {
                 context: {
                     addedUser: kysoOrganizationsAddMemberEvent.user,
                     organization: kysoOrganizationsAddMemberEvent.organization,
-                    role: kysoOrganizationsAddMemberEvent.role,
+                    role: this.getTextForEmail(kysoOrganizationsAddMemberEvent.role).replace('You can ', 'User can '),
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })
