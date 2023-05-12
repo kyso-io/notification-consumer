@@ -28,7 +28,7 @@ export class OrganizationsController {
     ) {}
 
     private getTextForEmail(role: string): string {
-        switch (role) {
+        switch (role.toLowerCase()) {
             case 'organization-admin':
                 return 'You can admin the organization.'
             case 'team-admin':
