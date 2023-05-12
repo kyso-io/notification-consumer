@@ -182,7 +182,7 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: this.getTextForEmail(currentRoles[0]),
+                        text: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
                     },
                 })
                 .then((messageInfo) => {
