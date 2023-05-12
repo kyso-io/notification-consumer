@@ -27,21 +27,6 @@ export class OrganizationsController {
         private readonly utilsService: UtilsService,
     ) {}
 
-    private getTextForEmail(role: string): string {
-        switch (role.toLowerCase()) {
-            case 'organization-admin':
-                return 'You can admin the organization.'
-            case 'team-admin':
-                return `You can admin all public and protected channels of the organization.`
-            case 'team-contributor':
-                return `You can contribute creating reports across all public and protected channels of the organization.`
-            case 'team-reader':
-                return 'You can read and comment across all public and protected channels of the organization.'
-            default:
-                return ''
-        }
-    }
-
     private async sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
@@ -51,7 +36,7 @@ export class OrganizationsController {
                 context: {
                     addedUser: kysoOrganizationsAddMemberEvent.user,
                     organization: kysoOrganizationsAddMemberEvent.organization,
-                    text: this.getTextForEmail(kysoOrganizationsAddMemberEvent.role),
+                    text: UtilsService.getDisplayTextByOrganizationRoleName(kysoOrganizationsAddMemberEvent.role),
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })
@@ -70,7 +55,7 @@ export class OrganizationsController {
                 context: {
                     addedUser: kysoOrganizationsAddMemberEvent.user,
                     organization: kysoOrganizationsAddMemberEvent.organization,
-                    role: this.getTextForEmail(kysoOrganizationsAddMemberEvent.role).replace('You can ', 'User can '),
+                    role: UtilsService.getDisplayTextByOrganizationRoleName(kysoOrganizationsAddMemberEvent.role),
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })
@@ -177,7 +162,7 @@ export class OrganizationsController {
                         user,
                         organization,
                         frontendUrl,
-                        text: this.getTextForEmail(role),
+                        text: UtilsService.getDisplayTextByOrganizationRoleName(role),
                     },
                 })
                 .then((messageInfo) => {
@@ -197,7 +182,7 @@ export class OrganizationsController {
                         user,
                         organization,
                         frontendUrl,
-                        role,
+                        role: UtilsService.getDisplayTextByOrganizationRoleName(role)
                     },
                 })
                 .then((messageInfo) => {

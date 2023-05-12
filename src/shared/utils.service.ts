@@ -10,6 +10,42 @@ export class UtilsService {
         private db: Db,
     ) {}
 
+    public static getDisplayTextByChannelRoleName(role: string): string {
+        if(!role) {
+            return "";
+        }
+
+        switch (role.toLowerCase()) {
+            case 'team-admin':
+                return `Can admin this channel.`
+            case 'team-contributor':
+                return `Can contribute creating reports in this channel.`
+            case 'team-reader':
+                return 'Can read and comment all reports in this channel.'
+            default:
+                return ''
+        }
+    }
+
+    public static getDisplayTextByOrganizationRoleName(role: string): string {
+        if (!role) {
+            return "";
+        }
+
+        switch (role.toLowerCase()) {
+            case 'organization-admin':
+                return 'Can admin the organization.'
+            case 'team-admin':
+                return `Can admin all public and protected channels of the organization.`
+            case 'team-contributor':
+                return `Can contribute creating reports across all public and protected channels of the organization.`
+            case 'team-reader':
+                return 'Can read and comment across all public and protected channels of the organization.'
+            default:
+                return ''
+        }
+    }
+
     public async canUserReceiveNotification(user_id: string, key: string, organization_id?: string, channel_id?: string): Promise<boolean> {
         const uns: UserNotificationsSettings = await this.db.collection<UserNotificationsSettings>(Constants.DATABASE_COLLECTION_USER_NOTIFICATIONS_SETTINGS).findOne({ user_id })
         if (!uns) {

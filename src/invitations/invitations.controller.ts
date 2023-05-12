@@ -4,6 +4,7 @@ import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
 import { Constants } from '../constants'
+import { UtilsService } from 'src/shared/utils.service'
 
 @Controller()
 export class InvitationsController {
@@ -26,7 +27,7 @@ export class InvitationsController {
                 template: 'invitation-team',
                 context: {
                     user,
-                    roles: roles.map((role: string) => role.replace('-', ' ')),
+                    roles: roles.map((role: string) => UtilsService.getDisplayTextByChannelRoleName(role)).join(", "),
                     frontendUrl,
                     organization,
                     team,

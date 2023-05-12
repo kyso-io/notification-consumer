@@ -27,19 +27,6 @@ export class TeamsController {
         private readonly utilsService: UtilsService,
     ) {}
 
-    private getTextForEmail(role: string): string {
-        switch (role) {
-            case 'team-admin':
-                return `You can admin this channel.`
-            case 'team-contributor':
-                return `You can contribute creating reports in this channel.`
-            case 'team-reader':
-                return 'You can read and comment all reports in this channel.'
-            default:
-                return ''
-        }
-    }
-
     @EventPattern(KysoEventEnum.TEAMS_CREATE)
     async handleTeamsCreate(kysoTeamsCreateEvent: KysoTeamsCreateEvent) {
         Logger.log(KysoEventEnum.TEAMS_CREATE, TeamsController.name)
@@ -97,7 +84,7 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: this.getTextForEmail(roles[0]),
+                        text: UtilsService.getDisplayTextByChannelRoleName(roles[0]),
                     },
                 })
                 .then((messageInfo) => {
@@ -117,7 +104,7 @@ export class TeamsController {
                         addedUser: user,
                         organization,
                         team,
-                        role: roles,
+                        role: roles.map(r => UtilsService.getDisplayTextByChannelRoleName(r)).join(", "),
                         frontendUrl,
                     },
                 })
@@ -216,7 +203,7 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        role: currentRoles[0],
+                        role: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
                     },
                 })
                 .then((messageInfo) => {
