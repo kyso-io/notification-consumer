@@ -9,18 +9,12 @@ import {
     User,
 } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
-import { Controller, Inject, Logger } from '@nestjs/common'
+import { Controller, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
-import { Db } from 'mongodb'
-import { Constants } from '../constants'
 
 @Controller()
 export class DiscussionsController {
-    constructor(
-        @Inject(Constants.DATABASE_CONNECTION)
-        private db: Db,
-        private readonly mailerService: MailerService,
-    ) {}
+    constructor(private readonly mailerService: MailerService) {}
 
     @EventPattern(KysoEventEnum.DISCUSSIONS_CREATE)
     async handleDiscussionsCreated(kysoDiscussionsCreateEvent: KysoDiscussionsCreateEvent) {

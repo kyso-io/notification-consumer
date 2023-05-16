@@ -131,7 +131,7 @@
                                                                                         valign="top">
                                                                                         <p>
                                                                                             The following comment has been written on the report <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>{{report.title}}</a>, 
-                                                                                            in <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> under <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a>.
+                                                                                            in <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> organization under <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a> channel.
                                                                                         </p>
                                                                                     </td>
                                                                                 </tr>
@@ -140,7 +140,9 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            {{comment.text}}
+                                                                                            <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>
+                                                                                                {{comment.text}}
+                                                                                            </a>
                                                                                         </p>
                                                                                     </td>
                                                                                 </tr>

@@ -17,6 +17,7 @@ import { OrganizationsModule } from './organizations/organizations.module'
 import { ReportsModule } from './reports/reports.module'
 import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
+import { InlineCommentsModule } from './inline-comments/inline-comments.module'
 
 let envFilePath = '.env'
 if (process.env.DOTENV_FILE) {
@@ -32,6 +33,7 @@ if (process.env.DOTENV_FILE) {
         }),
         DiscussionsModule,
         FeedbackModule,
+        InlineCommentsModule,
         InvitationsModule,
         MailerModule.forRootAsync({
             imports: [DatabaseModule],
