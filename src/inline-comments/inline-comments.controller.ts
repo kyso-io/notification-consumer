@@ -1,4 +1,14 @@
-import { InlineComment, KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum, User } from '@kyso-io/kyso-model'
+import {
+    InlineComment,
+    InlineCommentStatusHistoryDto,
+    KysoCommentsCreateEvent,
+    KysoCommentsDeleteEvent,
+    KysoCommentsUpdateEvent,
+    KysoEventEnum,
+    KysoSetting,
+    KysoSettingsEnum,
+    User,
+} from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -170,6 +180,20 @@ export class InlineCommentsController {
 
     private async sendMailInlineCommentStatusChanged(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
         try {
+            const kysoSetting: KysoSetting = await this.db.collection<KysoSetting>(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.KYSO_COMMENT_STATES_VALUES })
+            const inlineComment: InlineComment = kysoCommentsUpdateEvent.comment as InlineComment
+            const inlineCommentStatusHistoryDto: InlineCommentStatusHistoryDto = inlineComment.status_history[0]
+            let statusFrom: string = inlineCommentStatusHistoryDto.from_status as string
+            let statusTo: string = inlineCommentStatusHistoryDto.to_status as string
+            if (kysoSetting) {
+                const value: { labels: { [key: string]: string }; classes: { [key: string]: string } } = kysoSetting.value as any
+                if (value.labels[inlineCommentStatusHistoryDto.from_status]) {
+                    statusFrom = value.labels[inlineCommentStatusHistoryDto.from_status]
+                }
+                if (value.labels[inlineCommentStatusHistoryDto.to_status]) {
+                    statusTo = value.labels[inlineCommentStatusHistoryDto.to_status]
+                }
+            }
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
                 to: email,
                 subject: `Task status changed in report ${kysoCommentsUpdateEvent.report.title}`,
@@ -179,7 +203,9 @@ export class InlineCommentsController {
                     organization: kysoCommentsUpdateEvent.organization,
                     team: kysoCommentsUpdateEvent.team,
                     report: kysoCommentsUpdateEvent.report,
-                    comment: kysoCommentsUpdateEvent.comment,
+                    comment: inlineComment,
+                    statusFrom,
+                    statusTo,
                 },
             })
             Logger.log(`Inline comment status changed mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)
@@ -192,7 +218,7 @@ export class InlineCommentsController {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
                 to: email,
-                subject: `Task edited in report ${kysoCommentsUpdateEvent.report.title}`,
+                subject: `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-reply-updated',
                 context: {
                     frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
@@ -200,6 +226,7 @@ export class InlineCommentsController {
                     team: kysoCommentsUpdateEvent.team,
                     report: kysoCommentsUpdateEvent.report,
                     comment: kysoCommentsUpdateEvent.comment,
+                    parentInlineComment,
                 },
             })
             Logger.log(`Inline comment updated mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)

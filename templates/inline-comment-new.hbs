@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
   <style>
     /* Default Rules */
   </style>
@@ -114,12 +115,12 @@
                                                                                             style="text-decoration:none;color:#151515;font-size:22px;">A new task was created on report {{report.title}}</a>
                                                                                     </td>
                                                                                 </tr>
-                                                                                <tr style="border-collapse:collaps  e;">
+                                                                                <tr style="border-collapse:collapse;">
                                                                                     <td height="10"
                                                                                         style="font-size:1px;line-height:1px;border-collapse:collapse;">
                                                                                     </td>
                                                                                 </tr>
-                                                                                <tr style="border-collapse:collaps  e;">
+                                                                                <tr style="border-collapse:collapse;">
                                                                                     <td height="10"
                                                                                         style="font-size:1px;line-height:1px;border-collapse:collapse;">
                                                                                     </td>
@@ -131,7 +132,7 @@
                                                                                         valign="top">
                                                                                         <p>
                                                                                             The following task has been written on the report <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>{{report.title}}</a>, 
-                                                                                            in <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> organization under <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a> channel.
+                                                                                            in <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> organization under <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a> channel:
                                                                                         </p>
                                                                                     </td>
                                                                                 </tr>
@@ -140,8 +141,9 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>
-                                                                                                {{comment.text}}
+                                                                                            <a  style="font-family: 'Roboto', serif; font-style: italic; font-weight: bold;"
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}?taskId={{comment.id}}&cell={{comment.cell_id}}'>
+                                                                                                "{{comment.text}}"
                                                                                             </a>
                                                                                         </p>
                                                                                     </td>

@@ -1,377 +1,275 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    /* button div */
-    #buttons {
-    text-align: center;
-    }
+<html lang='en'>
+    <head>
+        <meta charset='UTF-8' />
+        <style>
+            /* button div */ #buttons { text-align: center; } /* start da css for da buttons */ .btn { border-radius: 5px; padding: 15px 25px; font-size: 22px; text-decoration: none; margin: 20px;
+            color: #fff; position: relative; display: inline-block; } .btn:active { transform: translate(0px, 5px); -webkit-transform: translate(0px, 5px); box-shadow: 0px 1px 0px 0px; } .blue {
+            background-color: #55acee; box-shadow: 0px 5px 0px 0px #3C93D5; } .blue:hover { background-color: #6FC6FF; } .green { background-color: #2ecc71; box-shadow: 0px 5px 0px 0px #15B358; }
+            .green:hover { background-color: #48E68B; } .red { background-color: #C81E1E; box-shadow: 0px 5px 0px 0px #CE3323; } .red:hover { background-color: #FF6656; } .kyso { background-color:
+            #244362; box-shadow: 0px 5px 0px 0px #24436F; } .kyso:hover { background-color: #24436F; } .orange { background-color: #e67e22; box-shadow: 0px 5px 0px 0px #CD6509; } .orange:hover {
+            background-color: #FF983C; } .yellow { background-color: #f1c40f; box-shadow: 0px 5px 0px 0px #D8AB00; } .yellow:hover { background-color: #FFDE29; }
+        </style>
+        <style data-premailer='ignore'>
+            /* Media Query Rules */
+        </style>
+    </head>
+    <body>
+        <div style='width:100% !important;margin:0;padding:0;background-color:#f1f5f9;'>
+            <span style='color:transparent;display:none;height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;width:0'>
+            </span>
 
-    /* start da css for da buttons */
-    .btn {
-    border-radius: 5px;
-    padding: 15px 25px;
-    font-size: 22px;
-    text-decoration: none;
-    margin: 20px;
-    color: #fff;
-    position: relative;
-    display: inline-block;
-    }
+            <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='table-layout:fixed;border-collapse:collapse;'>
+                <tbody>
+                    <tr style='border-collapse:collapse;'>
+                        <td align='center' valign='top' style='border-collapse:collapse;'>
+                            <table width='100%' align='center' border='0' cellpadding='0' cellspacing='0' role='presentation' style='margin:0 auto;max-width:620px;border-collapse:collapse;'>
+                                <tbody>
+                                    <tr style='border-collapse:collapse;'>
+                                        <td align='left' valign='top' style='padding:0 10px;border-collapse:collapse;'>
+                                            <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td height='20' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td valign='middle' style='padding:29px 35px;font-size:0;border-radius:8px;border-collapse:collapse;'>
 
-    .btn:active {
-    transform: translate(0px, 5px);
-    -webkit-transform: translate(0px, 5px);
-    box-shadow: 0px 1px 0px 0px;
-    }
+                                                            <div style='display:inline-block;width:100%;max-width:453px;vertical-align:middle;'>
+                                                                <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;'>
+                                                                    <tbody>
+                                                                        <tr style='border-collapse:collapse;'>
+                                                                            <td valign='top' style='padding:10px 5px;border-collapse:collapse;text-align:center;'>
+                                                                                <img
+                                                                                    src='https://kyso.io/assets/images/kyso-logo-and-name-dark.svg'
+                                                                                    width='150'
+                                                                                    height='150'
+                                                                                    alt=''
+                                                                                    style='max-width:100%;height:auto;border:0;line-height:100%;outline:0;font-size:14px;color:#1b1b1b'
+                                                                                    class='CToWUd'
+                                                                                />
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
 
-    .blue {
-    background-color: #55acee;
-    box-shadow: 0px 5px 0px 0px #3C93D5;
-    }
+                                                            <div style='display:inline-block;width:100%;max-width:77px;vertical-align:middle;'>
+                                                                <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;'>
+                                                                    <tbody>
+                                                                        <tr style='border-collapse:collapse;'>
+                                                                            <td valign='top' style='padding:10px 0;line-height:1;border-collapse:collapse;'>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
 
-    .blue:hover {
-    background-color: #6FC6FF;
-    }
-
-    .green {
-    background-color: #2ecc71;
-    box-shadow: 0px 5px 0px 0px #15B358;
-    }
-
-    .green:hover {
-    background-color: #48E68B;
-    }
-
-    .red {
-    background-color: #C81E1E;
-    box-shadow: 0px 5px 0px 0px #CE3323;
-    }
-
-    .red:hover {
-    background-color: #FF6656;
-    }
-
-    .kyso {
-    background-color: #244362;
-    box-shadow: 0px 5px 0px 0px #24436F;
-    }
-
-    .kyso:hover {
-    background-color: #24436F;
-    }
-
-    .orange {
-    background-color: #e67e22;
-    box-shadow: 0px 5px 0px 0px #CD6509;
-    }
-
-    .orange:hover {
-    background-color: #FF983C;
-    }
-
-    .yellow {
-    background-color: #f1c40f;
-    box-shadow: 0px 5px 0px 0px #D8AB00;
-    }
-
-    .yellow:hover {
-    background-color: #FFDE29;
-    }
-  </style>
-  <style data-premailer="ignore">
-    /* Media Query Rules */
-  </style>
-</head>
-<body>
-    <div style="width:100% !important;margin:0;padding:0;background-color:#f1f5f9;">
-        <span
-            style="color:transparent;display:none;height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;width:0">
-        </span>
-
-        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation"
-            style="table-layout:fixed;border-collapse:collapse;">
-            <tbody>
-                <tr style="border-collapse:collapse;">
-                    <td align="center" valign="top" style="border-collapse:collapse;">
-                        <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0"
-                            role="presentation" style="margin:0 auto;max-width:620px;border-collapse:collapse;">
-                            <tbody>
-                                <tr style="border-collapse:collapse;">
-                                    <td align="left" valign="top" style="padding:0 10px;border-collapse:collapse;">
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td height="20"
-                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td valign="middle"
-                                                        style="padding:29px 35px;font-size:0;border-radius:8px;border-collapse:collapse;">
-
-                                                        <div
-                                                            style="display:inline-block;width:100%;max-width:453px;vertical-align:middle;">
-                                                            <table width="100%" border="0" cellpadding="0"
-                                                                cellspacing="0" role="presentation"
-                                                                style="border-collapse:collapse;">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table width='100%' border='0' cellspacing='0' cellpadding='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td height='8' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table border='0' cellpadding='0' cellspacing='0' width='100%' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td style='background-color:#ffffff;border-radius:8px;border-collapse:collapse;' width='100%' valign='top' bgcolor='#ffffff'>
+                                                            <table border='0' cellpadding='0' cellspacing='0' width='100%' role='presentation' style='border-collapse:collapse;'>
                                                                 <tbody>
-                                                                    <tr style="border-collapse:collapse;">
-                                                                        <td valign="top"
-                                                                            style="padding:10px 5px;border-collapse:collapse;text-align:center;">
-                                                                            <img src="https://kyso.io/assets/images/kyso-logo-and-name-dark.svg"
-                                                                                width="150" height="150" alt=""
-                                                                                style="max-width:100%;height:auto;border:0;line-height:100%;outline:0;font-size:14px;color:#1b1b1b"
-                                                                                class="CToWUd">
+                                                                    <tr style='border-collapse:collapse;'>
+                                                                        <td style='padding:30px 40px 40px;border-collapse:collapse;' valign='top'>
+                                                                            <table border='0' cellpadding='0' cellspacing='0' width='100%' role='presentation' style='border-collapse:collapse;'>
+                                                                                <tbody>
+                                                                                    <tr style='border-collapse:collapse;'>
+                                                                                        <td
+                                                                                            style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
+                                                                                            valign='top'
+                                                                                        >
+                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>
+                                                                                                Your access request to
+                                                                                                {{organization.display_name}}
+                                                                                                has been rejected
+                                                                                            </a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr style='border-collapse:collapse;'>
+                                                                                        <td height='10' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr style='border-collapse:collapse;'>
+                                                                                        <td height='10' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                                <tbody>
+                                                                                    <tr style='border-collapse:collapse;'>
+                                                                                        <td
+                                                                                            style='line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;'
+                                                                                            valign='top'
+                                                                                        >
+                                                                                            <p>
+                                                                                                Hi
+                                                                                                {{requesterUser.display_name}},
+                                                                                                <br /><br />
+
+                                                                                                We are sorry to say that the administrator
+                                                                                                {{rejecterUser.display_name}}
+                                                                                                rejected your access request to the organization
+                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>.
+                                                                                                <br /><br />
+
+                                                                                                All the best,
+                                                                                                <br />
+                                                                                                Kyso
+                                                                                            </p>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
-                                                        </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
 
-                                                        <div
-                                                            style="display:inline-block;width:100%;max-width:77px;vertical-align:middle;">
-                                                            <table width="100%" border="0" cellpadding="0"
-                                                                cellspacing="0" role="presentation"
-                                                                style="border-collapse:collapse;">
+                                            <table width='100%' border='0' cellspacing='0' cellpadding='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td height='8' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table width='100%' border='0' cellspacing='0' cellpadding='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td height='8' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <table border='0' cellpadding='0' cellspacing='0' width='100%' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td style='padding:38px 40px 40px 40px;border-radius:8px;border-collapse:collapse;' valign='top'>
+                                                            <table border='0' cellpadding='0' cellspacing='0' width='100%' role='presentation' style='border-collapse:collapse;'>
                                                                 <tbody>
-                                                                    <tr style="border-collapse:collapse;">
-                                                                        <td valign="top"
-                                                                            style="padding:10px 0;line-height:1;border-collapse:collapse;">
+                                                                    <tr style='border-collapse:collapse;'>
+                                                                        <td
+                                                                            style='text-align:center;line-height:20px;letter-spacing:-.2px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#9b9b9b;border-collapse:collapse;'
+                                                                            valign='top'
+                                                                        >
+                                                                            <table bgcolor='#f1f5f9' align='center' cellpadding='0' cellspacing='0'>
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td width='600' align='center'>
+                                                                                            <table bgcolor='#f1f5f9' align='center' cellpadding='0' cellspacing='0'>
+                                                                                                <tbody>
+                                                                                                    <tr>
+                                                                                                        <td width='0' align='center'>
+                                                                                                        </td>
+                                                                                                        <td width='33' align='center'>
+                                                                                                            <a href='https://twitter.com/kyso_io' target='_blank'>
+                                                                                                                <img
+                                                                                                                    src='https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-twitter-48.png'
+                                                                                                                    width='33'
+                                                                                                                    alt='Twitter'
+                                                                                                                    border='0'
+                                                                                                                    style='margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px'
+                                                                                                                /></a>
+                                                                                                        </td>
+                                                                                                        <td width='20' align='center'>
+                                                                                                        </td>
+                                                                                                        <td width='33' align='center'>
+                                                                                                            <a href='https://kyso.io' target='_blank'>
+                                                                                                                <img
+                                                                                                                    src='https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-link-48.png'
+                                                                                                                    width='33'
+                                                                                                                    alt='Kyso'
+                                                                                                                    border='0'
+                                                                                                                    style='margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px'
+                                                                                                                /></a>
+                                                                                                        </td>
+                                                                                                        <td width='20' align='center'>
+                                                                                                        </td>
+                                                                                                        <td width='33' align='center'>
+                                                                                                            <a href='mailto:support@kyso.io' target='_blank'>
+                                                                                                                <img
+                                                                                                                    src='https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-forwardtofriend-48.png'
+                                                                                                                    width='33'
+                                                                                                                    alt='Email'
+                                                                                                                    border='0'
+                                                                                                                    style='margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px'
+                                                                                                                /></a>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <table bgcolor='#f1f5f9' align='center' cellpadding='0' cellspacing='0'>
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td width='600' align='center'>
+                                                                                            <table bgcolor='#f1f5f9' align='center' cellpadding='0' cellspacing='0'>
+                                                                                                <tbody>
+                                                                                                    <tr>
+                                                                                                        <td width='600' height='25' align='center' style='border-collapse:collapse;border:0;'>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style='border-collapse:collapse;'>
+                                                                        <td height='13' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
-                                                        </div>
-
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td height="8"
-                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td style="background-color:#ffffff;border-radius:8px;border-collapse:collapse;"
-                                                        width="100%" valign="top" bgcolor="#ffffff">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                            role="presentation" style="border-collapse:collapse;">
-                                                            <tbody>
-                                                                <tr style="border-collapse:collapse;">
-                                                                    <td style="padding:30px 40px 40px;border-collapse:collapse;"
-                                                                        valign="top">
-                                                                        <table border="0" cellpadding="0"
-                                                                            cellspacing="0" width="100%"
-                                                                            role="presentation"
-                                                                            style="border-collapse:collapse;">
-                                                                            <tbody>
-                                                                                <tr style="border-collapse:collapse;">
-                                                                                    <td style="line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;"
-                                                                                        valign="top">
-                                                                                        <a style="text-decoration:none;color:#151515;font-size:22px;">
-                                                                                            Your access request to {{organization.display_name}} has been rejected
-                                                                                        </a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr style="border-collapse:collaps  e;">
-                                                                                    <td height="10"
-                                                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr style="border-collapse:collaps  e;">
-                                                                                    <td height="10"
-                                                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                            <tbody>
-                                                                                <tr style="border-collapse:collapse;">
-                                                                                    <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
-                                                                                        valign="top">
-                                                                                        <p>
-                                                                                            Hi {{requesterUser.display_name}}, <br/><br/>
-                                                                                            
-                                                                                            We are sorry to say that the administrator {{rejecterUser.display_name}} rejected your access request to the organization <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>. <br /><br />
-                                                                                            
-                                                                                            All the best, <br/>
-                                                                                            Kyso
-                                                                                        </p>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td height="8"
-                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td height="8"
-                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td style="padding:38px 40px 40px 40px;border-radius:8px;border-collapse:collapse;"
-                                                        valign="top">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                                            role="presentation" style="border-collapse:collapse;">
-                                                            <tbody>
-                                                                <tr style="border-collapse:collapse;">
-                                                                    <td style="text-align:center;line-height:20px;letter-spacing:-.2px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#9b9b9b;border-collapse:collapse;"
-                                                                        valign="top">
-                                                                        <table bgcolor="#f1f5f9" align="center"
-                                                                            cellpadding="0" cellspacing="0">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td width="600" align="center">
-                                                                                        <table bgcolor="#f1f5f9"
-                                                                                            align="center"
-                                                                                            cellpadding="0"
-                                                                                            cellspacing="0">
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td width="0"
-                                                                                                        align="center">
-                                                                                                    </td>
-                                                                                                    <td width="33"
-                                                                                                        align="center">
-                                                                                                        <a href="https://twitter.com/kyso_io"
-                                                                                                            target="_blank">
-                                                                                                            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-twitter-48.png"
-                                                                                                                width="33"
-                                                                                                                alt="Twitter"
-                                                                                                                border="0"
-                                                                                                                style="margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px"></a>
-                                                                                                    </td>
-                                                                                                    <td width="20"
-                                                                                                        align="center">
-                                                                                                    </td>
-                                                                                                    <td width="33"
-                                                                                                        align="center">
-                                                                                                        <a href="https://kyso.io"
-                                                                                                            target="_blank">
-                                                                                                            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-link-48.png"
-                                                                                                                width="33"
-                                                                                                                alt="Kyso"
-                                                                                                                border="0"
-                                                                                                                style="margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px"></a>
-                                                                                                    </td>
-                                                                                                    <td width="20"
-                                                                                                        align="center">
-                                                                                                    </td>
-                                                                                                    <td width="33"
-                                                                                                        align="center">
-                                                                                                        <a href="mailto:support@kyso.io"
-                                                                                                            target="_blank">
-                                                                                                            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-forwardtofriend-48.png"
-                                                                                                                width="33"
-                                                                                                                alt="Email"
-                                                                                                                border="0"
-                                                                                                                style="margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px"></a>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                        <table bgcolor="#f1f5f9" align="center"
-                                                                            cellpadding="0" cellspacing="0">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td width="600" align="center">
-                                                                                        <table bgcolor="#f1f5f9"
-                                                                                            align="center"
-                                                                                            cellpadding="0"
-                                                                                            cellspacing="0">
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td width="600"
-                                                                                                        height="25"
-                                                                                                        align="center"
-                                                                                                        style="border-collapse:collapse;border:0;">
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr style="border-collapse:collapse;">
-                                                                    <td height="13"
-                                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0"
-                                            role="presentation" style="border-collapse:collapse;">
-                                            <tbody>
-                                                <tr style="border-collapse:collapse;">
-                                                    <td height="20"
-                                                        style="font-size:1px;line-height:1px;border-collapse:collapse;">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div style="white-space:nowrap;font:15px courier;line-height:0;display:none !important;">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <table width='100%' border='0' cellpadding='0' cellspacing='0' role='presentation' style='border-collapse:collapse;'>
+                                                <tbody>
+                                                    <tr style='border-collapse:collapse;'>
+                                                        <td height='20' style='font-size:1px;line-height:1px;border-collapse:collapse;'>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style='white-space:nowrap;font:15px courier;line-height:0;display:none !important;'>
+            </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>
