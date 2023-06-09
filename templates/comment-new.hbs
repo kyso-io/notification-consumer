@@ -1,6 +1,7 @@
 <html lang='en'>
     <head>
         <meta charset='UTF-8' />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
         <style>
             /* Default Rules */
         </style>
@@ -120,7 +121,7 @@
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
                                                                                                 >{{team.display_name}}</a>
-                                                                                                channel.
+                                                                                                channel:
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -131,10 +132,10 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                <a
+                                                                                                <a  style="font-family: 'Roboto', serif; font-style: italic; font-weight: bold;"
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'
                                                                                                 >
-                                                                                                    {{comment.text}}
+                                                                                                    "{{comment.text}}"
                                                                                                 </a>
                                                                                             </p>
                                                                                         </td>
