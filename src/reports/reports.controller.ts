@@ -1,4 +1,14 @@
-import { KysoEventEnum, KysoReportsCreateEvent, KysoReportsDeleteEvent, KysoReportsMentionsEvent, KysoReportsNewMentionEvent, KysoReportsNewVersionEvent, Report, User } from '@kyso-io/kyso-model'
+import {
+    KysoEventEnum,
+    KysoReportsCreateEvent,
+    KysoReportsDeleteEvent,
+    KysoReportsMentionsEvent,
+    KysoReportsMoveEvent,
+    KysoReportsNewMentionEvent,
+    KysoReportsNewVersionEvent,
+    Report,
+    User,
+} from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -59,6 +69,49 @@ export class ReportsController {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_report', organization.id, team.id)
                 if (sendNotification) {
                     await this.sendMailNewReport(kysoReportsCreateEvent, user.email)
+                }
+            }
+        }
+    }
+
+    private async sendMailReportMoved(kysoReportsMoveEvent: KysoReportsMoveEvent, email: string): Promise<void> {
+        try {
+            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                to: email,
+                subject: `Report '${kysoReportsMoveEvent.report.title}' moved`,
+                template: 'report-moved',
+                context: kysoReportsMoveEvent,
+            })
+            Logger.log(`Report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+        } catch (e) {
+            Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
+        }
+    }
+
+    @EventPattern(KysoEventEnum.REPORTS_MOVE)
+    async handleReportsMove(kysoReportsMoveEvent: KysoReportsMoveEvent) {
+        Logger.log(KysoEventEnum.REPORTS_MOVE, ReportsController.name)
+        Logger.debug(kysoReportsMoveEvent, ReportsController.name)
+        const { targetOrganization, targetTeam, report } = kysoReportsMoveEvent
+        const centralizedMails: boolean = targetOrganization?.options?.notifications?.centralized || false
+        const emails: string[] = targetOrganization?.options?.notifications?.emails || []
+        if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
+            for (const email of emails) {
+                await this.sendMailReportMoved(kysoReportsMoveEvent, email)
+            }
+        } else {
+            const users: User[] = await this.db
+                .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                .find({
+                    id: {
+                        $in: report.author_ids,
+                    },
+                })
+                .toArray()
+            for (const user of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_moved', targetOrganization.id, targetTeam.id)
+                if (sendNotification) {
+                    await this.sendMailReportMoved(kysoReportsMoveEvent, user.email)
                 }
             }
         }
