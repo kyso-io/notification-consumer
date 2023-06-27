@@ -7,6 +7,8 @@ import {
     KysoTeamsRemoveMemberEvent,
     KysoTeamsUpdateMemberRolesEvent,
     OrganizationMemberJoin,
+    Team,
+    TeamMemberJoin,
     TeamVisibilityEnum,
     User,
 } from '@kyso-io/kyso-model'
@@ -98,22 +100,50 @@ export class TeamsController {
             this.mailerService
                 .sendMail({
                     to: emailsCentralized,
-                    subject: `A member was added from ${team.display_name} channel`,
+                    subject: `A member was added to ${team.display_name} channel`,
                     template: 'team-new-member',
                     context: {
                         addedUser: user,
                         organization,
                         team,
-                        role: roles.map(r => UtilsService.getDisplayTextByChannelRoleName(r)).join(", "),
+                        role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
                         frontendUrl,
                     },
                 })
                 .then((messageInfo) => {
-                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    Logger.log(`New user in channel mail ${messageInfo.messageId} sent to ${emailsCentralized}`, TeamsController.name)
                 })
                 .catch((err) => {
-                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+                    Logger.error(`An error occurrend sending new user in channel mail to ${emailsCentralized}`, err, TeamsController.name)
                 })
+        } else {
+            const users: User[] = await this.getTeamMembers(team)
+            for (const u of users) {
+                if (u.id === user.id) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_member_channel', organization.id, team.id)
+                if (!sendNotification) {
+                    continue
+                }
+                try {
+                    const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        to: u.email,
+                        subject: `A member was added to ${team.display_name} channel`,
+                        template: 'team-new-member',
+                        context: {
+                            addedUser: user,
+                            organization,
+                            team,
+                            role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
+                            frontendUrl,
+                        },
+                    })
+                    Logger.log(`New user in channel mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending new user in channel mail to ${u.email}`, e, TeamsController.name)
+                }
+            }
         }
     }
 
@@ -122,27 +152,24 @@ export class TeamsController {
         Logger.log(KysoEventEnum.TEAMS_REMOVE_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
         const { user, organization, team, emailsCentralized, frontendUrl } = kysoTeamsRemoveMemberEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'removed_member_in_channel', organization.id, team.id)
-        if (sendNotification) {
-            this.mailerService
-                .sendMail({
-                    to: user.email,
-                    subject: `You were removed to ${team.display_name} channel`,
-                    template: 'team-you-were-removed',
-                    context: {
-                        removedUser: user,
-                        organization,
-                        team,
-                        frontendUrl,
-                    },
-                })
-                .then((messageInfo) => {
-                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-                })
-                .catch((err) => {
-                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
-                })
-        }
+        this.mailerService
+            .sendMail({
+                to: user.email,
+                subject: `You were removed from ${team.display_name} channel`,
+                template: 'team-you-were-removed',
+                context: {
+                    removedUser: user,
+                    organization,
+                    team,
+                    frontendUrl,
+                },
+            })
+            .then((messageInfo) => {
+                Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+            })
+            .catch((err) => {
+                Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+            })
         if (emailsCentralized.length > 0) {
             this.mailerService
                 .sendMail({
@@ -157,11 +184,38 @@ export class TeamsController {
                     },
                 })
                 .then((messageInfo) => {
-                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    Logger.log(`Removed user from team mail ${messageInfo.messageId} sent to ${emailsCentralized}`, TeamsController.name)
                 })
                 .catch((err) => {
-                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
+                    Logger.error(`An error occurrend sending removed user form team mail to ${emailsCentralized}`, err, TeamsController.name)
                 })
+        } else {
+            const users: User[] = await this.getTeamMembers(team)
+            for (const u of users) {
+                if (u.id === user.id) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'removed_member_in_channel', organization.id, team.id)
+                if (!sendNotification) {
+                    continue
+                }
+                try {
+                    const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        to: u.email,
+                        subject: `A member was removed from ${team.display_name} channel`,
+                        template: 'team-removed-member',
+                        context: {
+                            removedUser: user,
+                            organization,
+                            team,
+                            frontendUrl,
+                        },
+                    })
+                    Logger.log(`Removed user from team mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending removed user form team mail to ${u.email}`, e, TeamsController.name)
+                }
+            }
         }
     }
 
@@ -310,5 +364,29 @@ export class TeamsController {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, TeamsController.name)
             }
         }
+    }
+
+    private async getTeamMembers(team: Team): Promise<User[]> {
+        const teamMembers: TeamMemberJoin[] = await this.db.collection<TeamMemberJoin>(Constants.DATABASE_COLLECTION_TEAM_MEMBER).find({ team_id: team.id }).toArray()
+        let usersIds: string[] = teamMembers.map((x: TeamMemberJoin) => x.member_id)
+        if (team.visibility === TeamVisibilityEnum.PUBLIC || team.visibility === TeamVisibilityEnum.PROTECTED) {
+            const organizationMembers: OrganizationMemberJoin[] = await this.db
+                .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
+                .find({ organization_id: team.organization_id })
+                .toArray()
+            organizationMembers.forEach((x: OrganizationMemberJoin) => {
+                const index: number = usersIds.indexOf(x.id)
+                if (index === -1) {
+                    usersIds.push(x.id)
+                }
+            })
+        }
+        if (usersIds.length === 0) {
+            return []
+        }
+        return this.db
+            .collection<User>(Constants.DATABASE_COLLECTION_USER)
+            .find({ id: { $in: usersIds } })
+            .toArray()
     }
 }

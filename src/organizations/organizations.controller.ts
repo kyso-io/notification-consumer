@@ -7,6 +7,7 @@ import {
     KysoOrganizationsUpdateEvent,
     KysoSetting,
     KysoSettingsEnum,
+    Organization,
     OrganizationMemberJoin,
     User,
 } from '@kyso-io/kyso-model'
@@ -40,9 +41,9 @@ export class OrganizationsController {
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${kysoOrganizationsAddMemberEvent.user.email}`, OrganizationsController.name)
+            Logger.log(`User member in organization mail ${messageInfo.messageId} sent to ${kysoOrganizationsAddMemberEvent.user.email}`, OrganizationsController.name)
         } catch (e) {
-            Logger.error(`An error occurrend sending report mail to ${kysoOrganizationsAddMemberEvent.user.email}`, e, OrganizationsController.name)
+            Logger.error(`An error occurrend sending user member in organization mail to ${kysoOrganizationsAddMemberEvent.user.email}`, e, OrganizationsController.name)
         }
     }
 
@@ -59,9 +60,9 @@ export class OrganizationsController {
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${kysoOrganizationsAddMemberEvent.user.email}`, OrganizationsController.name)
+            Logger.log(`New member in organization mail ${messageInfo.messageId} sent to ${kysoOrganizationsAddMemberEvent.user.email}`, OrganizationsController.name)
         } catch (e) {
-            Logger.error(`An error occurrend sending report mail to ${kysoOrganizationsAddMemberEvent.user.email}`, e, OrganizationsController.name)
+            Logger.error(`An error occurrend sending new member in organization mail to ${kysoOrganizationsAddMemberEvent.user.email}`, e, OrganizationsController.name)
         }
     }
 
@@ -70,28 +71,21 @@ export class OrganizationsController {
         Logger.log(KysoEventEnum.ORGANIZATIONS_ADD_MEMBER, OrganizationsController.name)
         Logger.debug(kysoOrganizationsAddMemberEvent, OrganizationsController.name)
         const { user, organization, emailsCentralized } = kysoOrganizationsAddMemberEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_member_organization', organization.id)
-        if (sendNotification) {
-            await this.sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent)
-        }
+        await this.sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent)
         if (Array.isArray(emailsCentralized) && emailsCentralized.length > 0) {
             for (const email of emailsCentralized) {
                 await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, email)
                 await this.utilsService.sleep(200)
             }
         } else {
-            const organizationMembers: OrganizationMemberJoin[] = await this.db
-                .collection<OrganizationMemberJoin>('OrganizationMember')
-                .find({ organization_id: organization.id, role_names: { $in: ['organization-admin'] } })
-                .toArray()
-            for (const organizationMember of organizationMembers) {
-                const user: User = await this.db.collection<User>('User').findOne({ id: organizationMember.member_id })
-                if (!user) {
-                    continue
+            const users: User[] = await this.getOrganizationMembers(organization)
+            for (const u of users) {
+                if (u.id === user.id) {
+                    continue;
                 }
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(organizationMember.member_id, 'new_member_organization', organization.id)
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_member_organization', organization.id)
                 if (sendNotification) {
-                    await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, user.email)
+                    await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, u.email)
                     await this.utilsService.sleep(200)
                 }
             }
@@ -110,9 +104,9 @@ export class OrganizationsController {
                     frontendUrl: kysoOrganizationsRemoveMemberEvent.frontendUrl,
                 },
             })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${kysoOrganizationsRemoveMemberEvent.user.email}`, OrganizationsController.name)
+            Logger.log(`Removed user from organization mail ${messageInfo.messageId} sent to ${kysoOrganizationsRemoveMemberEvent.user.email}`, OrganizationsController.name)
         } catch (e) {
-            Logger.error(`An error occurrend sending report mail to ${kysoOrganizationsRemoveMemberEvent.user.email}`, e, OrganizationsController.name)
+            Logger.error(`An error occurrend sending removed user from organization mail to ${kysoOrganizationsRemoveMemberEvent.user.email}`, e, OrganizationsController.name)
         }
     }
 
@@ -121,10 +115,8 @@ export class OrganizationsController {
         Logger.log(KysoEventEnum.ORGANIZATIONS_REMOVE_MEMBER, OrganizationsController.name)
         Logger.debug(kysoOrganizationsRemoveMemberEvent, OrganizationsController.name)
         const { user, organization, emailsCentralized, frontendUrl } = kysoOrganizationsRemoveMemberEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'removed_member_in_organization', organization.id)
-        if (sendNotification) {
-            await this.sendMailMemberRemovedFromOrganization(kysoOrganizationsRemoveMemberEvent)
-        }
+        await this.sendMailMemberRemovedFromOrganization(kysoOrganizationsRemoveMemberEvent)
+
         if (emailsCentralized.length > 0) {
             this.mailerService
                 .sendMail({
@@ -138,11 +130,34 @@ export class OrganizationsController {
                     },
                 })
                 .then((messageInfo) => {
-                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, OrganizationsController.name)
+                    Logger.log(`User removed from organization mail ${messageInfo.messageId} sent to ${user.email}`, OrganizationsController.name)
                 })
                 .catch((err) => {
-                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, OrganizationsController.name)
+                    Logger.error(`An error occurrend sending user removed from organization mail to ${user.email}`, err, OrganizationsController.name)
                 })
+        } else {
+            const users: User[] = await this.getOrganizationMembers(organization)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'removed_member_in_organization', organization.id)
+                if (!sendNotification) {
+                    continue
+                }
+                try {
+                    const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        to: u.email,
+                        subject: `A member was removed from ${organization.display_name} organization`,
+                        template: 'organization-removed-member',
+                        context: {
+                            removedUser: user,
+                            organization,
+                            frontendUrl,
+                        },
+                    })
+                    Logger.log(`User removed from organization mail ${sentMessageInfo.messageId} sent to ${u.email}`, OrganizationsController.name)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending user removed from organization mail to ${u.email}`, e, OrganizationsController.name)
+                }
+            }
         }
     }
 
@@ -182,7 +197,7 @@ export class OrganizationsController {
                         user,
                         organization,
                         frontendUrl,
-                        role: UtilsService.getDisplayTextByOrganizationRoleName(role)
+                        role: UtilsService.getDisplayTextByOrganizationRoleName(role),
                     },
                 })
                 .then((messageInfo) => {
@@ -339,5 +354,21 @@ export class OrganizationsController {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, OrganizationsController.name)
             }
         }
+    }
+
+    private async getOrganizationMembers(organization: Organization): Promise<User[]> {
+        const organizationMembers: OrganizationMemberJoin[] = await this.db
+            .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
+            .find({ organization_id: organization.id })
+            .toArray()
+        if (organizationMembers.length === 0) {
+            return []
+        }
+        return this.db
+            .collection<User>(Constants.DATABASE_COLLECTION_USER)
+            .find({
+                id: { $in: organizationMembers.map((x: OrganizationMemberJoin) => x.member_id) },
+            })
+            .toArray()
     }
 }
