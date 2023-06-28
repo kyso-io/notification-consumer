@@ -109,7 +109,7 @@
                                                                                     <td style="line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <a
-                                                                                            style="text-decoration:none;color:#151515;font-size:22px;">A task was edited on report {{report.title}}</a>
+                                                                                            style="text-decoration:none;color:#151515;font-size:22px;">A task was updated in {{report.title}}</a>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr style="border-collapse:collapse;">
@@ -128,8 +128,11 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            The following task has been edited on the report <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>{{report.title}}</a>, 
-                                                                                            in <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a> organization under <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'>{{team.display_name}}</a> channel:
+                                                                                             <a
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
+                                                                                            </a>
+                                                                                            made an update to an existing task on the report <a href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'>{{report.title}}</a>:
                                                                                         </p>
                                                                                     </td>
                                                                                 </tr>
@@ -138,7 +141,7 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            <a  style="font-family: 'Roboto', serif; font-style: italic; font-weight: bold;"
+                                                                                            <a  style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                 href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}?taskId={{comment.id}}&cell={{comment.cell_id}}'>
                                                                                                 "{{comment.text}}"
                                                                                             </a>
@@ -149,7 +152,7 @@
                                                                                     <td style="line-height:28px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:300;letter-spacing:-.2px;color:#626a78;border-collapse:collapse;"
                                                                                         valign="top">
                                                                                         <p>
-                                                                                            Keep track of the task as it evolves. Participate if you have something to say about it.
+                                                                                           Respond to {{user.display_name}} if this requires your attention. Keep track of the task as it evolves.
                                                                                         </p>
                                                                                     </td>
                                                                                 </tr>
@@ -209,14 +212,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                            <a href='https://kyso.io' target='_blank'>
-                                                                                                                <img
-                                                                                                                    src='https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-link-48.png'
-                                                                                                                    width='33'
-                                                                                                                    alt='Kyso'
-                                                                                                                    border='0'
-                                                                                                                    style='margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px'
-                                                                                                                /></a>
+                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
+                                                                                             kyso.io
+                                                                                             </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>

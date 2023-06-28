@@ -92,11 +92,10 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                New
+                                                                                                A new channel called 
                                                                                                 {{team.display_name}}
-                                                                                                channel in
+                                                                                                 was created in 
                                                                                                 {{organization.display_name}}
-                                                                                                organization
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -116,20 +115,27 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hey {{addedUser.display_name}},
                                                                                                 <br /><br />
-                                                                                                {{user.display_name}}
-                                                                                                created the new channel
+                                                                                                <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
+                                                                                                </a> created a new channel, 
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                 >{{team.display_name}}</a>
                                                                                                 in
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
-                                                                                                >{{organization.display_name}}</a>
-                                                                                                organization.
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >{{organization.display_name}}</a>.
+                                                                                                <br /><br />
+                                                                                                   <a
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
+                                                                                                    style='font-weight: normal; text-decoration:none; color:#5046e5'
+                                                                                                    >Go check it out!</a>
+                                                                                                
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -180,14 +186,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                            <a href='https://kyso.io' target='_blank'>
-                                                                                                                <img
-                                                                                                                    src='https://cdn-images.mailchimp.com/icons/social-block-v2/outline-gray-link-48.png'
-                                                                                                                    width='33'
-                                                                                                                    alt='Kyso'
-                                                                                                                    border='0'
-                                                                                                                    style='margin:0px;padding:0px;border:0px;outline:0px;text-decoration:none;width:33px;height:33px'
-                                                                                                                /></a>
+                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
+                                                                                             kyso.io
+                                                                                             </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>
