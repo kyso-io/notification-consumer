@@ -10,7 +10,6 @@ import { AppService } from './app.service'
 import { CommentsModule } from './comments/comments.module'
 import { Constants } from './constants'
 import { DatabaseModule } from './database/database.module'
-import { DiscussionsModule } from './discussions/discussions.module'
 import { FeedbackModule } from './feedback/feedback.module'
 import { InvitationsModule } from './invitations/invitations.module'
 import { OrganizationsModule } from './organizations/organizations.module'
@@ -31,7 +30,6 @@ if (process.env.DOTENV_FILE) {
             envFilePath: envFilePath,
             isGlobal: true,
         }),
-        DiscussionsModule,
         FeedbackModule,
         InlineCommentsModule,
         InvitationsModule,

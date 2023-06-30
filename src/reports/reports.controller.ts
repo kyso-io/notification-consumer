@@ -239,36 +239,6 @@ export class ReportsController {
             })
     }
 
-    @EventPattern(KysoEventEnum.REPORTS_NEW_MENTION)
-    async handleDiscussionsNewMention(kysoReportsNewMentionEvent: KysoReportsNewMentionEvent) {
-        Logger.log(KysoEventEnum.REPORTS_NEW_MENTION, ReportsController.name)
-        Logger.debug(kysoReportsNewMentionEvent, ReportsController.name)
-        const { user, creator, organization, team, report, frontendUrl } = kysoReportsNewMentionEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_mention_in_report', organization.id, team.id)
-        if (!sendNotification) {
-            return
-        }
-        this.mailerService
-            .sendMail({
-                to: user.email,
-                subject: 'You have been mentioned in a report',
-                template: 'report-mention',
-                context: {
-                    creator,
-                    organization,
-                    team,
-                    report,
-                    frontendUrl,
-                },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Mention in report mail ${messageInfo.messageId} sent to ${user.email}`, ReportsController.name)
-            })
-            .catch((err) => {
-                Logger.error(`An error occurrend sending mention in report mail to ${user.email}`, err, ReportsController.name)
-            })
-    }
-
     private async sendMailMentionsInReport(kysoReportsMentionsEvent: KysoReportsMentionsEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
