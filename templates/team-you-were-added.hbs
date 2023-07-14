@@ -93,8 +93,7 @@
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
                                                                                                 You were added to
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -117,12 +116,23 @@
                                                                                                 Hi
                                                                                                 {{addedUser.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently you were added to the
+                                                                                                You were just added to the
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
                                                                                                 >{{team.display_name}}</a>
-                                                                                                channel.
-                                                                                                <strong>{{text}}</strong>
+                                                                                                channel by     
+                                                                                                <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}.
+                                                                                                </a>
+                                                                                                 Go check out some reports!
+                                                                                                 <br /><br />
+                                                                                                Cheers,
+                                                                                                <br />
+                                                                                                The Kyso Team
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

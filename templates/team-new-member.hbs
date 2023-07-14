@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                New member at
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                New member added to 
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,15 +113,27 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{user.display_name}},
                                                                                                 <br /><br />
                                                                                                 {{addedUser.display_name}}
                                                                                                 was added to
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>
-                                                                                                channel as
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >
+                                                                                                    {{team.display_name}}
+                                                                                                </a>
+                                                                                                channel in
+                                                                                                <a
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >
+                                                                                                    {{organization.display_name}}
+                                                                                                </a>
+                                                                                                as a 
                                                                                                 <b>{{role}}</b>.
+                                                                                                <br /><br />
+                                                                                                Help them get started by sharing useful content or linking them to an interesting report!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

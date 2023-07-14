@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                A user's role has change in
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                {{userReceivingAction.display_name}}'s role has been changed in 
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,16 +113,24 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{user.display_name}},
                                                                                                 <br /><br />
-                                                                                                The user's role for
-                                                                                                {{user.display_name}}
-                                                                                                in
+                                                                                                {{userCreatingAction.display_name}} just changed {{userReceivingAction.display_name}}'s role in
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>
-                                                                                                channel has changed to
-                                                                                                <b>{{role}}</b>.
+                                                                                                >
+                                                                                                    {{team.display_name}}
+                                                                                                </a>
+                                                                                                {{#if previousRole}}
+                                                                                                from  <b>{{previousRole}}</b> to <b>{{newRole}}</b>.
+                                                                                                {{else}}
+                                                                                                to <b>{{newRole}}</b>.
+                                                                                                {{/if}}
+                                                                                                <br /><br />
+                                                                                                Cheers,
+                                                                                                <br />
+                                                                                                The Kyso Team!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

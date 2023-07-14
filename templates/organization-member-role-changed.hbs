@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                A user's role has change in
-                                                                                                {{organization.display_name}}
-                                                                                                organization
+                                                                                               {{user.display_name}}'s role has changed in
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,14 +113,19 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{admin.display_name}},
                                                                                                 <br /><br />
                                                                                                 The user's role for
                                                                                                 {{user.display_name}}
                                                                                                 in
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization has changed to
-                                                                                                <b>{{role}}</b>.
+                                                                                                <a 
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >
+                                                                                                    {{organization.display_name}}
+                                                                                                </a>
+                                                                                                organization has changed from
+                                                                                                <b>{{previousRole}}</b> to <b>{{newRole}}</b>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                A user was removed from
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                {{removedUser.display_name}} removed from
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,15 +113,30 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{user.display_name}},
                                                                                                 <br /><br />
-                                                                                                The user
+                                                                                                {{userCreatingAction.display_name}} just removed 
                                                                                                 {{removedUser.display_name}}
-                                                                                                was removed from
+                                                                                                from the 
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
                                                                                                 >{{team.display_name}}</a>
-                                                                                                channel.
+                                                                                                channel in 
+                                                                                                 <a
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >
+                                                                                                    {{organization.display_name}}.
+                                                                                                </a>
+                                                                                                <br /><br />
+                                                                                                If this change is expected, you can ignore this email. If not, please contact
+                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}.
+                                                                                                </a>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

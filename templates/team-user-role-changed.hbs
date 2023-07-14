@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                New role in
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                Your user role has been changed in
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -115,14 +114,31 @@
                                                                                         >
                                                                                             <p>
                                                                                                 Hi
-                                                                                                {{user.display_name}},
+                                                                                                {{userReceivingAction.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently your role in
+                                                                                                {{userCreatingAction.display_name}}
+                                                                                                just changed your user role in
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>
-                                                                                                channel has changed.
-                                                                                                <strong>{{text}}</strong>
+                                                                                                >
+                                                                                                    {{team.display_name}}
+                                                                                                </a>
+                                                                                                from
+                                                                                                <strong>{{previous.role}}</strong> to
+                                                                                                <strong>{{text}}</strong>.
+                                                                                                <br /><br />
+                                                                                                If this change is expected, you can ignore this email. If not, please contact
+                                                                                                  <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{user.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}
+                                                                                                </a>.
+                                                                                                <br /><br />
+                                                                                                Cheers,
+                                                                                                <br />
+                                                                                                The Kyso Team!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

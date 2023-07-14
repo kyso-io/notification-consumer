@@ -91,9 +91,8 @@
                                                                                             style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
                                                                                             valign='top'
                                                                                         >
-                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                Hello
-                                                                                                {{receiver.display_name}},
+                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;' href='{{frontendUrl}}/{{organization.sluglified_name}}'>
+                                                                                                Centralised communications configured for {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -113,26 +112,30 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                recently the user
-                                                                                                <b>{{user.display_name}}</b>
-                                                                                                configured the centralized communication of the organization
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                in which you have administrative rights, to the following directions
-                                                                                                {{emailsNotifications}}.
+                                                                                                Hello {{user.display_name}},
+                                                                                                <br /><br />
+                                                                                                <b>{{receiver.display_name}}</b>
+                                                                                                recently configured centralised communications for 
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                >
+                                                                                                {{organization.display_name}}.</a>
+                                                                                                 This means that all future Kyso event communications will flow through a specific email address.
                                                                                                 <br /><br />
                                                                                             </p>
                                                                                             <p>
-                                                                                                If this is intended, you can just ignore this email. If not, please, review your organization settings,
-                                                                                                and if you need support please contact with us at
-                                                                                                <a href='mailto:support@kyso.io'>support@kyso.io</a>.
+                                                                                                You're receiving this update because you have administrative rights to <b>{{organization.display_name}}.</b>
+                                                                                                If this change is expected, you can ignore this email. If not, please contact
+                                                                                                <a
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/user/{{receiver.username}}'>{{receiver.display_name}}
+                                                                                            </a>
                                                                                                 <br /><br />
                                                                                             </p>
                                                                                             <p>
-                                                                                                All the best, The Kyso Team
+                                                                                                All the best, The Kyso Team!
                                                                                                 <br /><br />
-                                                                                            </p>
-                                                                                            <p>
-                                                                                                The Kyso Team
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

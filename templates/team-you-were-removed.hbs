@@ -93,8 +93,7 @@
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
                                                                                                 You were removed from
-                                                                                                {{team.display_name}}
-                                                                                                channel
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -117,11 +116,25 @@
                                                                                                 Hi
                                                                                                 {{removedUser.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently you were removed from
+                                                                                                {{userCreatingAction.display_name}}
+                                                                                                 recently removed you from the
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
                                                                                                 >{{team.display_name}}</a>
                                                                                                 channel.
+                                                                                                <br /><br />
+                                                                                                If this change is expected, you can ignore this email. If not, please contact 
+                                                                                                  <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}.
+                                                                                                </a>
+                                                                                                 <br /><br />
+                                                                                                Cheers,
+                                                                                                <br />
+                                                                                                The Kyso Team
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

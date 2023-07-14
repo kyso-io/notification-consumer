@@ -91,7 +91,7 @@
                                                                                             style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
                                                                                             valign='top'
                                                                                         >
-                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>We are sorry 😟</a>
+                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>Insufficient permissions to create report.</a>
                                                                                         </td>
                                                                                     </tr>
                                                                                     <tr style='border-collapse:collapse;'>
@@ -110,9 +110,16 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                It seems there was a problem creating your report. You might not have permission to carry out this
-                                                                                                action. Please contact your organization administrator or reach out to the Kyso crew directly at
-                                                                                                <a href='mailto:support@kyso.io'>support@kyso.io</a>!
+                                                                                                Hi {{user.display_name}},
+                                                                                                <br /><br />
+                                                                                                It seems there was a problem creating your report. It's likely that you don't have the right permissions to carry out this action.
+                                                                                                <br /><br />
+                                                                                                Please contact a 
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}
+                                                                                                </a>
+                                                                                                administrator for further information!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

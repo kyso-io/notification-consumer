@@ -1,13 +1,20 @@
-import { KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum } from '@kyso-io/kyso-model'
+import { KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
-import { Controller, Logger } from '@nestjs/common'
+import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
+import { Db } from 'mongodb'
 import { SentMessageInfo } from 'nodemailer'
+import { Constants } from '../constants'
 import { UtilsService } from '../shared/utils.service'
 
 @Controller()
 export class CommentsController {
-    constructor(private readonly mailerService: MailerService, private readonly utilsService: UtilsService) {}
+    constructor(
+        @Inject(Constants.DATABASE_CONNECTION)
+        private db: Db,
+        private readonly mailerService: MailerService,
+        private readonly utilsService: UtilsService,
+    ) {}
 
     private async sendMailReplyCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
@@ -59,6 +66,7 @@ export class CommentsController {
                 subject: `New comment in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'comment-new',
                 context: {
+                    userCreatingAction: kysoCommentsCreateEvent.user,
                     frontendUrl: kysoCommentsCreateEvent.frontendUrl,
                     organization: kysoCommentsCreateEvent.organization,
                     team: kysoCommentsCreateEvent.team,
@@ -112,6 +120,7 @@ export class CommentsController {
                 subject: `Comment edited in report ${report.title}`,
                 template: 'comment-updated',
                 context: {
+                    user,
                     frontendUrl,
                     organization,
                     team,
@@ -127,13 +136,14 @@ export class CommentsController {
             })
     }
 
-    private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, email: string): Promise<void> {
+    private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceiveEmail.email,
                 subject: `Deleted a comment in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'comment-deleted',
                 context: {
+                    user: kysoCommentsDeleteEvent.user,
                     frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
                     organization: kysoCommentsDeleteEvent.organization,
                     team: kysoCommentsDeleteEvent.team,
@@ -141,9 +151,9 @@ export class CommentsController {
                     comment: kysoCommentsDeleteEvent.comment,
                 },
             })
-            Logger.log(`Deleted comment mail ${messageInfo.messageId} sent to ${email}`, CommentsController.name)
+            Logger.log(`Deleted comment mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, CommentsController.name)
         } catch (e) {
-            Logger.error(`An error occurred sending deleted comment mail to ${email}`, e, CommentsController.name)
+            Logger.error(`An error occurred sending deleted comment mail to ${userReceiveEmail.email}`, e, CommentsController.name)
         }
     }
 
@@ -156,15 +166,19 @@ export class CommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
+                const userReceiveEmail: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (!userReceiveEmail) {
+                    continue
+                }
                 if (report) {
-                    await this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, email)
+                    await this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, userReceiveEmail)
                 }
             }
         } else {
             const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_comment_removed', organization.id, team.id)
             if (sendNotification) {
                 if (report) {
-                    this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, user.email)
+                    this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, user)
                 }
             }
         }

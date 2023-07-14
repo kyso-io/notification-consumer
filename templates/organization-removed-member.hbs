@@ -114,14 +114,21 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{admin.display_name}},
                                                                                                 <br /><br />
-                                                                                                The user
+                                                                                                {{userCreatingAction.display_name}} just removed
                                                                                                 {{removedUser.display_name}}
-                                                                                                was removed from
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization.
+                                                                                                from
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}.</a>
                                                                                             </p>
+                                                                                            <br></br>
+                                                                                            If this change is expected, you can ignore this email. If not, please contact 
+                                                                                            <a
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
+                                                                                            </a>
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>

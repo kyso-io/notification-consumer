@@ -21,13 +21,14 @@ import { UtilsService } from '../shared/utils.service'
 export class InlineCommentsController {
     constructor(@Inject(Constants.DATABASE_CONNECTION) private db: Db, private readonly mailerService: MailerService, private readonly utilsService: UtilsService) {}
 
-    private async sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, parentInlineComment: InlineComment, email: string): Promise<void> {
+    private async sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceiveEmail.email,
                 subject: `New task reply in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'inline-comment-reply',
                 context: {
+                    userCreatingAction: kysoCommentsCreateEvent.user,
                     frontendUrl: kysoCommentsCreateEvent.frontendUrl,
                     organization: kysoCommentsCreateEvent.organization,
                     team: kysoCommentsCreateEvent.team,
@@ -36,9 +37,9 @@ export class InlineCommentsController {
                     parentInlineComment,
                 },
             })
-            Logger.log(`New reply inline comment mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)
+            Logger.log(`New reply inline comment mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, InlineCommentsController.name)
         } catch (e) {
-            Logger.error(`An error occurred sending new reply inline comment mail to ${email}`, e, InlineCommentsController.name)
+            Logger.error(`An error occurred sending new reply inline comment mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
     }
 
@@ -65,7 +66,10 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, email)
+                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (user) {
+                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, user)
+                }
             }
         } else {
             const users: User[] = []
@@ -92,19 +96,20 @@ export class InlineCommentsController {
             for (const user of users) {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_task_reply', organization.id, team.id)
                 if (sendNotification) {
-                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, user.email)
+                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, user)
                 }
             }
         }
     }
 
-    private async sendMailNewInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
+    private async sendMailNewInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceiveEmail.email,
                 subject: `New task in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'inline-comment-new',
                 context: {
+                    userCreatingAction: kysoCommentsCreateEvent.user,
                     frontendUrl: kysoCommentsCreateEvent.frontendUrl,
                     organization: kysoCommentsCreateEvent.organization,
                     team: kysoCommentsCreateEvent.team,
@@ -112,9 +117,9 @@ export class InlineCommentsController {
                     comment: kysoCommentsCreateEvent.comment,
                 },
             })
-            Logger.log(`New inline comment mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)
+            Logger.log(`New inline comment mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, InlineCommentsController.name)
         } catch (e) {
-            Logger.error(`An error occurred sending new inline comment mail to ${email}`, e, InlineCommentsController.name)
+            Logger.error(`An error occurred sending new inline comment mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
     }
 
@@ -131,7 +136,10 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                await this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, email)
+                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (user) {
+                    await this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, user)
+                }
             }
         } else {
             // The user who created the comment
@@ -152,19 +160,20 @@ export class InlineCommentsController {
             for (const user of users) {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_task', organization.id, team.id)
                 if (sendNotification) {
-                    this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, user.email)
+                    this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, user)
                 }
             }
         }
     }
 
-    private async sendMailInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
+    private async sendMailInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceiveEmail.email,
                 subject: `Task edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-updated',
                 context: {
+                    userCreatingAction: kysoCommentsUpdateEvent.user,
                     frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
                     organization: kysoCommentsUpdateEvent.organization,
                     team: kysoCommentsUpdateEvent.team,
@@ -172,9 +181,9 @@ export class InlineCommentsController {
                     comment: kysoCommentsUpdateEvent.comment,
                 },
             })
-            Logger.log(`Inline comment updated mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)
+            Logger.log(`Inline comment updated mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, InlineCommentsController.name)
         } catch (e) {
-            Logger.error(`An error occurred sending inline comment updated mail to ${email}`, e, InlineCommentsController.name)
+            Logger.error(`An error occurred sending inline comment updated mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
     }
 
@@ -214,13 +223,14 @@ export class InlineCommentsController {
         }
     }
 
-    private async sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, parentInlineComment: InlineComment, email: string): Promise<void> {
+    private async sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceiveEmail.email,
                 subject: `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-reply-updated',
                 context: {
+                    userCreatingAction: kysoCommentsUpdateEvent.user,
                     frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
                     organization: kysoCommentsUpdateEvent.organization,
                     team: kysoCommentsUpdateEvent.team,
@@ -229,9 +239,9 @@ export class InlineCommentsController {
                     parentInlineComment,
                 },
             })
-            Logger.log(`Inline comment updated mail ${messageInfo.messageId} sent to ${email}`, InlineCommentsController.name)
+            Logger.log(`Inline comment updated mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, InlineCommentsController.name)
         } catch (e) {
-            Logger.error(`An error occurred sending inline comment updated mail to ${email}`, e, InlineCommentsController.name)
+            Logger.error(`An error occurred sending inline comment updated mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
     }
 
@@ -249,7 +259,10 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, email)
+                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (user) {
+                    await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, user)
+                }
             }
         } else {
             const users: User[] = []
@@ -284,12 +297,12 @@ export class InlineCommentsController {
                 if (parentInlineComment) {
                     const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_reply_updated', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent, parentInlineComment, user.email)
+                        await this.sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent, parentInlineComment, user)
                     }
                 } else {
                     const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_updated', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, user.email)
+                        await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, user)
                     }
                 }
             }
@@ -349,6 +362,7 @@ export class InlineCommentsController {
                 subject: `Deleted task in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'inline-comment-deleted',
                 context: {
+                    user: kysoCommentsDeleteEvent.user,
                     frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
                     organization: kysoCommentsDeleteEvent.organization,
                     team: kysoCommentsDeleteEvent.team,
@@ -369,6 +383,7 @@ export class InlineCommentsController {
                 subject: `Deleted task reply in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'inline-comment-reply-deleted',
                 context: {
+                    userCreatingAction: kysoCommentsDeleteEvent.user,
                     frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
                     organization: kysoCommentsDeleteEvent.organization,
                     team: kysoCommentsDeleteEvent.team,

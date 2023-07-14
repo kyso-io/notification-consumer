@@ -110,7 +110,7 @@
                                                                                             <p>
                                                                                                 <a
                                                                                                 style='font-weight: bold; text-decoration:none; color:#5046e5'
-                                                                                                href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
+                                                                                                href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
                                                                                             </a>
                                                                                                 made an update to an existing task on the report 
                                                                                                 <a
@@ -127,11 +127,13 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
+                                                                                                <br/>
                                                                                                 <a  style='font-weight: normal; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}?taskId={{comment.id}}&cell={{comment.cell_id}}'
                                                                                                 >
                                                                                                     "{{comment.text}}"
                                                                                                 </a>
+                                                                                                <br/><br/>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -141,7 +143,7 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Respond to {{user.display_name}} if this requires your attention. Keep track of the task as it evolves.
+                                                                                                Respond to {{userCreatingAction.display_name}} if this requires your attention. Keep track of the task as it evolves.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
