@@ -55,6 +55,7 @@ export class TeamsController {
                         subject: `New ${kysoTeamsCreateEvent.team.display_name} channel`,
                         template: 'new-team',
                         context: {
+                            notifiedUser: user,
                             user: kysoTeamsCreateEvent.user,
                             organization: kysoTeamsCreateEvent.organization,
                             team: kysoTeamsCreateEvent.team,
@@ -62,6 +63,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`New team mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new team mail to ${user.email}`, e, TeamsController.name)
                 }
@@ -73,53 +75,63 @@ export class TeamsController {
     async handleCommentsCreated(kysoTeamsAddMemberEvent: KysoTeamsAddMemberEvent) {
         Logger.log(KysoEventEnum.TEAMS_ADD_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsAddMemberEvent, TeamsController.name)
-        const { user, organization, team, emailsCentralized, roles, frontendUrl } = kysoTeamsAddMemberEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_member_channel', organization.id, team.id)
+        const { userCreatingAction, userReceivingAction, organization, team, roles, frontendUrl } = kysoTeamsAddMemberEvent
+        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'new_member_channel', organization.id, team.id)
         if (sendNotification) {
-            this.mailerService
-                .sendMail({
-                    to: user.email,
+            try {
+                const messageInfo = await this.mailerService.sendMail({
+                    to: userReceivingAction.email,
                     subject: `You were added to ${team.display_name} channel`,
                     template: 'team-you-were-added',
                     context: {
-                        addedUser: user,
+                        userCreatingAction,
+                        addedUser: userReceivingAction,
                         organization,
                         team,
                         frontendUrl,
                         text: UtilsService.getDisplayTextByChannelRoleName(roles[0]),
                     },
                 })
-                .then((messageInfo) => {
-                    Logger.log(`Report mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-                })
-                .catch((err) => {
-                    Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
-                })
+                Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, TeamsController.name)
+                await this.utilsService.sleep(200)
+            } catch (e) {
+                Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, TeamsController.name)
+            }
         }
-        if (emailsCentralized.length > 0) {
-            this.mailerService
-                .sendMail({
-                    to: emailsCentralized,
-                    subject: `A member was added to ${team.display_name} channel`,
-                    template: 'team-new-member',
-                    context: {
-                        addedUser: user,
-                        organization,
-                        team,
-                        role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
-                        frontendUrl,
-                    },
-                })
-                .then((messageInfo) => {
-                    Logger.log(`New user in channel mail ${messageInfo.messageId} sent to ${emailsCentralized}`, TeamsController.name)
-                })
-                .catch((err) => {
-                    Logger.error(`An error occurrend sending new user in channel mail to ${emailsCentralized}`, err, TeamsController.name)
-                })
+        let centralizedEmails: string[] = []
+        if (organization?.options?.notifications?.centralized && Array.isArray(organization?.options?.notifications?.emails)) {
+            centralizedEmails = organization.options.notifications.emails
+        }
+        if (centralizedEmails.length > 0) {
+            for (const email of centralizedEmails) {
+                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (!user) {
+                    continue
+                }
+                try {
+                    const messageInfo = await this.mailerService.sendMail({
+                        to: user.email,
+                        subject: `A member was added to ${team.display_name} channel`,
+                        template: 'team-new-member',
+                        context: {
+                            user,
+                            addedUser: userReceivingAction,
+                            organization,
+                            team,
+                            role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
+                            frontendUrl,
+                        },
+                    })
+                    Logger.log(`New user in channel mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending new user in channel mail to ${user.email}`, e, TeamsController.name)
+                }
+            }
         } else {
             const users: User[] = await this.getTeamMembers(team)
             for (const u of users) {
-                if (u.id === user.id) {
+                if (u.id === userReceivingAction.id) {
                     continue
                 }
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_member_channel', organization.id, team.id)
@@ -132,7 +144,8 @@ export class TeamsController {
                         subject: `A member was added to ${team.display_name} channel`,
                         template: 'team-new-member',
                         context: {
-                            addedUser: user,
+                            user: u,
+                            addedUser: userReceivingAction,
                             organization,
                             team,
                             role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
@@ -140,6 +153,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`New user in channel mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new user in channel mail to ${u.email}`, e, TeamsController.name)
                 }
@@ -151,13 +165,14 @@ export class TeamsController {
     async handleCommentsUpdated(kysoTeamsRemoveMemberEvent: KysoTeamsRemoveMemberEvent) {
         Logger.log(KysoEventEnum.TEAMS_REMOVE_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
-        const { user, organization, team, emailsCentralized, frontendUrl } = kysoTeamsRemoveMemberEvent
+        const { userCreatingAction, user, organization, team, frontendUrl } = kysoTeamsRemoveMemberEvent
         this.mailerService
             .sendMail({
                 to: user.email,
                 subject: `You were removed from ${team.display_name} channel`,
                 template: 'team-you-were-removed',
                 context: {
+                    userCreatingAction,
                     removedUser: user,
                     organization,
                     team,
@@ -170,25 +185,36 @@ export class TeamsController {
             .catch((err) => {
                 Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
             })
-        if (emailsCentralized.length > 0) {
-            this.mailerService
-                .sendMail({
-                    to: emailsCentralized,
-                    subject: `A member was removed from ${team.display_name} channel`,
-                    template: 'team-removed-member',
-                    context: {
-                        removedUser: user,
-                        organization,
-                        team,
-                        frontendUrl,
-                    },
-                })
-                .then((messageInfo) => {
-                    Logger.log(`Removed user from team mail ${messageInfo.messageId} sent to ${emailsCentralized}`, TeamsController.name)
-                })
-                .catch((err) => {
-                    Logger.error(`An error occurrend sending removed user form team mail to ${emailsCentralized}`, err, TeamsController.name)
-                })
+        let centralizedEmails: string[] = []
+        if (organization?.options?.notifications?.centralized && Array.isArray(organization?.options?.notifications?.emails)) {
+            centralizedEmails = organization.options.notifications.emails
+        }
+        if (centralizedEmails.length > 0) {
+            for (const email of centralizedEmails) {
+                const userEmail: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (!userEmail) {
+                    continue
+                }
+                try {
+                    const messageInfo = await this.mailerService.sendMail({
+                        to: userEmail.email,
+                        subject: `A member was removed from ${team.display_name} channel`,
+                        template: 'team-removed-member',
+                        context: {
+                            user: userEmail,
+                            userCreatingAction,
+                            removedUser: user,
+                            organization,
+                            team,
+                            frontendUrl,
+                        },
+                    })
+                    Logger.log(`Removed user from team mail ${messageInfo.messageId} sent to ${userEmail.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending removed user form team mail to ${userEmail.email}`, e, TeamsController.name)
+                }
+            }
         } else {
             const users: User[] = await this.getTeamMembers(team)
             for (const u of users) {
@@ -205,6 +231,8 @@ export class TeamsController {
                         subject: `A member was removed from ${team.display_name} channel`,
                         template: 'team-removed-member',
                         context: {
+                            user: u,
+                            userCreatingAction,
                             removedUser: user,
                             organization,
                             team,
@@ -212,6 +240,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`Removed user from team mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
                 } catch (e) {
                     Logger.error(`An error occurrend sending removed user form team mail to ${u.email}`, e, TeamsController.name)
                 }
@@ -223,16 +252,17 @@ export class TeamsController {
     async handleTeamsUpdateMemberRoles(kysoTeamsUpdateMemberRolesEvent: KysoTeamsUpdateMemberRolesEvent) {
         Logger.log(KysoEventEnum.TEAMS_UPDATE_MEMBER_ROLES, TeamsController.name)
         Logger.debug(kysoTeamsUpdateMemberRolesEvent, TeamsController.name)
-        const { user, organization, team, emailsCentralized, frontendUrl, currentRoles } = kysoTeamsUpdateMemberRolesEvent
-        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'updated_role_in_channel', organization.id, team.id)
+        const { userCreatingAction, userReceivingAction, organization, team, frontendUrl, previousRoles, currentRoles } = kysoTeamsUpdateMemberRolesEvent
+        const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'updated_role_in_channel', organization.id, team.id)
         if (sendNotification) {
             this.mailerService
                 .sendMail({
-                    to: user.email,
+                    to: userReceivingAction.email,
                     subject: `Your role in ${team.display_name} channel has changed`,
                     template: 'team-user-role-changed',
                     context: {
-                        user,
+                        userCreatingAction,
+                        userReceivingAction,
                         organization,
                         team,
                         frontendUrl,
@@ -240,32 +270,44 @@ export class TeamsController {
                     },
                 })
                 .then((messageInfo) => {
-                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, TeamsController.name)
                 })
                 .catch((err) => {
-                    Logger.error(`An error occurred sending team role changed mail to ${user.email}`, err, TeamsController.name)
+                    Logger.error(`An error occurred sending team role changed mail to ${userReceivingAction.email}`, err, TeamsController.name)
                 })
         }
-        if (emailsCentralized.length > 0) {
-            this.mailerService
-                .sendMail({
-                    to: emailsCentralized,
-                    subject: `A member's role has changed in ${team.display_name} channel`,
-                    template: 'team-member-role-changed',
-                    context: {
-                        user,
-                        organization,
-                        team,
-                        frontendUrl,
-                        role: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
-                    },
-                })
-                .then((messageInfo) => {
-                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${emailsCentralized.join(', ')}`, TeamsController.name)
-                })
-                .catch((err) => {
-                    Logger.error(`An error occurred sending team role changed mail to ${emailsCentralized.join(', ')}`, err, TeamsController.name)
-                })
+        let centralizedEmails: string[] = []
+        if (organization?.options?.notifications?.centralized && Array.isArray(organization?.options?.notifications?.emails)) {
+            centralizedEmails = organization.options.notifications.emails
+        }
+        if (centralizedEmails.length > 0) {
+            for (const email of centralizedEmails) {
+                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (!user) {
+                    continue
+                }
+                try {
+                    const messageInfo = await this.mailerService.sendMail({
+                        to: user.email,
+                        subject: `A member's role has changed in ${team.display_name} channel`,
+                        template: 'team-member-role-changed',
+                        context: {
+                            user,
+                            userCreatingAction,
+                            userReceivingAction,
+                            organization,
+                            team,
+                            frontendUrl,
+                            previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                            newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                        },
+                    })
+                    Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
+                    await this.utilsService.sleep(200)
+                } catch (e) {
+                    Logger.error(`An error occurred sending team role changed mail to ${user.email}`, e, TeamsController.name)
+                }
+            }
         }
     }
 
@@ -293,11 +335,13 @@ export class TeamsController {
                     subject: `Channel ${team.display_name} was removed`,
                     template: 'team-deleted',
                     context: {
-                        user,
+                        user: teamUser,
+                        userCreatingAction: user,
                         organization,
                         team,
                     },
                 })
+                Logger.log(`Team removed mail sent to ${teamUser.email}`, TeamsController.name)
                 await this.utilsService.sleep(200)
             } catch (e) {
                 Logger.error(`An error occurred sending team removed mail to ${teamUser.id} ${teamUser.email}`, e, TeamsController.name)
@@ -328,7 +372,7 @@ export class TeamsController {
                             request,
                         },
                     })
-
+                    Logger.log(`Created request access to team ${team.display_name} sent to user ${admin.email}`, TeamsController.name)
                     await this.utilsService.sleep(200)
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)

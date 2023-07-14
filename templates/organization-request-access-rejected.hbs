@@ -97,9 +97,9 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                Your access request to
+                                                                                                Your request to access
                                                                                                 {{organization.display_name}}
-                                                                                                has been rejected
+                                                                                                was rejected.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -123,15 +123,15 @@
                                                                                                 {{requesterUser.display_name}},
                                                                                                 <br /><br />
 
-                                                                                                We are sorry to say that the administrator
-                                                                                                {{rejecterUser.display_name}}
-                                                                                                rejected your access request to the organization
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>.
+                                                                                                Your access request to <b>{{organization.display_name}}</b> was rejected by
+                                                                                                {{rejecterUser.display_name}}.
+                                                                                                <br />
+                                                                                                Please contact any of the Organisation administrators for further information.
                                                                                                 <br /><br />
 
-                                                                                                All the best,
+                                                                                                Best,
                                                                                                 <br />
-                                                                                                Kyso
+                                                                                                The Kyso Team.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

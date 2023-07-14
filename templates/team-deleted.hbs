@@ -92,9 +92,7 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                The channel
-                                                                                                {{team.display_name}}
-                                                                                                has been deleted
+                                                                                                Channel deleted!
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,15 +112,31 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{user.display_name}},
                                                                                                 <br /><br />
-                                                                                                the channel
+                                                                                                <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}
+                                                                                                </a>
+                                                                                                recently deleted the
                                                                                                 {{team.display_name}}
-                                                                                                in the organization
-                                                                                                {{organization.display_name}}
-                                                                                                was recently deleted by
-                                                                                                {{user.display_name}}
-                                                                                                and all the content inside that channel no longer exists.
+                                                                                                 channel from
+                                                                                                <a
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >
+                                                                                                    {{organization.display_name}}.
+                                                                                                </a>
+                                                                                                <br /><br />
+                                                                                                All content inside that Channel no longer exits. If you have any questions, get in touch with 
+                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}.
+                                                                                                </a>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

@@ -93,8 +93,7 @@
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
                                                                                                 You were removed from
-                                                                                                {{organization.display_name}}
-                                                                                                organization
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -117,9 +116,15 @@
                                                                                                 Hi
                                                                                                 {{removedUser.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently you were removed from
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization.
+                                                                                                {{userCreatingAction.display_name}} recently removed you from 
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>.
+                                                                                                If this change is expected, you can ignore this email. If not, please contact
+                                                                                                <a
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
+                                                                                            </a>.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

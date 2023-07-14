@@ -33,6 +33,7 @@ export class ReportsController {
                 subject: `New report '${kysoReportsCreateEvent.report.title}' published`,
                 template: 'report-new',
                 context: {
+                    user: kysoReportsCreateEvent.user,
                     organization: kysoReportsCreateEvent.organization,
                     team: kysoReportsCreateEvent.team,
                     report: kysoReportsCreateEvent.report,
@@ -171,22 +172,24 @@ export class ReportsController {
         }
     }
 
-    private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, email: string): Promise<void> {
+    private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, userReceivingAction: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                to: email,
+                to: userReceivingAction.email,
                 subject: `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
                 template: 'report-deleted',
                 context: {
+                    userReceivingAction: userReceivingAction,
+                    userCreatingAction: kysoReportsDeleteEvent.user,
                     organization: kysoReportsDeleteEvent.organization,
                     team: kysoReportsDeleteEvent.team,
                     report: kysoReportsDeleteEvent.report,
                     frontendUrl: kysoReportsDeleteEvent.frontendUrl,
                 },
             })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+            Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, ReportsController.name)
         } catch (e) {
-            Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
+            Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, ReportsController.name)
         }
     }
 
@@ -199,7 +202,10 @@ export class ReportsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                await this.sendMailReportDeleted(kysoReportsDeleteEvent, email)
+                const user: User | null = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (user) {
+                    await this.sendMailReportDeleted(kysoReportsDeleteEvent, user)
+                }
             }
         } else {
             const users: User[] = await this.db
@@ -213,7 +219,7 @@ export class ReportsController {
             for (const user of users) {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'deleted_report', organization.id, team.id)
                 if (sendNotification) {
-                    await this.sendMailReportDeleted(kysoReportsDeleteEvent, user.email)
+                    await this.sendMailReportDeleted(kysoReportsDeleteEvent, user)
                 }
             }
         }

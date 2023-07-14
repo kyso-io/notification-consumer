@@ -98,8 +98,8 @@
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
                                                                                                 {{requesterUser.display_name}}
-                                                                                                is requesting access to
-                                                                                                {{team.display_name}}
+                                                                                                is requesting access to 
+                                                                                                {{team.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -122,53 +122,43 @@
                                                                                                 Hi
                                                                                                 {{admin.display_name}},
                                                                                                 <br /><br />
-
-                                                                                                The user
                                                                                                 {{requesterUser.display_name}}
-                                                                                                has requested access to the channel
+                                                                                                has requested access to the
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>, that belong to the organization
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                <br /><br />
-
-                                                                                                Please, as channel administrator, take action and choose one of the following options:
+                                                                                                >{{team.display_name}}</a>.
+                                                                                                As a Channel Admin, please select one of the options below:
 
                                                                                                 <div id='buttons'>
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_READER'
                                                                                                         target='_blank'
                                                                                                         class='btn kyso'
-                                                                                                    >Accept as a READER</a>
+                                                                                                    >Accept as a Reader</a>
+                                                                                                    <br />
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_CONTRIBUTOR'
                                                                                                         target='_blank'
                                                                                                         class='btn kyso'
-                                                                                                    >Accept as a CONTRIBUTOR</a>
+                                                                                                    >Accept as a Contributor</a>
+                                                                                                    <br />
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/teams/{{team.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/REJECTED'
                                                                                                         target='_blank'
                                                                                                         class='btn red'
-                                                                                                    >REJECT</a>
+                                                                                                    >Reject</a>
                                                                                                 </div>
 
-                                                                                                <div style='color: darkred; font-weight: 900; margin-bottom: 10px'>IMPORTANT: Accepting the request
-                                                                                                    implies the addition of
-                                                                                                    {{requesterUser.display_name}}
-                                                                                                    as member of the organization
-                                                                                                    {{organization.display_name}}
-                                                                                                    with the role READER</div>
+                                                                                                <br /><br />
 
-                                                                                                Remember that adding
-                                                                                                {{requesterUser.display_name}}
-                                                                                                to your organization will give her/him access to all the
-                                                                                                <b>protected channels</b>
-                                                                                                of your organizations.<br /><br />
-
-                                                                                                If you want to learn more about the permission system at Kyso, please read the
-                                                                                                <a href='https://docs.kyso.io/settings-and-administration/permissions-system' target='_blank'>docs</a>
-                                                                                                or ask for help to
-                                                                                                <a href='mailto:support@kyso.io'>support@kyso.io</a>
+                                                                                                If you want to learn more about Kyso's permissions system, please check out
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='https://docs.kyso.io/settings-and-administration/permissions-system' target='_blank'
+                                                                                                >
+                                                                                                    the docs.
+                                                                                                </a>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

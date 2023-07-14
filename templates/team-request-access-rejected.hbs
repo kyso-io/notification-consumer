@@ -97,9 +97,9 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                Your access request to
+                                                                                                Your request to access
                                                                                                 {{team.display_name}}
-                                                                                                has ben rejected
+                                                                                                was rejected.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -123,17 +123,24 @@
                                                                                                 {{requesterUser.display_name}},
                                                                                                 <br /><br />
 
-                                                                                                We are sorry to say that the administrator
-                                                                                                {{rejecterUser.display_name}}
-                                                                                                rejected your access request to the channel to the channel
+                                                                                                Your access request to 
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>, that belong to the organization
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
+                                                                                                >
+                                                                                                    {{team.display_name}}
+                                                                                                </a> was rejected by 
+                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{rejecterUser.username}}'
+                                                                                                >
+                                                                                                    {{rejecterUser.display_name}}.
+                                                                                                </a>
+                                                                                                Please contact them for further information.
                                                                                                 <br /><br />
 
-                                                                                                All the best,<br />
-                                                                                                Kyso
+                                                                                                Best,<br />
+                                                                                                The Kyso Team.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

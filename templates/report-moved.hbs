@@ -110,32 +110,33 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                The report titled
+                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
+                                                                                                </a>
+                                                                                                moved
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{targetOrganization.sluglified_name}}/{{targetTeam.sluglified_name}}/{{report.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                 >{{report.title}}</a>
-                                                                                                was just moved from
-                                                                                                <a
-                                                                                                    href='{{frontendUrl}}/{{sourceOrganization.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
-                                                                                                >{{sourceOrganization.display_name}}</a>
-                                                                                                organization under
-                                                                                                <a
-                                                                                                    href='{{frontendUrl}}/{{sourceOrganization.sluglified_name}}/{{sourceTeam.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
-                                                                                                >{{sourceTeam.display_name}}</a>
-                                                                                                channel to
-                                                                                                <a
-                                                                                                    href='{{frontendUrl}}/{{targetOrganization.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
-                                                                                                >{{targetOrganization.display_name}}</a>
-                                                                                                organization under
+                                                                                                from
+                                                                                                <b>{{sourceOrganization.display_name}}</b>
+                                                                                                to the 
                                                                                                 <a
                                                                                                     href='{{frontendUrl}}/{{targetOrganization.sluglified_name}}/{{targetTeam.sluglified_name}}'
-                                                                                                    style='font-weight: bold'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                 >{{targetTeam.display_name}}</a>
-                                                                                                channel.<br /><br />
-                                                                                                If you have any feedback or questions for the authors, just make a comment on the report!
+                                                                                                in
+                                                                                                <a
+                                                                                                    href='{{frontendUrl}}/{{targetOrganization.sluglified_name}}'
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                >{{targetOrganization.display_name}}.</a>
+                                                                                                <br /><br />
+                                                                                                Go check it out! If you have any questions about the change, reach out to 
+                                                                                                <a
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
+                                                                                            </a>
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

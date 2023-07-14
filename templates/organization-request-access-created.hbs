@@ -123,42 +123,46 @@
                                                                                                 {{admin.display_name}},
                                                                                                 <br /><br />
 
-                                                                                                The user
                                                                                                 {{requesterUser.display_name}}
-                                                                                                has requested access to the organization
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>.
+                                                                                                has requested access to
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>.
                                                                                                 <br /><br />
 
-                                                                                                Please, as organization administrator, take action and choose one of the following options:
+                                                                                                As an Organisation Admin, please select one of the options below:
 
                                                                                                 <div id='buttons'>
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/organizations/{{organization.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_READER'
                                                                                                         target='_blank'
                                                                                                         class='btn kyso'
-                                                                                                    >Accept as a READER</a>
+                                                                                                    >Accept as a Reader</a>
+                                                                                                    </br>
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/organizations/{{organization.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/ACCEPTED_AS_CONTRIBUTOR'
                                                                                                         target='_blank'
                                                                                                         class='btn kyso'
-                                                                                                    >Accept as a CONTRIBUTOR</a>
+                                                                                                    >Accept as a Contributor</a>
+                                                                                                    </br>
                                                                                                     <a
                                                                                                         href='{{frontendUrl}}/api/v1/organizations/{{organization.id}}/request-access/{{request.id}}/{{request.secret}}/{{admin.id}}/REJECTED'
                                                                                                         target='_blank'
                                                                                                         class='btn red'
-                                                                                                    >REJECT</a>
+                                                                                                    >Reject</a>
                                                                                                 </div>
 
-                                                                                                Remember that adding
+                                                                                                Remember that by adding 
                                                                                                 {{requesterUser.display_name}}
-                                                                                                to your organization will give her/him access to all the
+                                                                                                to your organisation, you are giving them access to all
                                                                                                 <b>protected channels</b>
-                                                                                                of your organizations.<br /><br />
+                                                                                                within <b>{{organization.display_name}}</b>
+                                                                                                <br /><br />
 
-                                                                                                If you want to learn more about the permission system at Kyso, please read the
-                                                                                                <a href='https://docs.kyso.io/settings-and-administration/permissions-system' target='_blank'>docs</a>
-                                                                                                or ask for help to
-                                                                                                <a href='mailto:support@kyso.io'>support@kyso.io</a>
+                                                                                                If you want to learn more about Kyso's permissions system, please check out
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='https://docs.kyso.io/settings-and-administration/permissions-system' target='_blank'>the docs</a>.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

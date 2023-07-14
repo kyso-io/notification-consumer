@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                New role in
-                                                                                                {{organization.display_name}}
-                                                                                                organization
+                                                                                                Your user role has been changed in 
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,13 +113,37 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hi
+                                                                                                Hello
                                                                                                 {{user.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently your role in
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization has changed.
-                                                                                                <strong>{{text}}</strong>
+                                                                                                <div class="entry">
+                                                                                                {{#if userCreatingAction}}
+                                                                                                {{userCreatingAction.display_name}}
+                                                                                                 just changed your user role in
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
+                                                                                                from
+                                                                                                <strong>{{previousRole}}</strong> to <strong>{{newRole}}.</strong>
+                                                                                                <br /><br />
+                                                                                                If this change is expected, you can ignore this email. If not, please contact 
+                                                                                                <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
+                                                                                                </a>
+                                                                                                {{else}}
+                                                                                                your user role in
+                                                                                                <a 
+                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
+                                                                                                from
+                                                                                                <strong>{{previousRole}}</strong> to <strong>{{newRole}}.</strong>
+                                                                                                {{/if}}
+                                                                                                </div>
+                                                                                                <br /><br />
+                                                                                                Cheers,
+                                                                                                <br />
+                                                                                                The Kyso Team!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

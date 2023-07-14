@@ -91,7 +91,7 @@
                                                                                             style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
                                                                                             valign='top'
                                                                                         >
-                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>A report was deleted to your account!</a>
+                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>Report deleted!</a>
                                                                                         </td>
                                                                                     </tr>
                                                                                     <tr style='border-collapse:collapse;'>
@@ -110,14 +110,33 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                The report titled
+                                                                                                Hi {{userReceivingAction.display_name}},
+                                                                                                <br /><br />
                                                                                                 <strong>{{report.title}}</strong>
-                                                                                                was just deleted in
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                under
+                                                                                                was just deleted from the
                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}'
-                                                                                                >{{team.display_name}}</a>.<br /><br />
+                                                                                                >
+                                                                                                    {{team.display_name}}
+                                                                                                </a>
+                                                                                                channel in 
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                >
+                                                                                                        {{organization.display_name}}.
+                                                                                                </a>
+                                                                                               <br /><br />
+
+                                                                                               Please reach out to 
+                                                                                                <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >
+                                                                                                    {{userCreatingAction.display_name}}
+                                                                                                </a>
+                                                                                                if this was a mistake.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

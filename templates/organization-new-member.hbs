@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                New member at
-                                                                                                {{organization.display_name}}
-                                                                                                organization
+                                                                                                New member added to
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -114,13 +113,20 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello 👋,
+                                                                                                Hello {{admin.display_name}},
                                                                                                 <br /><br />
                                                                                                 {{addedUser.display_name}}
-                                                                                                was added to
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization.
-                                                                                                <b>{{role}}</b>
+                                                                                                was just added to
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                >
+                                                                                                {{organization.display_name}}
+                                                                                                </a>
+                                                                                                as a
+                                                                                                <b>{{role}}.</b>
+                                                                                                <br></br>
+                                                                                                Help them get started by sharing useful content or linking them to an interesting report!
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>

@@ -92,9 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                You were added to
-                                                                                                {{organization.display_name}}
-                                                                                                organization
+                                                                                                You were added to 
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -117,10 +116,27 @@
                                                                                                 Hi
                                                                                                 {{addedUser.display_name}},
                                                                                                 <br /><br />
-                                                                                                Recently you were added to the
-                                                                                                <a href='{{frontendUrl}}/{{organization.sluglified_name}}'>{{organization.display_name}}</a>
-                                                                                                organization.
-                                                                                                <strong>{{text}}</strong>
+                                                                                                You were just added to 
+                                                                                                <a 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                                >
+                                                                                                    {{organization.display_name}}
+                                                                                                </a>
+                                                                                                {{#if userCreatingAction}}
+                                                                                                by
+                                                                                                 <a
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
+                                                                                                </a>
+                                                                                                {{/if}}
+                                                                                                .
+
+                                                                                                 Go check out some reports!
+                                                                                                 <br /><br />
+                                                                                                Cheers,
+                                                                                                 <br />
+                                                                                                The Kyso Team
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
