@@ -49,9 +49,9 @@ if (process.env.DOTENV_FILE) {
                     transport: {
                         host: mailTransport.value,
                         port: +mailPort.value,
-                        secure: true,
-                        ignoreTLS: false, 
-                        requireTLS: true,
+                        secure: false,
+                        ignoreTLS: true, 
+                        requireTLS: false,
                         auth: {
                             user: mailUser.value, 
                             pass: mailPassword.value                            
