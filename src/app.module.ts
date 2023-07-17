@@ -3,7 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { Db } from 'mongodb'
+import { Db, Logger } from 'mongodb'
 import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -41,8 +41,23 @@ if (process.env.DOTENV_FILE) {
             useFactory: async (db: Db) => {
                 const mailTransport: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_TRANSPORT })) as any
                 const mailFrom: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any
+                const mailUser: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_USER })) as any
+                const mailPassword: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_PASSWORD })) as any
+                const mailPort: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_PORT })) as any
+
                 return {
-                    transport: mailTransport.value,
+                    transport: {
+                        host: mailTransport.value,
+                        port: +mailPort.value,
+                        secure: true,
+                        ignoreTLS: true, 
+                        requireTLS: false,
+                        auth: {
+                            user: mailUser.value, 
+                            pass: mailPassword.value                            
+                        },
+                        debug: true
+                    },
                     defaults: {
                         from: mailFrom.value,
                     },
