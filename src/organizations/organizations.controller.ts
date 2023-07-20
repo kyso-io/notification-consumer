@@ -314,6 +314,7 @@ export class OrganizationsController {
                 },
             })
             .toArray()
+        const kysoSetting: KysoSetting = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.FRONTEND_URL })) as any
         for (const organizationUser of organizationUsers) {
             const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(organizationUser.id, 'organization_removed', organization.id)
             if (!sendNotification) {
@@ -325,6 +326,7 @@ export class OrganizationsController {
                     subject: `Organization ${organization.display_name} was removed`,
                     template: 'organization-deleted',
                     context: {
+                        frontendUrl: kysoSetting.value,
                         user: organizationUser,
                         userCreatingAction: user,
                         organization,
