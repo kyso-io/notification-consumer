@@ -266,7 +266,8 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                        previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                        newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
                     },
                 })
                 .then((messageInfo) => {
