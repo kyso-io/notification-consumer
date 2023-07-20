@@ -11,17 +11,17 @@ export class UtilsService {
     ) {}
 
     public static getDisplayTextByChannelRoleName(role: string): string {
-        if(!role) {
-            return "";
+        if (!role) {
+            return ''
         }
 
         switch (role.toLowerCase()) {
             case 'team-admin':
-                return `Can admin this channel.`
+                return `Can administer this channel's settings`
             case 'team-contributor':
-                return `Can contribute creating reports in this channel.`
+                return `Can create content within this channel`
             case 'team-reader':
-                return 'Can read and comment all reports in this channel.'
+                return 'Can read, create comments & tasks on reports in this channel'
             default:
                 return ''
         }
@@ -29,18 +29,18 @@ export class UtilsService {
 
     public static getDisplayTextByOrganizationRoleName(role: string): string {
         if (!role) {
-            return "";
+            return ''
         }
 
         switch (role.toLowerCase()) {
             case 'organization-admin':
-                return 'Can admin the organization.'
+                return 'Full control of everything in the organization'
             case 'team-admin':
-                return `Can admin all public and protected channels of the organization.`
+                return `Can administer all channels within this organization`
             case 'team-contributor':
-                return `Can contribute creating reports across all public and protected channels of the organization.`
+                return `Can create content within this organization`
             case 'team-reader':
-                return 'Can read and comment across all public and protected channels of the organization.'
+                return 'Can read, create comments & tasks on reports in this organization'
             default:
                 return ''
         }

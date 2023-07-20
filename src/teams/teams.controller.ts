@@ -1,5 +1,7 @@
 import {
     KysoEventEnum,
+    KysoSetting,
+    KysoSettingsEnum,
     KysoTeamRequestAccessCreatedEvent,
     KysoTeamsAddMemberEvent,
     KysoTeamsCreateEvent,
@@ -89,7 +91,6 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: UtilsService.getDisplayTextByChannelRoleName(roles[0]),
                     },
                 })
                 Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, TeamsController.name)
@@ -266,7 +267,8 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                        previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                        newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
                     },
                 })
                 .then((messageInfo) => {
@@ -324,6 +326,7 @@ export class TeamsController {
                 },
             })
             .toArray()
+        const kysoSetting: KysoSetting = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.FRONTEND_URL })) as any
         for (const teamUser of teamUsers) {
             const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(teamUser.id, 'channel_removed', organization.id, team.id)
             if (!sendNotification) {
@@ -339,6 +342,7 @@ export class TeamsController {
                         userCreatingAction: user,
                         organization,
                         team,
+                        frontendUrl: kysoSetting.value,
                     },
                 })
                 Logger.log(`Team removed mail sent to ${teamUser.email}`, TeamsController.name)
