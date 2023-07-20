@@ -38,7 +38,6 @@ export class OrganizationsController {
                     userCreatingAction: kysoOrganizationsAddMemberEvent.userCreatingAction,
                     addedUser: kysoOrganizationsAddMemberEvent.userReceivingAction,
                     organization: kysoOrganizationsAddMemberEvent.organization,
-                    text: UtilsService.getDisplayTextByOrganizationRoleName(kysoOrganizationsAddMemberEvent.newRole),
                     frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
                 },
             })

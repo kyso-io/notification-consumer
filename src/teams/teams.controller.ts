@@ -89,7 +89,6 @@ export class TeamsController {
                         organization,
                         team,
                         frontendUrl,
-                        text: UtilsService.getDisplayTextByChannelRoleName(roles[0]),
                     },
                 })
                 Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, TeamsController.name)
