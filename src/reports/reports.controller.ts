@@ -131,6 +131,7 @@ export class ReportsController {
                 subject: `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
                 template: 'report-updated',
                 context: {
+                    userCreatingAction: kysoReportsNewVersionEvent.user,
                     organization: kysoReportsNewVersionEvent.organization,
                     team: kysoReportsNewVersionEvent.team,
                     report: kysoReportsNewVersionEvent.report,
