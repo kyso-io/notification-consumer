@@ -196,7 +196,7 @@ export class OrganizationsController {
                 .sendMail({
                     to: userReceivingAction.email,
                     subject: `Your role in ${organization.display_name} organization has changed`,
-                    template: 'organization-user-role-changed',
+                    template: 'organization-your-role-changed',
                     context: {
                         userCreatingAction,
                         user: userReceivingAction,
@@ -227,7 +227,7 @@ export class OrganizationsController {
                     .sendMail({
                         to: u.email,
                         subject: `A member's role has changed in ${organization.display_name} organization`,
-                        template: 'organization-member-role-changed',
+                        template: 'organization-user-role-changed',
                         context: {
                             admin: u,
                             user: userReceivingAction,
@@ -244,6 +244,33 @@ export class OrganizationsController {
                         Logger.error(`An error occurred sending organization role changed mail to ${u.email}`, err, OrganizationsController.name)
                     })
             }
+        } else {
+            const users: User[] = await this.getOrganizationAdmins(organization)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_organization', organization.id)
+                if (!sendNotification) {
+                    return
+                }
+                try {
+                    const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        to: u.email,
+                        subject: `A member's role has changed in ${organization.display_name} organization`,
+                        template: 'organization-member-role-changed',
+                        context: {
+                            admin: u,
+                            user: userReceivingAction,
+                            organization,
+                            frontendUrl,
+                            previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
+                            newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
+                        },
+                    })
+                    Logger.log(`Organization role changed mail ${sentMessageInfo.messageId} sent to ${u.email}`, OrganizationsController.name)
+                    await this.utilsService.sleep(200)
+                } catch (e) {
+                    Logger.error(`An error occurred sending organization role changed mail to ${u.email}`, e, OrganizationsController.name)
+                }
+            }
         }
     }
 
@@ -258,25 +285,12 @@ export class OrganizationsController {
         Logger.log(KysoEventEnum.ORGANIZATIONS_UPDATE_CENTRALIZED_COMMUNICATIONS, OrganizationsController.name)
         Logger.debug(kysoOrganizationsUpdateEvent, OrganizationsController.name)
         const { user, organization } = kysoOrganizationsUpdateEvent
-        const organizationMembersJoin: OrganizationMemberJoin[] = (await this.db
-            .collection(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
-            .find({
-                organization_id: organization.id,
-                role_names: { $in: ['organization-admin'] },
-            })
-            .toArray()) as any[]
-        if (organizationMembersJoin.length === 0) {
-            return
-        }
         if (organization.options.notifications.emails.length === 0) {
             return
         }
+        const adminUsers: User[] = await this.getOrganizationAdmins(organization)
         const emailsNotifications: string = organization.options.notifications.emails.join(', ')
         const kysoSetting: KysoSetting = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.FRONTEND_URL })) as any
-        const adminUsers: User[] = (await this.db
-            .collection(Constants.DATABASE_COLLECTION_USER)
-            .find({ id: { $in: organizationMembersJoin.map((om: OrganizationMemberJoin) => om.member_id) } })
-            .toArray()) as any[]
         for (const adminUser of adminUsers) {
             this.mailerService
                 .sendMail({
@@ -398,6 +412,22 @@ export class OrganizationsController {
         const organizationMembers: OrganizationMemberJoin[] = await this.db
             .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
             .find({ organization_id: organization.id })
+            .toArray()
+        if (organizationMembers.length === 0) {
+            return []
+        }
+        return this.db
+            .collection<User>(Constants.DATABASE_COLLECTION_USER)
+            .find({
+                id: { $in: organizationMembers.map((x: OrganizationMemberJoin) => x.member_id) },
+            })
+            .toArray()
+    }
+
+    private async getOrganizationAdmins(organization: Organization): Promise<User[]> {
+        const organizationMembers: OrganizationMemberJoin[] = await this.db
+            .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
+            .find({ organization_id: organization.id, role_names: { $in: ['organization-admin'] } })
             .toArray()
         if (organizationMembers.length === 0) {
             return []
