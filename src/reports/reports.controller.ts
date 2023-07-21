@@ -177,7 +177,7 @@ export class ReportsController {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
                 to: userReceivingAction.email,
                 subject: `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
-                template: 'report-deleted',
+                template: 'report-delete',
                 context: {
                     userReceivingAction: userReceivingAction,
                     userCreatingAction: kysoReportsDeleteEvent.user,
@@ -217,7 +217,7 @@ export class ReportsController {
                 })
                 .toArray()
             for (const user of users) {
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'deleted_report', organization.id, team.id)
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_removed', organization.id, team.id)
                 if (sendNotification) {
                     await this.sendMailReportDeleted(kysoReportsDeleteEvent, user)
                 }
