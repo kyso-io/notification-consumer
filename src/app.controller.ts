@@ -11,7 +11,7 @@ export class AppController {
         return this.appService.getHello()
     }
 
-    /*
+    
     @Get("/test") 
     test() {
         this.mailerService
@@ -27,5 +27,5 @@ export class AppController {
             .catch((err) => {
                 Logger.error(`Error sending mail`, err)
             })
-    }*/
+    }
 }

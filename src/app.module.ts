@@ -56,7 +56,7 @@ if (process.env.DOTENV_FILE) {
 
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
-                            finalMailTransport["SES"] = new AWS.SES(JSON.parse(mailConfig.vendor.payload))
+                            finalMailTransport["SES"] = new AWS.SES(mailConfig.vendor.payload)
                             break;
                         default:
                             break;
@@ -69,13 +69,13 @@ if (process.env.DOTENV_FILE) {
                     defaults: {
                         from: mailFrom.value,
                     },
-                    template: {
+                    /*template: {
                         dir: join(__dirname, '../templates'),
                         adapter: new HandlebarsAdapter(),
                         options: {
                             strict: true,
                         },
-                    },
+                    },*/
                 }
             },
         }),

@@ -25,7 +25,7 @@ async function bootstrap() {
         { inheritAppConfig: true },
     )
     await app.startAllMicroservices()
-    // await app.listen(5555)
+    await app.listen(5555)
 }
 
 bootstrap()
