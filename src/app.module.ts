@@ -62,7 +62,8 @@ if (process.env.DOTENV_FILE) {
                                         region: mailConfig.vendor.payload.region,
                                         accessKeyId: mailConfig.vendor.payload.accessKeyId,
                                         secretAccessKey: mailConfig.vendor.payload.secretAccessKey
-                                    })
+                                    }),
+                                    AWS
                                 }
                             }
                             break;
