@@ -91,13 +91,30 @@ export class CommentsController {
             for (const email of emails) {
                 if (report) {
                     await this.sendMailNewCommentInReport(kysoCommentsCreateEvent, email)
+                    await this.utilsService.sleep(200)
                 }
             }
         } else {
-            const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_comment_in_report', organization.id, team.id)
-            if (sendNotification) {
-                if (report) {
-                    this.sendMailNewCommentInReport(kysoCommentsCreateEvent, user.email)
+            const users: User[] = [user]
+            if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
+                const authors: User[] = await this.db
+                .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                .find({ id: { $in: report.author_ids } })
+                .toArray()
+                for (const author of authors) {
+                    const index: number = users.findIndex((u) => u.id === author.id)
+                    if (index === -1) {
+                        users.push(author)
+                    }
+                }
+            }
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_comment_in_report', organization.id, team.id)
+                if (sendNotification) {
+                    if (report) {
+                        this.sendMailNewCommentInReport(kysoCommentsCreateEvent, u.email)
+                        await this.utilsService.sleep(200)
+                    }
                 }
             }
         }
