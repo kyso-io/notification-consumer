@@ -4,6 +4,7 @@ import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
 import { Constants } from '../constants'
+import { UtilsService } from 'src/shared/utils.service'
 
 @Controller()
 export class UsersController {
@@ -11,6 +12,7 @@ export class UsersController {
         private readonly mailerService: MailerService,
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
+        private readonly utilsService: UtilsService
     ) {}
 
     @EventPattern(KysoEventEnum.USERS_CREATE)
@@ -21,6 +23,7 @@ export class UsersController {
         const { user } = kysoUsersCreateEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'Welcome to Kyso',
                 template: 'user-new',
@@ -50,6 +53,7 @@ export class UsersController {
         const { user, userVerification, frontendUrl } = kysoUsersVerificationEmailEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'Verify your account',
                 template: 'verify-email',
@@ -78,6 +82,7 @@ export class UsersController {
         const { user, userForgotPassword, frontendUrl } = kysoUsersRecoveryPasswordEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'Change password',
                 template: 'change-password',

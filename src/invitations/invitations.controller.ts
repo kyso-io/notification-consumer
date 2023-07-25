@@ -12,6 +12,7 @@ export class InvitationsController {
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
         private readonly mailerService: MailerService,
+        private readonly utilsService: UtilsService
     ) {}
 
     @EventPattern(KysoEventEnum.INVITATIONS_TEAM_CREATE)
@@ -22,6 +23,7 @@ export class InvitationsController {
         const { user, roles, organization, team, invitation, frontendUrl } = kysoInvitationsTeamCreateEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: invitation.email,
                 subject: `Kyso: New invitation to join into channel ${team.sluglified_name}`,
                 template: 'invitation-team',
