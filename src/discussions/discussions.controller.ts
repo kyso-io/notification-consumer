@@ -11,10 +11,12 @@ import {
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
+import { UtilsService } from 'src/shared/utils.service'
 
 @Controller()
 export class DiscussionsController {
-    constructor(private readonly mailerService: MailerService) {}
+    constructor(private readonly mailerService: MailerService,
+        private readonly utilsService: UtilsService) {}
 
     @EventPattern(KysoEventEnum.DISCUSSIONS_CREATE)
     async handleDiscussionsCreated(kysoDiscussionsCreateEvent: KysoDiscussionsCreateEvent) {
@@ -29,6 +31,7 @@ export class DiscussionsController {
 
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: `New discussion ${discussion.title} created`,
                 template: 'discussion-new',
@@ -61,6 +64,7 @@ export class DiscussionsController {
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: `You were assigned to the discussion ${discussion.title}`,
                 template: 'discussion-you-were-added-as-assignee',
@@ -87,6 +91,7 @@ export class DiscussionsController {
         const { to, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: `You were unassigned to the discussion ${discussion.title}`,
                 template: 'discussion-you-were-removed-as-assignee',
@@ -113,6 +118,7 @@ export class DiscussionsController {
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: `${assigneeUser.display_name} was assigned to the discussion ${discussion.title}`,
                 template: 'discussion-author-new-assignee',
@@ -140,6 +146,7 @@ export class DiscussionsController {
         const { to, assigneeUser, organization, team, discussion, frontendUrl } = kysoDiscussionsAssigneeEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: `${assigneeUser.display_name} was unassigned to the discussion ${discussion.title}`,
                 template: 'discussion-author-removed-assignee',
@@ -167,6 +174,7 @@ export class DiscussionsController {
         const { user, creator, organization, team, discussion, frontendUrl } = kysoDiscussionsNewMentionEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'You have been mentioned in a discussion',
                 template: 'discussion-mention',
@@ -194,6 +202,7 @@ export class DiscussionsController {
         const { to, creator, users, organization, team, discussion, frontendUrl } = kysoDiscussionsMentionsEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to,
                 subject: 'Mentions in a discussion',
                 template: 'discussion-mentions',

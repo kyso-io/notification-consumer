@@ -24,6 +24,7 @@ export class InlineCommentsController {
     private async sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceiveEmail.email,
                 subject: `New task reply in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'inline-comment-reply',
@@ -105,6 +106,7 @@ export class InlineCommentsController {
     private async sendMailNewInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceiveEmail.email,
                 subject: `New task in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'inline-comment-new',
@@ -169,6 +171,7 @@ export class InlineCommentsController {
     private async sendMailInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceiveEmail.email,
                 subject: `Task edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-updated',
@@ -204,6 +207,7 @@ export class InlineCommentsController {
                 }
             }
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Task status changed in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-status-changed',
@@ -226,6 +230,7 @@ export class InlineCommentsController {
     private async sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceiveEmail.email,
                 subject: `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'inline-comment-reply-updated',
@@ -365,6 +370,7 @@ export class InlineCommentsController {
     private async sendMailDeleteInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Deleted task in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'inline-comment-deleted',
@@ -386,6 +392,7 @@ export class InlineCommentsController {
     private async sendMailDeleteReplyInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, parentInlineComment: InlineComment, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Deleted task reply in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'inline-comment-reply-deleted',

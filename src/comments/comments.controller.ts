@@ -19,6 +19,7 @@ export class CommentsController {
     private async sendMailReplyCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `New reply to your comment on report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'comment-reply',
@@ -76,6 +77,7 @@ export class CommentsController {
     private async sendMailNewCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `New comment in report ${kysoCommentsCreateEvent.report.title}`,
                 template: 'comment-new',
@@ -137,6 +139,7 @@ export class CommentsController {
     private async sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
         try {
             const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Comment edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'comment-updated',
@@ -198,6 +201,7 @@ export class CommentsController {
     private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, userReceiveEmail: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceiveEmail.email,
                 subject: `Deleted a comment in report ${kysoCommentsDeleteEvent.report.title}`,
                 template: 'comment-deleted',

@@ -53,6 +53,7 @@ export class TeamsController {
             if (sendNotification) {
                 try {
                     const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: user.email,
                         subject: `New ${kysoTeamsCreateEvent.team.display_name} channel`,
                         template: 'new-team',
@@ -82,6 +83,7 @@ export class TeamsController {
         if (sendNotification) {
             try {
                 const messageInfo = await this.mailerService.sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: userReceivingAction.email,
                     subject: `You were added to ${team.display_name} channel`,
                     template: 'team-you-were-added',
@@ -111,6 +113,7 @@ export class TeamsController {
                 }
                 try {
                     const messageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: user.email,
                         subject: `A member was added to ${team.display_name} channel`,
                         template: 'team-new-member',
@@ -141,6 +144,7 @@ export class TeamsController {
                 }
                 try {
                     const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: u.email,
                         subject: `A member was added to ${team.display_name} channel`,
                         template: 'team-new-member',
@@ -169,6 +173,7 @@ export class TeamsController {
         const { userCreatingAction, user, organization, team, frontendUrl } = kysoTeamsRemoveMemberEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: `You were removed from ${team.display_name} channel`,
                 template: 'team-you-were-removed',
@@ -198,6 +203,7 @@ export class TeamsController {
                 }
                 try {
                     const messageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: userEmail.email,
                         subject: `A member was removed from ${team.display_name} channel`,
                         template: 'team-removed-member',
@@ -228,6 +234,7 @@ export class TeamsController {
                 }
                 try {
                     const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: u.email,
                         subject: `A member was removed from ${team.display_name} channel`,
                         template: 'team-removed-member',
@@ -258,6 +265,7 @@ export class TeamsController {
         if (sendNotification) {
             this.mailerService
                 .sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: userReceivingAction.email,
                     subject: `Your role in ${team.display_name} channel has changed`,
                     template: 'team-user-role-changed',
@@ -290,6 +298,7 @@ export class TeamsController {
                 }
                 try {
                     const messageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: user.email,
                         subject: `A member's role has changed in ${team.display_name} channel`,
                         template: 'team-member-role-changed',
@@ -334,6 +343,7 @@ export class TeamsController {
             }
             try {
                 await this.mailerService.sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: teamUser.email,
                     subject: `Channel ${team.display_name} was removed`,
                     template: 'team-deleted',
@@ -364,6 +374,7 @@ export class TeamsController {
             if (admin) {
                 try {
                     await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: admin.email,
                         subject: `${requesterUser.display_name} requested access for team ${team.display_name}`,
                         template: 'team-request-access-created',
@@ -395,6 +406,7 @@ export class TeamsController {
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.mailerService.sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: requesterUser.email,
                     subject: `Your access request to team ${team.display_name} has been rejected`,
                     template: 'team-request-access-rejected',

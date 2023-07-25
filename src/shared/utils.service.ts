@@ -1,5 +1,5 @@
-import { UserNotificationsSettings } from '@kyso-io/kyso-model'
-import { Inject, Injectable } from '@nestjs/common'
+import { UserNotificationsSettings, KysoSetting, KysoSettingsEnum } from '@kyso-io/kyso-model'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { Db } from 'mongodb'
 import { Constants } from '../constants'
 
@@ -9,6 +9,22 @@ export class UtilsService {
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
     ) {}
+
+    private mailFrom: string = null;
+
+    public async getMailFrom(): Promise<string> {
+        try {
+            if(!this.mailFrom) {
+                const dbValue: KysoSetting | null = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any;
+                this.mailFrom = dbValue.value;
+
+                return this.mailFrom;
+            }
+        } catch(ex) {
+            Logger.error("Error getting mail from", ex);
+            return "noreply@kyso.io";
+        }
+    }
 
     public static getDisplayTextByChannelRoleName(role: string): string {
         if (!role) {

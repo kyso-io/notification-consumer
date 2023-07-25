@@ -29,6 +29,7 @@ export class ReportsController {
     private async sendMailNewReport(kysoReportsCreateEvent: KysoReportsCreateEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `New report '${kysoReportsCreateEvent.report.title}' published`,
                 template: 'report-new',
@@ -78,6 +79,7 @@ export class ReportsController {
     private async sendMailReportMoved(kysoReportsMoveEvent: KysoReportsMoveEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Report '${kysoReportsMoveEvent.report.title}' moved`,
                 template: 'report-moved',
@@ -127,6 +129,7 @@ export class ReportsController {
     private async sendMailNewReportVersion(kysoReportsNewVersionEvent: KysoReportsNewVersionEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
                 template: 'report-updated',
@@ -176,6 +179,7 @@ export class ReportsController {
     private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, userReceivingAction: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: userReceivingAction.email,
                 subject: `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
                 template: 'report-delete',
@@ -234,6 +238,7 @@ export class ReportsController {
         const { user } = kysoReportsCreateEvent
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'Error creating report',
                 template: 'report-error-permissions',
@@ -257,6 +262,7 @@ export class ReportsController {
         }
         this.mailerService
             .sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: 'You have been mentioned in a report',
                 template: 'report-mention',
@@ -279,6 +285,7 @@ export class ReportsController {
     private async sendMailMentionsInReport(kysoReportsMentionsEvent: KysoReportsMentionsEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: email,
                 subject: 'Mentions in a report',
                 template: 'report-mentions',

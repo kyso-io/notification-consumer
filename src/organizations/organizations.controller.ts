@@ -31,6 +31,7 @@ export class OrganizationsController {
     private async sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: kysoOrganizationsAddMemberEvent.userReceivingAction.email,
                 subject: `You are now member of ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
                 template: 'organization-you-were-added',
@@ -50,6 +51,7 @@ export class OrganizationsController {
     private async sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent, user: User): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: user.email,
                 subject: `New member at ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
                 template: 'organization-new-member',
@@ -104,6 +106,7 @@ export class OrganizationsController {
     private async sendMailMemberRemovedFromOrganization(kysoOrganizationsRemoveMemberEvent: KysoOrganizationsRemoveMemberEvent): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: await this.utilsService.getMailFrom(),
                 to: kysoOrganizationsRemoveMemberEvent.user.email,
                 subject: `You were removed from ${kysoOrganizationsRemoveMemberEvent.organization.display_name} organization`,
                 template: 'organization-you-were-removed',
@@ -138,6 +141,7 @@ export class OrganizationsController {
                 }
                 this.mailerService
                     .sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: u.email,
                         subject: `A member was removed from ${organization.display_name} organization`,
                         template: 'organization-removed-member',
@@ -165,6 +169,7 @@ export class OrganizationsController {
                 }
                 try {
                     const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: u.email,
                         subject: `A member was removed from ${organization.display_name} organization`,
                         template: 'organization-removed-member',
@@ -194,6 +199,7 @@ export class OrganizationsController {
         if (sendNotification) {
             this.mailerService
                 .sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: userReceivingAction.email,
                     subject: `Your role in ${organization.display_name} organization has changed`,
                     template: 'organization-user-role-changed',
@@ -225,6 +231,7 @@ export class OrganizationsController {
                 }
                 this.mailerService
                     .sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: u.email,
                         subject: `A member's role has changed in ${organization.display_name} organization`,
                         template: 'organization-member-role-changed',
@@ -280,6 +287,7 @@ export class OrganizationsController {
         for (const adminUser of adminUsers) {
             this.mailerService
                 .sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: adminUser.email,
                     subject: `Centralized notifications were updated for ${organization.display_name} organization`,
                     template: 'organization-centralized-notifications',
@@ -321,6 +329,7 @@ export class OrganizationsController {
             }
             try {
                 await this.mailerService.sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: organizationUser.email,
                     subject: `Organization ${organization.display_name} was removed`,
                     template: 'organization-deleted',
@@ -347,6 +356,7 @@ export class OrganizationsController {
             if (admin) {
                 try {
                     await this.mailerService.sendMail({
+                        from: await this.utilsService.getMailFrom(),
                         to: admin.email,
                         subject: `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
                         template: 'organization-request-access-created',
@@ -376,6 +386,7 @@ export class OrganizationsController {
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.mailerService.sendMail({
+                    from: await this.utilsService.getMailFrom(),
                     to: requesterUser.email,
                     subject: `Your access request to organization ${organization.display_name} has been rejected`,
                     template: 'organization-request-access-rejected',
