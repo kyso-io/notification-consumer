@@ -47,7 +47,7 @@ export class InlineCommentsController {
     async handleReplyToInlineComment(kysoCommentsCreateEvent: KysoCommentsCreateEvent) {
         Logger.log(KysoEventEnum.INLINE_COMMENTS_REPLY, InlineCommentsController.name)
         Logger.debug(kysoCommentsCreateEvent, InlineCommentsController.name)
-        const { organization, report, team } = kysoCommentsCreateEvent
+        const { organization, report, team, user } = kysoCommentsCreateEvent
         if (!report) {
             Logger.error(`Inline comment ${kysoCommentsCreateEvent.comment.id} is a reply of a inline comment but the report does not exist`, InlineCommentsController.name)
             return
@@ -66,13 +66,13 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
-                if (user) {
-                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, user)
+                const u: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (u) {
+                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, u)
                 }
             }
         } else {
-            const users: User[] = []
+            const users: User[] = [user]
             const userParentInlineComment: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: parentInlineComment.user_id })
             if (!userParentInlineComment) {
                 Logger.error(`Inline comment ${inlineComment.id} is a reply of a inline comment but the parent inline comment user does not exist`, InlineCommentsController.name)
@@ -86,17 +86,17 @@ export class InlineCommentsController {
                     .collection<User>(Constants.DATABASE_COLLECTION_USER)
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
-                for (const u of reportAuthors) {
-                    const index: number = users.findIndex((user: User) => user.id === u.id)
+                for (const reportAuthor of reportAuthors) {
+                    const index: number = users.findIndex((u: User) => u.id === reportAuthor.id)
                     if (index === -1) {
-                        users.push(u)
+                        users.push(reportAuthor)
                     }
                 }
             }
-            for (const user of users) {
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_task_reply', organization.id, team.id)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_task_reply', organization.id, team.id)
                 if (sendNotification) {
-                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, user)
+                    await this.sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent, parentInlineComment, u)
                 }
             }
         }
@@ -136,9 +136,9 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
-                if (user) {
-                    await this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, user)
+                const u: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (u) {
+                    await this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, u)
                 }
             }
         } else {
@@ -151,16 +151,16 @@ export class InlineCommentsController {
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
                 for (const u of reportAuthors) {
-                    const index: number = users.findIndex((user: User) => user.id === u.id)
+                    const index: number = users.findIndex((us: User) => us.id === u.id)
                     if (index === -1) {
                         users.push(u)
                     }
                 }
             }
-            for (const user of users) {
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_task', organization.id, team.id)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_task', organization.id, team.id)
                 if (sendNotification) {
-                    this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, user)
+                    this.sendMailNewInlineCommentInReport(kysoCommentsCreateEvent, u)
                 }
             }
         }
@@ -259,9 +259,9 @@ export class InlineCommentsController {
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
             for (const email of emails) {
-                const user: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
-                if (user) {
-                    await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, user)
+                const u: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
+                if (u) {
+                    await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, u)
                 }
             }
         } else {
@@ -279,7 +279,7 @@ export class InlineCommentsController {
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
                 for (const u of reportAuthors) {
-                    const index: number = users.findIndex((user: User) => user.id === u.id)
+                    const index: number = users.findIndex((us: User) => us.id === u.id)
                     if (index === -1) {
                         users.push(u)
                     }
@@ -294,22 +294,22 @@ export class InlineCommentsController {
                 }
                 const userComment: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: parentInlineComment.user_id })
                 if (userComment) {
-                    const index: number = users.findIndex((user: User) => user.id === userComment.id)
+                    const index: number = users.findIndex((us: User) => us.id === userComment.id)
                     if (index === -1) {
                         users.push(userComment)
                     }
                 }
             }
-            for (const user of users) {
+            for (const u of users) {
                 if (parentInlineComment) {
-                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_reply_updated', organization.id, team.id)
+                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'task_reply_updated', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent, parentInlineComment, user)
+                        await this.sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent, parentInlineComment, u)
                     }
                 } else {
-                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_updated', organization.id, team.id)
+                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'task_updated', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, user)
+                        await this.sendMailInlineCommentUpdated(kysoCommentsUpdateEvent, u)
                     }
                 }
             }
@@ -347,16 +347,16 @@ export class InlineCommentsController {
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
                 for (const u of reportAuthors) {
-                    const index: number = users.findIndex((user: User) => user.id === u.id)
+                    const index: number = users.findIndex((us: User) => us.id === u.id)
                     if (index === -1) {
                         users.push(u)
                     }
                 }
             }
-            for (const user of users) {
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_status_changed', organization.id, team.id)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'task_status_changed', organization.id, team.id)
                 if (sendNotification) {
-                    await this.sendMailInlineCommentStatusChanged(kysoCommentsUpdateEvent, user.email)
+                    await this.sendMailInlineCommentStatusChanged(kysoCommentsUpdateEvent, u.email)
                 }
             }
         }
@@ -409,7 +409,7 @@ export class InlineCommentsController {
     async handleInlineCommentDeleted(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent) {
         Logger.log(KysoEventEnum.INLINE_COMMENTS_DELETE, InlineCommentsController.name)
         Logger.debug(kysoCommentsDeleteEvent, InlineCommentsController.name)
-        const { organization, team, report, comment } = kysoCommentsDeleteEvent
+        const { organization, team, report, comment, user } = kysoCommentsDeleteEvent
         const inlineComment: InlineComment = comment as any
         if (!report) {
             Logger.error(`Inline comment ${inlineComment.id} is a reply of a inline comment but the report does not exist`, InlineCommentsController.name)
@@ -428,17 +428,16 @@ export class InlineCommentsController {
                 Logger.error(`Inline comment ${inlineComment.id} is a reply of a inline comment but the parent inline comment user does not exist`, InlineCommentsController.name)
                 return
             }
-            users.push(userComment)
             if (report.author_ids.length > 0) {
                 // The authors of the report
                 const reportAuthors: User[] = await this.db
                     .collection<User>(Constants.DATABASE_COLLECTION_USER)
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
-                for (const u of reportAuthors) {
-                    const index: number = users.findIndex((user: User) => user.id === u.id)
+                for (const reportAuthor of reportAuthors) {
+                    const index: number = users.findIndex((u: User) => u.id === reportAuthor.id)
                     if (index === -1) {
-                        users.push(u)
+                        users.push(reportAuthor)
                     }
                 }
             }
@@ -449,17 +448,35 @@ export class InlineCommentsController {
                     Logger.error(`Inline comment ${inlineComment.id} is a reply of a inline comment but the parent inline comment does not exist`, InlineCommentsController.name)
                     return
                 }
+                const parentUserComment: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: parentInlineComment.user_id })
+                if (parentUserComment) {
+                    const index: number = users.findIndex((u: User) => u.id === parentUserComment.id)
+                    if (index === -1) {
+                        users.push(parentUserComment)
+                    }
+                }
+                if (userComment.id !== user.id) {
+                    // The reply owner gets an email if he is not the person who deletes it.
+                    const index: number = users.findIndex((u: User) => u.id === userComment.id)
+                    if (index === -1) {
+                        users.push(userComment)
+                    }
+                }
+            } else {
+                users.push(userComment)
             }
-            for (const user of users) {
+            for (const u of users) {
                 if (parentInlineComment) {
-                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_reply_removed', organization.id, team.id)
+                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'task_reply_removed', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailDeleteReplyInlineCommentInReport(kysoCommentsDeleteEvent, parentInlineComment, user.email)
+                        await this.sendMailDeleteReplyInlineCommentInReport(kysoCommentsDeleteEvent, parentInlineComment, u.email)
+                        await this.utilsService.sleep(2000)
                     }
                 } else {
-                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'task_removed', organization.id, team.id)
+                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'task_removed', organization.id, team.id)
                     if (sendNotification) {
-                        await this.sendMailDeleteInlineCommentInReport(kysoCommentsDeleteEvent, user.email)
+                        await this.sendMailDeleteInlineCommentInReport(kysoCommentsDeleteEvent, u.email)
+                        await this.utilsService.sleep(2000)
                     }
                 }
             }

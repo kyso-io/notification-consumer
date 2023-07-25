@@ -105,7 +105,7 @@ export class CommentsController {
             for (const email of emails) {
                 if (report) {
                     await this.sendMailNewCommentInReport(kysoCommentsCreateEvent, email)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 }
             }
         } else {
@@ -127,7 +127,7 @@ export class CommentsController {
                 if (sendNotification) {
                     if (report) {
                         this.sendMailNewCommentInReport(kysoCommentsCreateEvent, u.email)
-                        await this.utilsService.sleep(200)
+                        await this.utilsService.sleep(2000)
                     }
                 }
             }
@@ -166,7 +166,7 @@ export class CommentsController {
             for (const email of emails) {
                 if (report) {
                     await this.sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent, email)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 }
             }
         } else {
@@ -188,7 +188,7 @@ export class CommentsController {
                 if (sendNotification) {
                     if (report) {
                         this.sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent, u.email)
-                        await this.utilsService.sleep(200)
+                        await this.utilsService.sleep(2000)
                     }
                 }
             }
@@ -252,7 +252,7 @@ export class CommentsController {
                 if (sendNotification) {
                     if (report) {
                         this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, u)
-                        await this.utilsService.sleep(200)
+                        await this.utilsService.sleep(2000)
                     }
                 }
             }

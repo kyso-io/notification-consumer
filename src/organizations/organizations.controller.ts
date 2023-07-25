@@ -84,7 +84,7 @@ export class OrganizationsController {
                     continue
                 }
                 await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, u)
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             }
         } else {
             const users: User[] = await this.getOrganizationMembers(organization)
@@ -95,7 +95,7 @@ export class OrganizationsController {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_member_organization', organization.id)
                 if (sendNotification) {
                     await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, u)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 }
             }
         }
@@ -177,7 +177,7 @@ export class OrganizationsController {
                         },
                     })
                     Logger.log(`User removed from organization mail ${sentMessageInfo.messageId} sent to ${u.email}`, OrganizationsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending user removed from organization mail to ${u.email}`, e, OrganizationsController.name)
                 }
@@ -331,7 +331,7 @@ export class OrganizationsController {
                         organization,
                     },
                 })
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending organization removed mail to ${organizationUser.id} ${organizationUser.email}`, e, OrganizationsController.name)
             }
@@ -358,7 +358,7 @@ export class OrganizationsController {
                             request,
                         },
                     })
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to organization ${organization.display_name} to user ${admin.email}`, e, OrganizationsController.name)
                 }
@@ -387,7 +387,7 @@ export class OrganizationsController {
                     },
                 })
 
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, OrganizationsController.name)
             }

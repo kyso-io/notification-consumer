@@ -65,7 +65,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`New team mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new team mail to ${user.email}`, e, TeamsController.name)
                 }
@@ -94,7 +94,7 @@ export class TeamsController {
                     },
                 })
                 Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, TeamsController.name)
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, TeamsController.name)
             }
@@ -124,7 +124,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`New user in channel mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new user in channel mail to ${user.email}`, e, TeamsController.name)
                 }
@@ -154,7 +154,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`New user in channel mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new user in channel mail to ${u.email}`, e, TeamsController.name)
                 }
@@ -211,7 +211,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`Removed user from team mail ${messageInfo.messageId} sent to ${userEmail.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending removed user form team mail to ${userEmail.email}`, e, TeamsController.name)
                 }
@@ -241,7 +241,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`Removed user from team mail ${sentMessageInfo.messageId} sent to ${u.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending removed user form team mail to ${u.email}`, e, TeamsController.name)
                 }
@@ -305,7 +305,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`Team role changed mail ${messageInfo.messageId} sent to ${user.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurred sending team role changed mail to ${user.email}`, e, TeamsController.name)
                 }
@@ -346,7 +346,7 @@ export class TeamsController {
                     },
                 })
                 Logger.log(`Team removed mail sent to ${teamUser.email}`, TeamsController.name)
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending team removed mail to ${teamUser.id} ${teamUser.email}`, e, TeamsController.name)
             }
@@ -377,7 +377,7 @@ export class TeamsController {
                         },
                     })
                     Logger.log(`Created request access to team ${team.display_name} sent to user ${admin.email}`, TeamsController.name)
-                    await this.utilsService.sleep(200)
+                    await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
                 }
@@ -407,7 +407,7 @@ export class TeamsController {
                     },
                 })
 
-                await this.utilsService.sleep(200)
+                await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending rejected request access to organization ${organization.display_name} to user ${rejecterUser.email}`, e, TeamsController.name)
             }
