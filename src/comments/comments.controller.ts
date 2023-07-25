@@ -98,9 +98,9 @@ export class CommentsController {
             const users: User[] = [user]
             if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
                 const authors: User[] = await this.db
-                .collection<User>(Constants.DATABASE_COLLECTION_USER)
-                .find({ id: { $in: report.author_ids } })
-                .toArray()
+                    .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                    .find({ id: { $in: report.author_ids } })
+                    .toArray()
                 for (const author of authors) {
                     const index: number = users.findIndex((u) => u.id === author.id)
                     if (index === -1) {
@@ -120,37 +120,65 @@ export class CommentsController {
         }
     }
 
-    @EventPattern(KysoEventEnum.COMMENTS_UPDATE)
-    async handleCommentsUpdated(event: KysoCommentsUpdateEvent) {
-        Logger.log(KysoEventEnum.COMMENTS_UPDATE, CommentsController.name)
-        Logger.debug(event, CommentsController.name)
-
-        const { frontendUrl, organization, team, report, user, comment } = event
-
-        const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
-        const emails: string[] = organization?.options?.notifications?.emails || []
-        const to = centralizedMails && emails.length > 0 ? emails : user.email
-
-        this.mailerService
-            .sendMail({
-                to,
-                subject: `Comment edited in report ${report.title}`,
+    private async sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
+        try {
+            const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                to: email,
+                subject: `Comment edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 template: 'comment-updated',
                 context: {
-                    user,
-                    frontendUrl,
-                    organization,
-                    team,
-                    report,
-                    comment,
+                    user: kysoCommentsUpdateEvent.user,
+                    frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
+                    organization: kysoCommentsUpdateEvent.organization,
+                    team: kysoCommentsUpdateEvent.team,
+                    report: kysoCommentsUpdateEvent.report,
+                    comment: kysoCommentsUpdateEvent.comment,
                 },
             })
-            .then((messageInfo) => {
-                Logger.log(`Updated comment mail ${messageInfo.messageId} sent to ${Array.isArray(to) ? to.join(', ') : to}`, CommentsController.name)
-            })
-            .catch((err) => {
-                Logger.error(`An error occurred sending updated comment mail to ${Array.isArray(to) ? to.join(', ') : to}`, err, CommentsController.name)
-            })
+            Logger.log(`Updated comment mail ${sentMessageInfo.messageId} sent to ${email}`, CommentsController.name)
+        } catch (e) {
+            Logger.error(`An error occurred sending updated comment mail to ${email}`, e, CommentsController.name)
+        }
+    }
+
+    @EventPattern(KysoEventEnum.COMMENTS_UPDATE)
+    async handleCommentsUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent) {
+        Logger.log(KysoEventEnum.COMMENTS_UPDATE, CommentsController.name)
+        Logger.debug(kysoCommentsUpdateEvent, CommentsController.name)
+        const { organization, team, report, user } = kysoCommentsUpdateEvent
+        const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
+        const emails: string[] = organization?.options?.notifications?.emails || []
+        if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
+            for (const email of emails) {
+                if (report) {
+                    await this.sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent, email)
+                    await this.utilsService.sleep(200)
+                }
+            }
+        } else {
+            const users: User[] = [user]
+            if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
+                const authors: User[] = await this.db
+                    .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                    .find({ id: { $in: report.author_ids } })
+                    .toArray()
+                for (const author of authors) {
+                    const index: number = users.findIndex((u) => u.id === author.id)
+                    if (index === -1) {
+                        users.push(author)
+                    }
+                }
+            }
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_comment_in_report', organization.id, team.id)
+                if (sendNotification) {
+                    if (report) {
+                        this.sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent, u.email)
+                        await this.utilsService.sleep(200)
+                    }
+                }
+            }
+        }
     }
 
     private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, userReceiveEmail: User): Promise<void> {
