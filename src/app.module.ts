@@ -55,19 +55,22 @@ if (process.env.DOTENV_FILE) {
                     
                     AWS.config.update(mailConfig.vendor.payload);
 
+                    
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
                             finalMailTransport = createTransport({
                                 SES: {
                                     ses: new AWS.SES({
                                         region: mailConfig.vendor.payload.region,
-                                        accessKeyId: mailConfig.vendor.payload.accessKeyId,
-                                        secretAccessKey: mailConfig.vendor.payload.secretAccessKey
+                                        credentials: {
+                                            accessKeyId: mailConfig.vendor.payload.accessKeyId,
+                                            secretAccessKey: mailConfig.vendor.payload.secretAccessKey
+                                        }
                                     }),
                                     AWS
                                 }
                             }).transporter;
-                            
+
                             break;
                         default:
                             break;
