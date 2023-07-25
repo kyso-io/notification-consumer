@@ -53,16 +53,17 @@ if (process.env.DOTENV_FILE) {
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     
                     AWS.config.update(mailConfig.vendor.payload);
-                    console.log(mailConfig.vendor.payload);
 
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
                             finalMailTransport = {
-                                SES: new AWS.SES({
-                                    region: mailConfig.vendor.payload.region,
-                                    accessKeyId: mailConfig.vendor.payload.accessKeyId,
-                                    secretAccessKey: mailConfig.vendor.payload.secretAccessKey
-                                }),
+                                SES: {
+                                    ses: new AWS.SES({
+                                        region: mailConfig.vendor.payload.region,
+                                        accessKeyId: mailConfig.vendor.payload.accessKeyId,
+                                        secretAccessKey: mailConfig.vendor.payload.secretAccessKey
+                                    })
+                                }
                             }
                             break;
                         default:
