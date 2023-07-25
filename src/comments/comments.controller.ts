@@ -102,7 +102,7 @@ export class CommentsController {
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
                 for (const author of authors) {
-                    const index: number = users.findIndex((u) => u.id === author.id)
+                    const index: number = users.findIndex((u: User) => u.id === author.id)
                     if (index === -1) {
                         users.push(author)
                     }
@@ -163,7 +163,7 @@ export class CommentsController {
                     .find({ id: { $in: report.author_ids } })
                     .toArray()
                 for (const author of authors) {
-                    const index: number = users.findIndex((u) => u.id === author.id)
+                    const index: number = users.findIndex((u: User) => u.id === author.id)
                     if (index === -1) {
                         users.push(author)
                     }
@@ -220,10 +220,26 @@ export class CommentsController {
                 }
             }
         } else {
-            const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_comment_removed', organization.id, team.id)
-            if (sendNotification) {
-                if (report) {
-                    this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, user)
+            const users: User[] = [user]
+            if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
+                const authors: User[] = await this.db
+                    .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                    .find({ id: { $in: report.author_ids } })
+                    .toArray()
+                for (const author of authors) {
+                    const index: number = users.findIndex((u: User) => u.id === author.id)
+                    if (index === -1) {
+                        users.push(author)
+                    }
+                }
+            }
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'report_comment_removed', organization.id, team.id)
+                if (sendNotification) {
+                    if (report) {
+                        this.sendMailDeleteCommentInReport(kysoCommentsDeleteEvent, u)
+                        await this.utilsService.sleep(200)
+                    }
                 }
             }
         }
