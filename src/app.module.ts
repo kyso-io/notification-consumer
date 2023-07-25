@@ -52,9 +52,11 @@ if (process.env.DOTENV_FILE) {
                 if(mailConfig.vendor && mailConfig.vendor.type) {
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     
+                    console.log(mailConfig.vendor.payload);
+
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
-                            finalMailTransport["SES"] = new AWS.SES(mailConfig.vendor.payload)
+                            finalMailTransport["SES"] = new AWS.SES(JSON.parse(mailConfig.vendor.payload))
                             break;
                         default:
                             break;
