@@ -19,6 +19,7 @@ import { ReportsModule } from './reports/reports.module'
 import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
 import * as AWS from 'aws-sdk';
+import { createTransport } from 'nodemailer'
 
 let envFilePath = '.env'
 if (process.env.DOTENV_FILE) {
@@ -56,7 +57,7 @@ if (process.env.DOTENV_FILE) {
 
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
-                            finalMailTransport = {
+                            finalMailTransport = createTransport({
                                 SES: {
                                     ses: new AWS.SES({
                                         region: mailConfig.vendor.payload.region,
@@ -65,7 +66,8 @@ if (process.env.DOTENV_FILE) {
                                     }),
                                     AWS
                                 }
-                            }
+                            }).transporter;
+                            
                             break;
                         default:
                             break;
