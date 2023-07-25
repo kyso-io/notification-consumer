@@ -297,6 +297,13 @@ export class InlineCommentsController {
                     Logger.error(`Inline comment ${inlineComment.id} is a reply of a inline comment but the parent inline comment does not exist`, InlineCommentsController.name)
                     return
                 }
+                const userComment: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: parentInlineComment.user_id })
+                if (userComment) {
+                    const index: number = users.findIndex((user: User) => user.id === userComment.id)
+                    if (index === -1) {
+                        users.push(userComment)
+                    }
+                }
             }
             for (const user of users) {
                 if (parentInlineComment) {
