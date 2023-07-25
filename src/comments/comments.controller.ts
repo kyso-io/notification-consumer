@@ -1,4 +1,4 @@
-import { KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum, User } from '@kyso-io/kyso-model'
+import { Comment, KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum, User } from '@kyso-io/kyso-model'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
@@ -40,7 +40,21 @@ export class CommentsController {
     async handleReplyToComment(kysoCommentsCreateEvent: KysoCommentsCreateEvent) {
         Logger.log(KysoEventEnum.COMMENTS_REPLY, CommentsController.name)
         Logger.debug(kysoCommentsCreateEvent, CommentsController.name)
-        const { organization, user, report, team } = kysoCommentsCreateEvent
+        const { organization, user, report, team, comment } = kysoCommentsCreateEvent
+        if (!comment.comment_id) {
+            Logger.error(`Comment ${comment.id} does not have a comment_id`, CommentsController.name)
+            return
+        }
+        const parentComment: Comment = await this.db.collection<Comment>(Constants.DATABASE_COLLECTION_COMMENT).findOne({ id: comment.comment_id })
+        if (!parentComment) {
+            Logger.error(`Comment ${comment.id} does not have a parent comment`, CommentsController.name)
+            return
+        }
+        const parentCommentUser: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ id: parentComment.user_id })
+        if (!parentCommentUser) {
+            Logger.error(`User of parent comment ${parentComment.id} not found`, CommentsController.name)
+            return
+        }
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
@@ -53,7 +67,7 @@ export class CommentsController {
             const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'replay_comment_in_report', organization.id, team.id)
             if (sendNotification) {
                 if (report) {
-                    await this.sendMailReplyCommentInReport(kysoCommentsCreateEvent, user.email)
+                    await this.sendMailReplyCommentInReport(kysoCommentsCreateEvent, parentCommentUser.email)
                 }
             }
         }
