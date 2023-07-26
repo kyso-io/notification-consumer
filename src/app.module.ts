@@ -19,7 +19,6 @@ import { ReportsModule } from './reports/reports.module'
 import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
 import * as AWS from 'aws-sdk';
-import { createTransport } from 'nodemailer'
 
 let envFilePath = '.env'
 if (process.env.DOTENV_FILE) {
@@ -45,17 +44,26 @@ if (process.env.DOTENV_FILE) {
                 const mailFrom: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any              
                 
                 const mailConfig: any = mailTransport.value as any;
-
-                const finalMailTransport = {
+                
+                let finalMailTransport = {
                     ...mailConfig.transport
                 }
 
                 if(mailConfig.vendor && mailConfig.vendor.type) {
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     
+                    AWS.config.update(mailConfig.vendor.payload);
+                    console.log(mailConfig.vendor.payload);
+
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
-                            finalMailTransport["SES"] = new AWS.SES(mailConfig.vendor.payload)
+                            finalMailTransport = {
+                                SES: new AWS.SES({
+                                    region: mailConfig.vendor.payload.region,
+                                    accessKeyId: mailConfig.vendor.payload.accessKeyId,
+                                    secretAccessKey: mailConfig.vendor.payload.secretAccessKey
+                                }),
+                            }
                             break;
                         default:
                             break;
