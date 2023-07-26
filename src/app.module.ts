@@ -48,7 +48,7 @@ const mailConfig: any = mailTransport.value as any;
                 }
 
                 try {
-                    finalMailTransport = `smtps://${mailConfig.transport.auth.user}:${mailConfig.transport.auth.pass}@${mailConfig.transport.host}:${mailConfig.transport.port}`;
+                    finalMailTransport = `smtps://${mailConfig.transport.auth.user}:${mailConfig.transport.auth.pass}@${mailConfig.transport.host}`;
                 } catch(e) {
                     Logger.warn(`Cant form smtps string`, e)
                 }
