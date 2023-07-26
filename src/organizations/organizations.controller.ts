@@ -31,7 +31,7 @@ export class OrganizationsController {
     private async sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 kysoOrganizationsAddMemberEvent.userReceivingAction.email,
                 `You are now member of ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
                 'organization-you-were-added',
@@ -50,7 +50,7 @@ export class OrganizationsController {
     private async sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent, user: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 user.email,
                 `New member at ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
                 'organization-new-member',
@@ -104,7 +104,7 @@ export class OrganizationsController {
     private async sendMailMemberRemovedFromOrganization(kysoOrganizationsRemoveMemberEvent: KysoOrganizationsRemoveMemberEvent): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 kysoOrganizationsRemoveMemberEvent.user.email,
                 `You were removed from ${kysoOrganizationsRemoveMemberEvent.organization.display_name} organization`,
                 'organization-you-were-removed',
@@ -137,7 +137,7 @@ export class OrganizationsController {
                     continue
                 }
                 await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         u.email,
                         `A member was removed from ${organization.display_name} organization`,
                         'organization-removed-member',
@@ -162,7 +162,7 @@ export class OrganizationsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         u.email,
                         `A member was removed from ${organization.display_name} organization`,
                         'organization-removed-member',
@@ -190,7 +190,7 @@ export class OrganizationsController {
         const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'updated_role_in_organization', organization.id)
         if (sendNotification) {
             await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     userReceivingAction.email,
                     `Your role in ${organization.display_name} organization has changed`,
                     'organization-user-role-changed',
@@ -218,7 +218,7 @@ export class OrganizationsController {
                     continue
                 }
                 await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         u.email,
                         `A member's role has changed in ${organization.display_name} organization`,
                         'organization-member-role-changed',
@@ -270,7 +270,7 @@ export class OrganizationsController {
             .toArray()) as any[]
         for (const adminUser of adminUsers) {
             await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     adminUser.email,
                     `Centralized notifications were updated for ${organization.display_name} organization`,
                     'organization-centralized-notifications',
@@ -309,7 +309,7 @@ export class OrganizationsController {
             }
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     organizationUser.email,
                     `Organization ${organization.display_name} was removed`,
                     'organization-deleted',
@@ -336,7 +336,7 @@ export class OrganizationsController {
             if (admin) {
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         admin.email,
                         `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
                         'organization-request-access-created',
@@ -366,7 +366,7 @@ export class OrganizationsController {
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     requesterUser.email,
                     `Your access request to organization ${organization.display_name} has been rejected`,
                     'organization-request-access-rejected',

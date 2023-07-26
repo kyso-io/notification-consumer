@@ -29,7 +29,7 @@ export class ReportsController {
     private async sendMailNewReport(kysoReportsCreateEvent: KysoReportsCreateEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `New report '${kysoReportsCreateEvent.report.title}' published`,
                 'report-new',
@@ -78,7 +78,7 @@ export class ReportsController {
     private async sendMailReportMoved(kysoReportsMoveEvent: KysoReportsMoveEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Report '${kysoReportsMoveEvent.report.title}' moved`,
                 'report-moved',
@@ -128,7 +128,7 @@ export class ReportsController {
     private async sendMailNewReportVersion(kysoReportsNewVersionEvent: KysoReportsNewVersionEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
                 'report-updated',
@@ -178,7 +178,7 @@ export class ReportsController {
     private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, userReceivingAction: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceivingAction.email,
                 `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
                 'report-delete',
@@ -236,7 +236,7 @@ export class ReportsController {
 
         const { user } = kysoReportsCreateEvent
         await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 user.email,
                 'Error creating report',
                 'report-error-permissions',
@@ -257,7 +257,7 @@ export class ReportsController {
             return
         }
         await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 user.email,
                 'You have been mentioned in a report',
                 'report-mention',
@@ -277,7 +277,7 @@ export class ReportsController {
     private async sendMailMentionsInReport(kysoReportsMentionsEvent: KysoReportsMentionsEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 'Mentions in a report',
                 'report-mentions',

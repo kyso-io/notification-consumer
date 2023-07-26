@@ -18,7 +18,7 @@ export class UtilsService {
 
     public static configuredEmailProvider: string = "smtp";
     private static AWS_SES: any = null;
-    private mailFrom: string = null;
+    private mailFrom: string = "noreply@kyso.io";
 
     public static configureSES(mailConfig: any) {
         UtilsService.AWS_SES = new AWS.SES({
@@ -28,10 +28,10 @@ export class UtilsService {
         });
     }
 
-    public async sendRawEmail(from: string, to: string, subject: string, text: string) {
+    public async sendRawEmail(to: string, subject: string, text: string) {
         if(UtilsService.configuredEmailProvider === "smtp") {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: from,
+                from: this.mailFrom,
                 to: to,
                 subject: subject,
                 text: text
@@ -56,8 +56,8 @@ export class UtilsService {
                         Data: subject
                     }
                 },
-                Source: from,
-                ReplyToAddresses: [from]
+                Source: this.mailFrom,
+                ReplyToAddresses: [this.mailFrom]
             }
             
             UtilsService.AWS_SES.sendEmail(params).promise()
@@ -66,10 +66,10 @@ export class UtilsService {
         }
     }
 
-    public async sendHtmlEmail(from: string, to: string, subject: string, html: string) {
+    public async sendHtmlEmail(to: string, subject: string, html: string) {
         if(UtilsService.configuredEmailProvider === "smtp") {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: from,
+                from: this.mailFrom,
                 to: to,
                 subject: subject,
                 html: html
@@ -94,8 +94,8 @@ export class UtilsService {
                         Data: subject
                     }
                 },
-                Source: "noreply@kyso.io",
-                ReplyToAddresses: [from]
+                Source: this.mailFrom,
+                ReplyToAddresses: [this.mailFrom]
             }
             
             console.log(params);
@@ -106,10 +106,10 @@ export class UtilsService {
         }
     }
 
-    public async sendHandlebarsEmail(from: string, to: string, subject: string, template: string, context: any) {
+    public async sendHandlebarsEmail(to: string, subject: string, template: string, context: any) {
         if(UtilsService.configuredEmailProvider === "smtp") {
             const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: from,
+                from: this.mailFrom,
                 to: to,
                 subject: subject,
                 template: template,
@@ -123,23 +123,7 @@ export class UtilsService {
             const compiledTemplate = handlebars.compile(templateSource);
             const outputString = compiledTemplate(context);
             
-            this.sendHtmlEmail(from, to, subject, outputString);
-        }
-    }
-
-    
-
-    public async getMailFrom(): Promise<string> {
-        try {
-            if(!this.mailFrom) {
-                const dbValue: KysoSetting | null = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any;
-                this.mailFrom = dbValue.value;
-
-                return this.mailFrom;
-            }
-        } catch(ex) {
-            Logger.error("Error getting mail from", ex);
-            return "noreply@kyso.io";
+            this.sendHtmlEmail( to, subject, outputString);
         }
     }
 

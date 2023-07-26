@@ -42,18 +42,15 @@ if (process.env.DOTENV_FILE) {
             imports: [DatabaseModule],
             inject: [Constants.DATABASE_CONNECTION],
             useFactory: async (db: Db, utilsService: UtilsService) => {
-                const mailTransport: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_TRANSPORT })) as any
-                const mailFrom: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any              
-                
-
-                const mailConfig: any = mailTransport.value as any;
+                const mailTransport: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_TRANSPORT })) as any;              
+const mailConfig: any = mailTransport.value as any;
                 
                 let finalMailTransport = {
                     ...mailConfig.transport
                 }
 
                 if(mailConfig.vendor && mailConfig.vendor.type) {
-                    
+
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     UtilsService.configuredEmailProvider = mailConfig.vendor.type;
 
@@ -79,7 +76,7 @@ if (process.env.DOTENV_FILE) {
                 return {
                     transport: finalMailTransport,
                     defaults: {
-                        from: mailFrom.value,
+                        from: "noreply@kyso.io",
                     },
                     template: {
                         dir: join(__dirname, '../templates'),

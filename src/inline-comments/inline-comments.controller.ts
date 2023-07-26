@@ -24,7 +24,7 @@ export class InlineCommentsController {
     private async sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceiveEmail.email,
                 `New task reply in report ${kysoCommentsCreateEvent.report.title}`,
                 'inline-comment-reply',
@@ -105,7 +105,7 @@ export class InlineCommentsController {
     private async sendMailNewInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, userReceiveEmail: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceiveEmail.email,
                 `New task in report ${kysoCommentsCreateEvent.report.title}`,
                 'inline-comment-new',
@@ -169,7 +169,7 @@ export class InlineCommentsController {
     private async sendMailInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, userReceiveEmail: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceiveEmail.email,
                 `Task edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 'inline-comment-updated',
@@ -204,7 +204,7 @@ export class InlineCommentsController {
                 }
             }
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Task status changed in report ${kysoCommentsUpdateEvent.report.title}`,
                 'inline-comment-status-changed',
@@ -226,7 +226,7 @@ export class InlineCommentsController {
     private async sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceiveEmail.email,
                 `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 'inline-comment-reply-updated',
@@ -365,7 +365,7 @@ export class InlineCommentsController {
     private async sendMailDeleteInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Deleted task in report ${kysoCommentsDeleteEvent.report.title}`,
                 'inline-comment-deleted',
@@ -386,7 +386,7 @@ export class InlineCommentsController {
     private async sendMailDeleteReplyInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, parentInlineComment: InlineComment, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Deleted task reply in report ${kysoCommentsDeleteEvent.report.title}`,
                 'inline-comment-reply-deleted',

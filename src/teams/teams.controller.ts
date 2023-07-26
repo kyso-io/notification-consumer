@@ -53,7 +53,7 @@ export class TeamsController {
             if (sendNotification) {
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         user.email,
                         `New ${kysoTeamsCreateEvent.team.display_name} channel`,
                         'new-team',
@@ -82,7 +82,7 @@ export class TeamsController {
         if (sendNotification) {
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     userReceivingAction.email,
                     `You were added to ${team.display_name} channel`,
                     'team-you-were-added',
@@ -112,7 +112,7 @@ export class TeamsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         user.email,
                         `A member was added to ${team.display_name} channel`,
                         'team-new-member',
@@ -143,7 +143,7 @@ export class TeamsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         u.email,
                         `A member was added to ${team.display_name} channel`,
                         'team-new-member',
@@ -171,7 +171,7 @@ export class TeamsController {
         Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
         const { userCreatingAction, user, organization, team, frontendUrl } = kysoTeamsRemoveMemberEvent
         await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 user.email,
                 `You were removed from ${team.display_name} channel`,
                 'team-you-were-removed',
@@ -198,7 +198,7 @@ export class TeamsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         userEmail.email,
                         `A member was removed from ${team.display_name} channel`,
                         'team-removed-member',
@@ -229,7 +229,7 @@ export class TeamsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         u.email,
                         `A member was removed from ${team.display_name} channel`,
                         'team-removed-member',
@@ -259,7 +259,7 @@ export class TeamsController {
         const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'updated_role_in_channel', organization.id, team.id)
         if (sendNotification) {
             await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     userReceivingAction.email,
                     `Your role in ${team.display_name} channel has changed`,
                     'team-user-role-changed',
@@ -290,7 +290,7 @@ export class TeamsController {
                 }
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         user.email,
                         `A member's role has changed in ${team.display_name} channel`,
                         'team-member-role-changed',
@@ -335,7 +335,7 @@ export class TeamsController {
             }
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     teamUser.email,
                     `Channel ${team.display_name} was removed`,
                     'team-deleted',
@@ -366,7 +366,7 @@ export class TeamsController {
             if (admin) {
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        await this.utilsService.getMailFrom(),
+                        
                         admin.email,
                         `${requesterUser.display_name} requested access for team ${team.display_name}`,
                         'team-request-access-created',
@@ -398,7 +398,7 @@ export class TeamsController {
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    await this.utilsService.getMailFrom(),
+                    
                     requesterUser.email,
                     `Your access request to team ${team.display_name} has been rejected`,
                     'team-request-access-rejected',

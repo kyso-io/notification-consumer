@@ -19,7 +19,7 @@ export class CommentsController {
     private async sendMailReplyCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
             const messageInfo: SentMessageInfo = await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `New reply to your comment on report ${kysoCommentsCreateEvent.report.title}`,
                 'comment-reply',
@@ -77,7 +77,7 @@ export class CommentsController {
     private async sendMailNewCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `New comment in report ${kysoCommentsCreateEvent.report.title}`,
                 'comment-new',
@@ -138,7 +138,7 @@ export class CommentsController {
     private async sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 email,
                 `Comment edited in report ${kysoCommentsUpdateEvent.report.title}`,
                 'comment-updated',
@@ -199,7 +199,7 @@ export class CommentsController {
     private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, userReceiveEmail: User): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                await this.utilsService.getMailFrom(),
+                
                 userReceiveEmail.email,
                 `Deleted a comment in report ${kysoCommentsDeleteEvent.report.title}`,
                 'comment-deleted',
