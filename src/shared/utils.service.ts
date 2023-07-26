@@ -2,15 +2,130 @@ import { UserNotificationsSettings, KysoSetting, KysoSettingsEnum } from '@kyso-
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { Db } from 'mongodb'
 import { Constants } from '../constants'
-
+import { MailerService } from '@nestjs-modules/mailer';
+import { SentMessageInfo } from 'nodemailer';
+import * as AWS from 'aws-sdk';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import * as handlebars from 'handlebars';
 @Injectable()
 export class UtilsService {
     constructor(
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
+        private readonly mailerService: MailerService
     ) {}
 
+    public static configuredEmailProvider: string = "smtp";
+    private static AWS_SES: any = null;
     private mailFrom: string = null;
+
+    public static configureSES(mailConfig: any) {
+        UtilsService.AWS_SES = new AWS.SES({
+            region: mailConfig.vendor.payload.region,
+            accessKeyId: mailConfig.vendor.payload.accessKeyId,
+            secretAccessKey: mailConfig.vendor.payload.secretAccessKey
+        });
+    }
+
+    public async sendRawEmail(from: string, to: string, subject: string, text: string) {
+        if(UtilsService.configuredEmailProvider === "smtp") {
+            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: from,
+                to: to,
+                subject: subject,
+                text: text
+            })
+
+            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+        } else {
+            const params = {
+                Destination: {
+                    CcAddresses: [],
+                    ToAddresses: [to]
+                },
+                Message: {
+                    Body: {
+                        Text: {
+                            Charset: "UTF-8",
+                            Data: text
+                        }
+                    },
+                    Subject: {
+                        Charset: "UTF-8",
+                        Data: subject
+                    }
+                },
+                Source: from,
+                ReplyToAddresses: [from]
+            }
+            
+            UtilsService.AWS_SES.sendEmail(params).promise()
+                .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
+                .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+        }
+    }
+
+    public async sendHtmlEmail(from: string, to: string, subject: string, html: string) {
+        if(UtilsService.configuredEmailProvider === "smtp") {
+            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: from,
+                to: to,
+                subject: subject,
+                html: html
+            })
+
+            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+        } else {
+            const params = {
+                Destination: {
+                    CcAddresses: [],
+                    ToAddresses: [to]
+                },
+                Message: {
+                    Body: {
+                        Html: {
+                            Charset: "UTF-8",
+                            Data: html
+                        }
+                    },
+                    Subject: {
+                        Charset: "UTF-8",
+                        Data: subject
+                    }
+                },
+                Source: from,
+                ReplyToAddresses: [from]
+            }
+            
+            UtilsService.AWS_SES.sendEmail(params).promise()
+                .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
+                .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+        }
+    }
+
+    public async sendHandlebarsEmail(from: string, to: string, subject: string, template: string, context: any) {
+        if(UtilsService.configuredEmailProvider === "smtp") {
+            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                from: from,
+                to: to,
+                subject: subject,
+                template: template,
+                context: context
+            })
+
+            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+        } else {
+            const templateSource = readFileSync(join(__dirname, `../../templates/${template}.hbs`)).toString();
+
+            const compiledTemplate = handlebars.compile(templateSource);
+            const outputString = compiledTemplate(context);
+            
+            this.sendHtmlEmail(from, to, subject, outputString);
+        }
+    }
+
+    
 
     public async getMailFrom(): Promise<string> {
         try {

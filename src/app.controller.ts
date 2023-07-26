@@ -1,10 +1,11 @@
 import { Controller, Get, Logger } from '@nestjs/common'
 import { AppService } from './app.service'
 import { MailerService } from '@nestjs-modules/mailer'
+import { UtilsService } from './shared/utils.service'
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService, private readonly mailerService: MailerService) {}
+    constructor(private readonly appService: AppService, private readonly utilsService: UtilsService) {}
 
     @Get()
     getHello(): string {
@@ -12,43 +13,45 @@ export class AppController {
     }
 
     
-    @Get("/test") 
+    @Get("/raw") 
     test() {
-        this.mailerService
-            .sendMail({
-                from: "hello@kyso.io",
-                to: "francisco@kyso.io",
-                subject: 'Welcome to Kyso',
-                text : "hola"
-            })
-            .then(() => {
-                Logger.log(`Email sent`)
-            })
-            .catch((err) => {
-                Logger.error(`Error sending mail`, err)
-            })
+        this.utilsService
+            .sendRawEmail(
+                "hello@kyso.io",
+                "francisco@kyso.io",
+                'Welcome to Kyso',
+                "hola"
+            );
+    }
+
+    @Get("/html") 
+    html() {
+        this.utilsService
+            .sendHtmlEmail(
+                "hello@kyso.io",
+                "francisco@kyso.io",
+                'Welcome to Kyso',
+                "<h1>HOLA GILIPOLLAS</h1>"
+            );
     }
 
     @Get("/handlebars")
     handlebars() {
-        this.mailerService.sendMail({
-            from: "hello@kyso.io",
-            to: "francisco@kyso.io",
-            subject: `New reply to your comment on report`,
-            template: 'comment-reply',
-            context: {
-                frontendUrl: "kysoCommentsCreateEvent.frontendUrl",
-                organization: "kysoCommentsCreateEvent.organization",
-                team: "kysoCommentsCreateEvent.team",
-                report: "kysoCommentsCreateEvent.report",
-                comment: "kysoCommentsCreateEvent.comment",
-            },
-        }).then(() => {
-            Logger.log(`Email sent`)
-        })
-        .catch((err) => {
-            Logger.error(`Error sending mail`, err)
-        })
+        const context = {
+            frontendUrl: "https://dev.kyso.io",
+            organization: "jamaica",
+            team: "porros",
+            report: "Reporte de mi madre",
+            comment: "Comentario de mi madre",
+        }
+
+        this.utilsService.sendHandlebarsEmail(
+            "hello@kyso.io",
+            "francisco@kyso.io",
+            `New reply to your comment on report`,
+            'comment-reply',
+            context
+        )
     }
 
 }

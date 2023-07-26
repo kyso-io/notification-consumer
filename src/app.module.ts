@@ -19,6 +19,8 @@ import { ReportsModule } from './reports/reports.module'
 import { TeamsModule } from './teams/teams.module'
 import { UsersModule } from './users/users.module'
 import * as AWS from 'aws-sdk';
+import { UtilsService } from './shared/utils.service'
+import { SharedModule } from './shared/shared.module'
 
 let envFilePath = '.env'
 if (process.env.DOTENV_FILE) {
@@ -39,10 +41,11 @@ if (process.env.DOTENV_FILE) {
         MailerModule.forRootAsync({
             imports: [DatabaseModule],
             inject: [Constants.DATABASE_CONNECTION],
-            useFactory: async (db: Db) => {
+            useFactory: async (db: Db, utilsService: UtilsService) => {
                 const mailTransport: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_TRANSPORT })) as any
                 const mailFrom: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any              
                 
+
                 const mailConfig: any = mailTransport.value as any;
                 
                 let finalMailTransport = {
@@ -50,13 +53,14 @@ if (process.env.DOTENV_FILE) {
                 }
 
                 if(mailConfig.vendor && mailConfig.vendor.type) {
-                    Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     
-                    AWS.config.update(mailConfig.vendor.payload);
-                    console.log(mailConfig.vendor.payload);
+                    Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
+                    UtilsService.configuredEmailProvider = mailConfig.vendor.type;
 
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
+                            UtilsService.configureSES(mailConfig);
+
                             finalMailTransport = {
                                 SES: new AWS.SES({
                                     region: mailConfig.vendor.payload.region,
@@ -68,21 +72,22 @@ if (process.env.DOTENV_FILE) {
                         default:
                             break;
                     }
+                } else {
+                    UtilsService.configuredEmailProvider = "smtp";
                 }
-
 
                 return {
                     transport: finalMailTransport,
                     defaults: {
                         from: mailFrom.value,
                     },
-                    /*template: {
+                    template: {
                         dir: join(__dirname, '../templates'),
                         adapter: new HandlebarsAdapter(),
                         options: {
                             strict: true,
                         },
-                    },*/
+                    },
                 }
             },
         }),
@@ -90,6 +95,7 @@ if (process.env.DOTENV_FILE) {
         ReportsModule,
         TeamsModule,
         UsersModule,
+        SharedModule
     ],
     controllers: [AppController],
     providers: [AppService],
