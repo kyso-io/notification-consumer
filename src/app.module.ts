@@ -83,6 +83,7 @@ if (process.env.DOTENV_FILE) {
                     defaults: {
                         from: mailFrom.value,
                     },
+                    preview: true,
                     template: {
                         dir: join(__dirname, '../templates'),
                         adapter: new HandlebarsAdapter(),
