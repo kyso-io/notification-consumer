@@ -29,101 +29,120 @@ export class UtilsService {
     }
 
     public async sendRawEmail(to: string, subject: string, text: string) {
-        if(UtilsService.configuredEmailProvider === "smtp") {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: this.mailFrom,
-                to: to,
-                subject: subject,
-                text: text
-            })
-
-            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
-        } else {
-            const params = {
-                Destination: {
-                    CcAddresses: [],
-                    ToAddresses: [to]
-                },
-                Message: {
-                    Body: {
-                        Text: {
+        switch(UtilsService.configuredEmailProvider.toLowerCase()) {
+            case "smtp":
+                const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                    from: this.mailFrom,
+                    to: to,
+                    subject: subject,
+                    text: text
+                })
+    
+                Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+                break;
+            case "aws-ses": 
+                const params = {
+                    Destination: {
+                        CcAddresses: [],
+                        ToAddresses: [to]
+                    },
+                    Message: {
+                        Body: {
+                            Text: {
+                                Charset: "UTF-8",
+                                Data: text
+                            }
+                        },
+                        Subject: {
                             Charset: "UTF-8",
-                            Data: text
+                            Data: subject
                         }
                     },
-                    Subject: {
-                        Charset: "UTF-8",
-                        Data: subject
-                    }
-                },
-                Source: this.mailFrom,
-                ReplyToAddresses: [this.mailFrom]
-            }
-            
-            UtilsService.AWS_SES.sendEmail(params).promise()
-                .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
-                .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+                    Source: this.mailFrom,
+                    ReplyToAddresses: [this.mailFrom]
+                }
+                
+                UtilsService.AWS_SES.sendEmail(params).promise()
+                    .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
+                    .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+                break;
+            default:
+                Logger.error(`Configured email provider ${UtilsService.configuredEmailProvider} not supported`);
+                break;
+
         }
     }
 
     public async sendHtmlEmail(to: string, subject: string, html: string) {
-        if(UtilsService.configuredEmailProvider === "smtp") {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: this.mailFrom,
-                to: to,
-                subject: subject,
-                html: html
-            })
-
-            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
-        } else {
-            const params = {
-                Destination: {
-                    CcAddresses: [],
-                    ToAddresses: [to]
-                },
-                Message: {
-                    Body: {
-                        Html: {
+        switch(UtilsService.configuredEmailProvider.toLowerCase()) {
+            case "smtp":
+                const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                    from: this.mailFrom,
+                    to: to,
+                    subject: subject,
+                    html: html
+                })
+    
+                Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+                break;
+            case "aws-ses": 
+                const params = {
+                    Destination: {
+                        CcAddresses: [],
+                        ToAddresses: [to]
+                    },
+                    Message: {
+                        Body: {
+                            Html: {
+                                Charset: "UTF-8",
+                                Data: html
+                            }
+                        },
+                        Subject: {
                             Charset: "UTF-8",
-                            Data: html
+                            Data: subject
                         }
                     },
-                    Subject: {
-                        Charset: "UTF-8",
-                        Data: subject
-                    }
-                },
-                Source: this.mailFrom,
-                ReplyToAddresses: [this.mailFrom]
-            }
-            
-            console.log(params);
+                    Source: this.mailFrom,
+                    ReplyToAddresses: [this.mailFrom]
+                }
+                
+                console.log(params);
 
-            UtilsService.AWS_SES.sendEmail(params).promise()
-                .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
-                .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+                UtilsService.AWS_SES.sendEmail(params).promise()
+                    .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
+                    .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
+                break;
+            default:
+                Logger.error(`Configured email provider ${UtilsService.configuredEmailProvider} not supported`);
+                break;
         }
     }
 
     public async sendHandlebarsEmail(to: string, subject: string, template: string, context: any) {
-        if(UtilsService.configuredEmailProvider === "smtp") {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: this.mailFrom,
-                to: to,
-                subject: subject,
-                template: template,
-                context: context
-            })
+        switch(UtilsService.configuredEmailProvider.toLowerCase()) {
+            case "smtp":
+                const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
+                    from: this.mailFrom,
+                    to: to,
+                    subject: subject,
+                    template: template,
+                    context: context
+                })
+    
+                Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
+                break;
+            case "aws-ses": 
+                const templateSource = readFileSync(join(__dirname, `../../templates/${template}.hbs`)).toString();
 
-            Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
-        } else {
-            const templateSource = readFileSync(join(__dirname, `../../templates/${template}.hbs`)).toString();
-
-            const compiledTemplate = handlebars.compile(templateSource);
-            const outputString = compiledTemplate(context);
-            
-            this.sendHtmlEmail( to, subject, outputString);
+                const compiledTemplate = handlebars.compile(templateSource);
+                const outputString = compiledTemplate(context);
+                
+                this.sendHtmlEmail( to, subject, outputString);
+                break;
+            default:
+                Logger.error(`Configured email provider ${UtilsService.configuredEmailProvider} not supported`);
+                break;
         }
     }
 
