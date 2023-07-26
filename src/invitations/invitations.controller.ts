@@ -1,5 +1,4 @@
 import { KysoEventEnum, KysoInvitationsTeamCreateEvent } from '@kyso-io/kyso-model'
-import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
@@ -11,7 +10,6 @@ export class InvitationsController {
     constructor(
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
-        private readonly mailerService: MailerService,
         private readonly utilsService: UtilsService
     ) {}
 
@@ -21,13 +19,11 @@ export class InvitationsController {
         Logger.debug(kysoInvitationsTeamCreateEvent, InvitationsController.name)
 
         const { user, roles, organization, team, invitation, frontendUrl } = kysoInvitationsTeamCreateEvent
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: invitation.email,
-                subject: `Kyso: New invitation to join into channel ${team.sluglified_name}`,
-                template: 'invitation-team',
-                context: {
+        this.utilsService.sendHandlebarsEmail(
+                invitation.email,
+                `Kyso: New invitation to join into channel ${team.sluglified_name}`,
+                'invitation-team',
+                {
                     user,
                     roles: roles.map((role: string) => UtilsService.getDisplayTextByChannelRoleName(role)).join(", "),
                     frontendUrl,
@@ -35,10 +31,7 @@ export class InvitationsController {
                     team,
                     invitation,
                 },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Invitation mail ${messageInfo.messageId} sent to ${invitation.email}`, InvitationsController.name)
-            })
+            )
             .catch((err) => {
                 Logger.error(`An error occurrend sending invitation welcome mail to ${invitation.email}`, err, InvitationsController.name)
             })

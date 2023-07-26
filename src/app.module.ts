@@ -10,7 +10,6 @@ import { AppService } from './app.service'
 import { CommentsModule } from './comments/comments.module'
 import { Constants } from './constants'
 import { DatabaseModule } from './database/database.module'
-import { DiscussionsModule } from './discussions/discussions.module'
 import { FeedbackModule } from './feedback/feedback.module'
 import { InlineCommentsModule } from './inline-comments/inline-comments.module'
 import { InvitationsModule } from './invitations/invitations.module'
@@ -34,14 +33,13 @@ if (process.env.DOTENV_FILE) {
             envFilePath: envFilePath,
             isGlobal: true,
         }),
-        DiscussionsModule,
         FeedbackModule,
         InlineCommentsModule,
         InvitationsModule,
         MailerModule.forRootAsync({
             imports: [DatabaseModule],
             inject: [Constants.DATABASE_CONNECTION],
-            useFactory: async (db: Db, utilsService: UtilsService) => {
+            useFactory: async (db: Db) => {
                 const mailTransport: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_TRANSPORT })) as any;              
 const mailConfig: any = mailTransport.value as any;
                 

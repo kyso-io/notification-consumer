@@ -1,5 +1,4 @@
 import { KysoEventEnum, KysoUsersCreateEvent, KysoUsersDeleteEvent, KysoUsersRecoveryPasswordEvent, KysoUsersUpdateEvent, KysoUsersVerificationEmailEvent } from '@kyso-io/kyso-model'
-import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
@@ -9,7 +8,6 @@ import { UtilsService } from 'src/shared/utils.service'
 @Controller()
 export class UsersController {
     constructor(
-        private readonly mailerService: MailerService,
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
         private readonly utilsService: UtilsService
@@ -21,19 +19,14 @@ export class UsersController {
         Logger.debug(kysoUsersCreateEvent, UsersController.name)
 
         const { user } = kysoUsersCreateEvent
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: user.email,
-                subject: 'Welcome to Kyso',
-                template: 'user-new',
-                context: {
+        this.utilsService.sendHandlebarsEmail(
+                user.email,
+                'Welcome to Kyso',
+                'user-new',
+                {
                     user,
                 },
-            })
-            .then(() => {
-                Logger.log(`Welcome e-mail sent to ${user.display_name} ${user.email}`, UsersController.name)
-            })
+            )
             .catch((err) => {
                 Logger.error(`Error sending welcome e-mail to ${user.display_name} ${user.email}`, err, UsersController.name)
             })
@@ -51,24 +44,19 @@ export class UsersController {
         Logger.debug(kysoUsersVerificationEmailEvent, UsersController.name)
 
         const { user, userVerification, frontendUrl } = kysoUsersVerificationEmailEvent
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: user.email,
-                subject: 'Verify your account',
-                template: 'verify-email',
-                context: {
+        this.utilsService.sendHandlebarsEmail(
+                user.email,
+                'Verify your account',
+                'verify-email',
+                {
                     user,
                     userVerification: {
                         ...userVerification,
                         email: encodeURIComponent(user.email),
                     },
                     frontendUrl,
-                },
-            })
-            .then(() => {
-                Logger.log(`Verify account e-mail sent to ${user.display_name}`, UsersController.name)
-            })
+                }
+            )
             .catch((err) => {
                 Logger.error(`Error sending verify account e-mail to ${user.display_name}`, err, UsersController.name)
             })
@@ -80,21 +68,16 @@ export class UsersController {
         Logger.debug(kysoUsersRecoveryPasswordEvent, UsersController.name)
 
         const { user, userForgotPassword, frontendUrl } = kysoUsersRecoveryPasswordEvent
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: user.email,
-                subject: 'Change password',
-                template: 'change-password',
-                context: {
+        this.utilsService.sendHandlebarsEmail(
+                user.email,
+                'Change password',
+                'change-password',
+                {
                     user,
                     userForgotPassword,
                     frontendUrl,
                 },
-            })
-            .then(() => {
-                Logger.log(`Recovery password e-mail sent to ${user.display_name}`, UsersController.name)
-            })
+            )
             .catch((err) => {
                 Logger.error(`Error sending recovery password e-mail to ${user.display_name}`, err, UsersController.name)
             })

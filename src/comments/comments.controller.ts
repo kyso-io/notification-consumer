@@ -1,5 +1,4 @@
 import { Comment, KysoCommentsCreateEvent, KysoCommentsDeleteEvent, KysoCommentsUpdateEvent, KysoEventEnum, User } from '@kyso-io/kyso-model'
-import { MailerService } from '@nestjs-modules/mailer'
 import { Controller, Inject, Logger } from '@nestjs/common'
 import { EventPattern } from '@nestjs/microservices'
 import { Db } from 'mongodb'
@@ -12,7 +11,6 @@ export class CommentsController {
     constructor(
         @Inject(Constants.DATABASE_CONNECTION)
         private db: Db,
-        private readonly mailerService: MailerService,
         private readonly utilsService: UtilsService,
     ) {}
 
