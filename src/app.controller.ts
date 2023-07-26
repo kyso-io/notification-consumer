@@ -28,4 +28,27 @@ export class AppController {
                 Logger.error(`Error sending mail`, err)
             })
     }
+
+    @Get("/handlebars")
+    handlebars() {
+        this.mailerService.sendMail({
+            from: "hello@kyso.io",
+            to: "francisco@kyso.io",
+            subject: `New reply to your comment on report`,
+            template: 'comment-reply',
+            context: {
+                frontendUrl: "kysoCommentsCreateEvent.frontendUrl",
+                organization: "kysoCommentsCreateEvent.organization",
+                team: "kysoCommentsCreateEvent.team",
+                report: "kysoCommentsCreateEvent.report",
+                comment: "kysoCommentsCreateEvent.comment",
+            },
+        }).then(() => {
+            Logger.log(`Email sent`)
+        })
+        .catch((err) => {
+            Logger.error(`Error sending mail`, err)
+        })
+    }
+
 }

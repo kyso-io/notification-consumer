@@ -45,32 +45,17 @@ if (process.env.DOTENV_FILE) {
                 const mailFrom: KysoSetting | null = (await db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any              
                 
                 const mailConfig: any = mailTransport.value as any;
-                
-                let finalMailTransport = {
+
+                const finalMailTransport = {
                     ...mailConfig.transport
                 }
 
                 if(mailConfig.vendor && mailConfig.vendor.type) {
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     
-                    AWS.config.update(mailConfig.vendor.payload);
-
-                    
                     switch(mailConfig.vendor.type.toLowerCase()) {
                         case "aws-ses":
-                            finalMailTransport = createTransport({
-                                SES: {
-                                    ses: new AWS.SES({
-                                        region: mailConfig.vendor.payload.region,
-                                        credentials: {
-                                            accessKeyId: mailConfig.vendor.payload.accessKeyId,
-                                            secretAccessKey: mailConfig.vendor.payload.secretAccessKey
-                                        }
-                                    }),
-                                    AWS
-                                }
-                            }).transporter;
-
+                            finalMailTransport["SES"] = new AWS.SES(mailConfig.vendor.payload)
                             break;
                         default:
                             break;
@@ -83,14 +68,13 @@ if (process.env.DOTENV_FILE) {
                     defaults: {
                         from: mailFrom.value,
                     },
-                    preview: true,
-                    template: {
+                    /*template: {
                         dir: join(__dirname, '../templates'),
                         adapter: new HandlebarsAdapter(),
                         options: {
                             strict: true,
                         },
-                    },
+                    },*/
                 }
             },
         }),
