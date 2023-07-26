@@ -94,7 +94,7 @@ export class UtilsService {
                         Data: subject
                     }
                 },
-                Source: from,
+                Source: "noreply@kyso.io",
                 ReplyToAddresses: [from]
             }
             
