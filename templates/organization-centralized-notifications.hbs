@@ -112,9 +112,9 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello {{user.display_name}},
+                                                                                                Hello {{receiver.display_name}},
                                                                                                 <br /><br />
-                                                                                                <b>{{receiver.display_name}}</b>
+                                                                                                <b>{{user.display_name}}</b>
                                                                                                 recently configured centralised communications for 
                                                                                                 <a 
                                                                                                     style='font-weight: bold; text-decoration:none; color:#5046e5'
@@ -129,7 +129,7 @@
                                                                                                 If this change is expected, you can ignore this email. If not, please contact
                                                                                                 <a
                                                                                                 style='font-weight: bold; text-decoration:none; color:#5046e5'
-                                                                                                href='{{frontendUrl}}/user/{{receiver.username}}'>{{receiver.display_name}}
+                                                                                                href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
                                                                                             </a>
                                                                                                 <br /><br />
                                                                                             </p>
