@@ -120,30 +120,12 @@ export class UtilsService {
     }
 
     public async sendHandlebarsEmail(to: string, subject: string, template: string, context: any) {
-        switch(UtilsService.configuredEmailProvider.toLowerCase()) {
-            case "smtp":
-                const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                    from: this.mailFrom,
-                    to: to,
-                    subject: subject,
-                    template: template,
-                    context: context
-                })
-    
-                Logger.log(`Message id ${messageInfo.messageId} sent to ${to}`);
-                break;
-            case "aws-ses": 
-                const templateSource = readFileSync(join(__dirname, `../../templates/${template}.hbs`)).toString();
+        const templateSource = readFileSync(join(__dirname, `../../templates/${template}.hbs`)).toString();
 
-                const compiledTemplate = handlebars.compile(templateSource);
-                const outputString = compiledTemplate(context);
-                
-                this.sendHtmlEmail( to, subject, outputString);
-                break;
-            default:
-                Logger.error(`Configured email provider ${UtilsService.configuredEmailProvider} not supported`);
-                break;
-        }
+        const compiledTemplate = handlebars.compile(templateSource);
+        const outputString = compiledTemplate(context);
+        
+        this.sendHtmlEmail( to, subject, outputString);
     }
 
     public static getDisplayTextByChannelRoleName(role: string): string {

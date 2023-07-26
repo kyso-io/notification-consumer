@@ -16,7 +16,7 @@ export class AppController {
     test() {
         this.utilsService
             .sendRawEmail(
-                "francisco@kyso.io",
+                "fjbarrena@gmail.com",
                 'Welcome to Kyso',
                 "hola"
             );
@@ -26,7 +26,7 @@ export class AppController {
     html() {
         this.utilsService
             .sendHtmlEmail(
-                "francisco@kyso.io",
+                "fjbarrena@gmail.com",
                 'Welcome to Kyso',
                 "<h1>HOLA GUAPO</h1>"
             );
@@ -43,7 +43,7 @@ export class AppController {
         }
 
         this.utilsService.sendHandlebarsEmail(
-            "francisco@kyso.io",
+            "fjbarrena@gmail.com",
             `New reply to your comment on report`,
             'comment-reply',
             context

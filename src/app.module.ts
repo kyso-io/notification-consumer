@@ -47,8 +47,13 @@ const mailConfig: any = mailTransport.value as any;
                     ...mailConfig.transport
                 }
 
+                try {
+                    finalMailTransport = `smtps://${mailConfig.transport.auth.user}:${mailConfig.transport.auth.pass}@${mailConfig.transport.host}:${mailConfig.transport.port}`;
+                } catch(e) {
+                    Logger.warn(`Cant form smtps string`, e)
+                }
+                
                 if(mailConfig.vendor && mailConfig.vendor.type) {
-
                     Logger.log(`Received mail vendor ${mailConfig.vendor.type}`);
                     UtilsService.configuredEmailProvider = mailConfig.vendor.type;
 
@@ -71,19 +76,14 @@ const mailConfig: any = mailTransport.value as any;
                     UtilsService.configuredEmailProvider = "smtp";
                 }
 
-                return {
-                    transport: finalMailTransport,
-                    defaults: {
-                        from: "noreply@kyso.io",
-                    },
-                    template: {
-                        dir: join(__dirname, '../templates'),
-                        adapter: new HandlebarsAdapter(),
-                        options: {
-                            strict: true,
-                        },
-                    },
+                const finalObject = {
+                    transport: finalMailTransport
                 }
+
+
+                console.log(finalObject);
+
+                return finalObject;
             },
         }),
         OrganizationsModule,
