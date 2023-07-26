@@ -28,20 +28,19 @@ export class ReportsController {
 
     private async sendMailNewReport(kysoReportsCreateEvent: KysoReportsCreateEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `New report '${kysoReportsCreateEvent.report.title}' published`,
-                template: 'report-new',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `New report '${kysoReportsCreateEvent.report.title}' published`,
+                'report-new',
+                {
                     user: kysoReportsCreateEvent.user,
                     organization: kysoReportsCreateEvent.organization,
                     team: kysoReportsCreateEvent.team,
                     report: kysoReportsCreateEvent.report,
                     frontendUrl: kysoReportsCreateEvent.frontendUrl,
                 },
-            })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+            )
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -78,14 +77,14 @@ export class ReportsController {
 
     private async sendMailReportMoved(kysoReportsMoveEvent: KysoReportsMoveEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `Report '${kysoReportsMoveEvent.report.title}' moved`,
-                template: 'report-moved',
-                context: kysoReportsMoveEvent,
-            })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `Report '${kysoReportsMoveEvent.report.title}' moved`,
+                'report-moved',
+                kysoReportsMoveEvent,
+            )
+            
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -128,20 +127,20 @@ export class ReportsController {
 
     private async sendMailNewReportVersion(kysoReportsNewVersionEvent: KysoReportsNewVersionEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
-                template: 'report-updated',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
+                'report-updated',
+                {
                     userCreatingAction: kysoReportsNewVersionEvent.user,
                     organization: kysoReportsNewVersionEvent.organization,
                     team: kysoReportsNewVersionEvent.team,
                     report: kysoReportsNewVersionEvent.report,
                     frontendUrl: kysoReportsNewVersionEvent.frontendUrl,
                 },
-            })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+            )
+            
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -178,12 +177,12 @@ export class ReportsController {
 
     private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, userReceivingAction: User): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: userReceivingAction.email,
-                subject: `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
-                template: 'report-delete',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                userReceivingAction.email,
+                `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
+                'report-delete',
+                {
                     userReceivingAction: userReceivingAction,
                     userCreatingAction: kysoReportsDeleteEvent.user,
                     organization: kysoReportsDeleteEvent.organization,
@@ -191,8 +190,8 @@ export class ReportsController {
                     report: kysoReportsDeleteEvent.report,
                     frontendUrl: kysoReportsDeleteEvent.frontendUrl,
                 },
-            })
-            Logger.log(`Report mail ${messageInfo.messageId} sent to ${userReceivingAction.email}`, ReportsController.name)
+            )
+            
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, ReportsController.name)
         }
@@ -236,16 +235,13 @@ export class ReportsController {
         Logger.debug(kysoReportsCreateEvent, ReportsController.name)
 
         const { user } = kysoReportsCreateEvent
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: user.email,
-                subject: 'Error creating report',
-                template: 'report-error-permissions',
-            })
-            .then(() => {
-                Logger.log(`Mail 'Invalid permissions for creating report' sent to ${user.display_name}`, ReportsController.name)
-            })
+        await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                user.email,
+                'Error creating report',
+                'report-error-permissions',
+                {}
+            )
             .catch((err) => {
                 Logger.error(`Error sending mail 'Invalid permissions for creating report' to ${user.display_name}`, err, ReportsController.name)
             })
@@ -260,23 +256,19 @@ export class ReportsController {
         if (!sendNotification) {
             return
         }
-        this.mailerService
-            .sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: user.email,
-                subject: 'You have been mentioned in a report',
-                template: 'report-mention',
-                context: {
+        await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                user.email,
+                'You have been mentioned in a report',
+                'report-mention',
+                {
                     creator,
                     organization,
                     team,
                     report,
                     frontendUrl,
                 },
-            })
-            .then((messageInfo) => {
-                Logger.log(`Mention in report mail ${messageInfo.messageId} sent to ${user.email}`, ReportsController.name)
-            })
+            )
             .catch((err) => {
                 Logger.error(`An error occurrend sending mention in report mail to ${user.email}`, err, ReportsController.name)
             })
@@ -284,12 +276,12 @@ export class ReportsController {
 
     private async sendMailMentionsInReport(kysoReportsMentionsEvent: KysoReportsMentionsEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: 'Mentions in a report',
-                template: 'report-mentions',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                'Mentions in a report',
+                'report-mentions',
+                {
                     creator: kysoReportsMentionsEvent.creator,
                     users: kysoReportsMentionsEvent.users.map((u: User) => u.display_name).join(','),
                     organization: kysoReportsMentionsEvent.organization,
@@ -297,8 +289,7 @@ export class ReportsController {
                     report: kysoReportsMentionsEvent.report,
                     frontendUrl: kysoReportsMentionsEvent.frontendUrl,
                 },
-            })
-            Logger.log(`Mention in report mail ${messageInfo.messageId} sent to ${email}`, ReportsController.name)
+            );
         } catch (e) {
             Logger.error(`An error occurrend sending mention in report mail to ${email}`, e, ReportsController.name)
         }

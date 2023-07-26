@@ -18,19 +18,19 @@ export class CommentsController {
 
     private async sendMailReplyCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `New reply to your comment on report ${kysoCommentsCreateEvent.report.title}`,
-                template: 'comment-reply',
-                context: {
+            const messageInfo: SentMessageInfo = await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `New reply to your comment on report ${kysoCommentsCreateEvent.report.title}`,
+                'comment-reply',
+                {
                     frontendUrl: kysoCommentsCreateEvent.frontendUrl,
                     organization: kysoCommentsCreateEvent.organization,
                     team: kysoCommentsCreateEvent.team,
                     report: kysoCommentsCreateEvent.report,
                     comment: kysoCommentsCreateEvent.comment,
                 }
-            })
+            )
             Logger.log(`New reply comment mail ${messageInfo.messageId} sent to ${email}`, CommentsController.name)
         } catch (e) {
             Logger.error(`An error occurred sending new reply comment mail to ${email}`, e, CommentsController.name)
@@ -76,21 +76,20 @@ export class CommentsController {
 
     private async sendMailNewCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, email: string): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `New comment in report ${kysoCommentsCreateEvent.report.title}`,
-                template: 'comment-new',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `New comment in report ${kysoCommentsCreateEvent.report.title}`,
+                'comment-new',
+                {
                     userCreatingAction: kysoCommentsCreateEvent.user,
                     frontendUrl: kysoCommentsCreateEvent.frontendUrl,
                     organization: kysoCommentsCreateEvent.organization,
                     team: kysoCommentsCreateEvent.team,
                     report: kysoCommentsCreateEvent.report,
                     comment: kysoCommentsCreateEvent.comment,
-                },
-            })
-            Logger.log(`New comment mail ${messageInfo.messageId} sent to ${email}`, CommentsController.name)
+                }
+            );
         } catch (e) {
             Logger.error(`An error occurred sending new comment mail to ${email}`, e, CommentsController.name)
         }
@@ -138,12 +137,12 @@ export class CommentsController {
 
     private async sendMailCommentUpdatedInReport(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, email: string): Promise<void> {
         try {
-            const sentMessageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: email,
-                subject: `Comment edited in report ${kysoCommentsUpdateEvent.report.title}`,
-                template: 'comment-updated',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                email,
+                `Comment edited in report ${kysoCommentsUpdateEvent.report.title}`,
+                'comment-updated',
+                {
                     user: kysoCommentsUpdateEvent.user,
                     frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
                     organization: kysoCommentsUpdateEvent.organization,
@@ -151,8 +150,7 @@ export class CommentsController {
                     report: kysoCommentsUpdateEvent.report,
                     comment: kysoCommentsUpdateEvent.comment,
                 },
-            })
-            Logger.log(`Updated comment mail ${sentMessageInfo.messageId} sent to ${email}`, CommentsController.name)
+            )
         } catch (e) {
             Logger.error(`An error occurred sending updated comment mail to ${email}`, e, CommentsController.name)
         }
@@ -200,12 +198,12 @@ export class CommentsController {
 
     private async sendMailDeleteCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, userReceiveEmail: User): Promise<void> {
         try {
-            const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                from: await this.utilsService.getMailFrom(),
-                to: userReceiveEmail.email,
-                subject: `Deleted a comment in report ${kysoCommentsDeleteEvent.report.title}`,
-                template: 'comment-deleted',
-                context: {
+            await this.utilsService.sendHandlebarsEmail(
+                await this.utilsService.getMailFrom(),
+                userReceiveEmail.email,
+                `Deleted a comment in report ${kysoCommentsDeleteEvent.report.title}`,
+                'comment-deleted',
+                {
                     user: kysoCommentsDeleteEvent.user,
                     frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
                     organization: kysoCommentsDeleteEvent.organization,
@@ -213,8 +211,7 @@ export class CommentsController {
                     report: kysoCommentsDeleteEvent.report,
                     comment: kysoCommentsDeleteEvent.comment,
                 },
-            })
-            Logger.log(`Deleted comment mail ${messageInfo.messageId} sent to ${userReceiveEmail.email}`, CommentsController.name)
+            );
         } catch (e) {
             Logger.error(`An error occurred sending deleted comment mail to ${userReceiveEmail.email}`, e, CommentsController.name)
         }
