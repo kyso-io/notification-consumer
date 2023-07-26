@@ -28,7 +28,6 @@ export class OrganizationsController {
     private async sendMailMemberAddedToOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                
                 kysoOrganizationsAddMemberEvent.userReceivingAction.email,
                 `You are now member of ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
                 'organization-you-were-added',
@@ -46,19 +45,13 @@ export class OrganizationsController {
 
     private async sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent: KysoOrganizationsAddMemberEvent, user: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                user.email,
-                `New member at ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`,
-                'organization-new-member',
-                {
-                    admin: user,
-                    addedUser: kysoOrganizationsAddMemberEvent.userReceivingAction,
-                    organization: kysoOrganizationsAddMemberEvent.organization,
-                    role: UtilsService.getDisplayTextByOrganizationRoleName(kysoOrganizationsAddMemberEvent.newRole),
-                    frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(user.email, `New member at ${kysoOrganizationsAddMemberEvent.organization.display_name} organization`, 'organization-new-member', {
+                admin: user,
+                addedUser: kysoOrganizationsAddMemberEvent.userReceivingAction,
+                organization: kysoOrganizationsAddMemberEvent.organization,
+                role: UtilsService.getDisplayTextByOrganizationRoleName(kysoOrganizationsAddMemberEvent.newRole),
+                frontendUrl: kysoOrganizationsAddMemberEvent.frontendUrl,
+            })
         } catch (e) {
             Logger.error(`An error occurrend sending new member in organization mail to ${kysoOrganizationsAddMemberEvent.userReceivingAction.email}`, e, OrganizationsController.name)
         }
@@ -101,7 +94,6 @@ export class OrganizationsController {
     private async sendMailMemberRemovedFromOrganization(kysoOrganizationsRemoveMemberEvent: KysoOrganizationsRemoveMemberEvent): Promise<void> {
         try {
             await this.utilsService.sendHandlebarsEmail(
-                
                 kysoOrganizationsRemoveMemberEvent.user.email,
                 `You were removed from ${kysoOrganizationsRemoveMemberEvent.organization.display_name} organization`,
                 'organization-you-were-removed',
@@ -133,19 +125,14 @@ export class OrganizationsController {
                 if (!u) {
                     continue
                 }
-                await this.utilsService.sendHandlebarsEmail(
-                        
-                        u.email,
-                        `A member was removed from ${organization.display_name} organization`,
-                        'organization-removed-member',
-                        {
-                            admin: u,
-                            userCreatingAction,
-                            removedUser: user,
-                            organization,
-                            frontendUrl,
-                        },
-                    )
+                await this.utilsService
+                    .sendHandlebarsEmail(u.email, `A member was removed from ${organization.display_name} organization`, 'organization-removed-member', {
+                        admin: u,
+                        userCreatingAction,
+                        removedUser: user,
+                        organization,
+                        frontendUrl,
+                    })
                     .catch((err) => {
                         Logger.error(`An error occurrend sending user removed from organization mail to ${user.email}`, err, OrganizationsController.name)
                     })
@@ -158,19 +145,13 @@ export class OrganizationsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        u.email,
-                        `A member was removed from ${organization.display_name} organization`,
-                        'organization-removed-member',
-                        {
-                            admin: u,
-                            userCreatingAction,
-                            removedUser: user,
-                            organization,
-                            frontendUrl,
-                        },
-                    )
+                    await this.utilsService.sendHandlebarsEmail(u.email, `A member was removed from ${organization.display_name} organization`, 'organization-removed-member', {
+                        admin: u,
+                        userCreatingAction,
+                        removedUser: user,
+                        organization,
+                        frontendUrl,
+                    })
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending user removed from organization mail to ${u.email}`, e, OrganizationsController.name)
@@ -186,20 +167,15 @@ export class OrganizationsController {
         const { userCreatingAction, userReceivingAction, organization, frontendUrl, newRole, previousRole } = kysoOrganizationsAddMemberEvent
         const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'updated_role_in_organization', organization.id)
         if (sendNotification) {
-            await this.utilsService.sendHandlebarsEmail(
-                    
-                    userReceivingAction.email,
-                    `Your role in ${organization.display_name} organization has changed`,
-                    'organization-user-role-changed',
-                    {
-                        userCreatingAction,
-                        user: userReceivingAction,
-                        organization,
-                        frontendUrl,
-                        previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
-                        newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
-                    },
-                )
+            await this.utilsService
+                .sendHandlebarsEmail(userReceivingAction.email, `Your role in ${organization.display_name} organization has changed`, 'organization-user-role-changed', {
+                    userCreatingAction,
+                    user: userReceivingAction,
+                    organization,
+                    frontendUrl,
+                    previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
+                    newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
+                })
                 .catch((err) => {
                     Logger.error(`An error occurred sending organization role changed mail to ${userReceivingAction.email}`, err, OrganizationsController.name)
                 })
@@ -214,20 +190,15 @@ export class OrganizationsController {
                 if (!u) {
                     continue
                 }
-                await this.utilsService.sendHandlebarsEmail(
-                        
-                        u.email,
-                        `A member's role has changed in ${organization.display_name} organization`,
-                        'organization-member-role-changed',
-                        {
-                            admin: u,
-                            user: userReceivingAction,
-                            organization,
-                            frontendUrl,
-                            previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
-                            newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
-                        },
-                    )
+                await this.utilsService
+                    .sendHandlebarsEmail(u.email, `A member's role has changed in ${organization.display_name} organization`, 'organization-member-role-changed', {
+                        admin: u,
+                        user: userReceivingAction,
+                        organization,
+                        frontendUrl,
+                        previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
+                        newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
+                    })
                     .catch((err) => {
                         Logger.error(`An error occurred sending organization role changed mail to ${u.email}`, err, OrganizationsController.name)
                     })
@@ -266,8 +237,8 @@ export class OrganizationsController {
             .find({ id: { $in: organizationMembersJoin.map((om: OrganizationMemberJoin) => om.member_id) } })
             .toArray()) as any[]
         for (const adminUser of adminUsers) {
-            await this.utilsService.sendHandlebarsEmail(
-                    
+            try {
+                await this.utilsService.sendHandlebarsEmail(
                     adminUser.email,
                     `Centralized notifications were updated for ${organization.display_name} organization`,
                     'organization-centralized-notifications',
@@ -279,9 +250,10 @@ export class OrganizationsController {
                         emailsNotifications,
                     },
                 )
-                .catch((err) => {
-                    Logger.error(`An error occurred sending centralized notifications organization  mail to ${user.email}`, err, OrganizationsController.name)
-                })
+                await this.utilsService.sleep(2000)
+            } catch (e) {
+                Logger.error(`An error occurred sending centralized notifications organization  mail to ${user.email}`, e, OrganizationsController.name)
+            }
         }
     }
 
@@ -305,18 +277,12 @@ export class OrganizationsController {
                 continue
             }
             try {
-                await this.utilsService.sendHandlebarsEmail(
-                    
-                    organizationUser.email,
-                    `Organization ${organization.display_name} was removed`,
-                    'organization-deleted',
-                    {
-                        frontendUrl: kysoSetting.value,
-                        user: organizationUser,
-                        userCreatingAction: user,
-                        organization,
-                    },
-                )
+                await this.utilsService.sendHandlebarsEmail(organizationUser.email, `Organization ${organization.display_name} was removed`, 'organization-deleted', {
+                    frontendUrl: kysoSetting.value,
+                    user: organizationUser,
+                    userCreatingAction: user,
+                    organization,
+                })
                 await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending organization removed mail to ${organizationUser.id} ${organizationUser.email}`, e, OrganizationsController.name)
@@ -333,7 +299,6 @@ export class OrganizationsController {
             if (admin) {
                 try {
                     await this.utilsService.sendHandlebarsEmail(
-                        
                         admin.email,
                         `${requesterUser.display_name} requested access for organization ${organization.display_name}`,
                         'organization-request-access-created',
@@ -363,7 +328,6 @@ export class OrganizationsController {
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
                 await this.utilsService.sendHandlebarsEmail(
-                    
                     requesterUser.email,
                     `Your access request to organization ${organization.display_name} has been rejected`,
                     'organization-request-access-rejected',
