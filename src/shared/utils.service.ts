@@ -98,6 +98,8 @@ export class UtilsService {
                 ReplyToAddresses: [from]
             }
             
+            console.log(params);
+
             UtilsService.AWS_SES.sendEmail(params).promise()
                 .then((messageInfo) => {Logger.log(`Message id ${messageInfo.MessageId} sent to ${to}`);})
                 .catch((err) => {Logger.error(`Error sending email to ${to}`, err);})
