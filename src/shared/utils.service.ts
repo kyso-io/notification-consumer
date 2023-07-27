@@ -18,7 +18,7 @@ export class UtilsService {
 
     public static configuredEmailProvider: string = "smtp";
     private static AWS_SES: any = null;
-    private mailFrom: string = "noreply@kyso.io";
+    private mailFrom: string = null;
 
     public static configureSES(mailConfig: any) {
         UtilsService.AWS_SES = new AWS.SES({
@@ -28,11 +28,28 @@ export class UtilsService {
         });
     }
 
+    public async getMailFrom(): Promise<string> {
+        try {
+            if(!this.mailFrom) {
+                const dbValue: KysoSetting | null = (await this.db.collection(Constants.DATABASE_COLLECTION_KYSO_SETTINGS).findOne({ key: KysoSettingsEnum.MAIL_FROM })) as any;
+                this.mailFrom = dbValue.value;
+
+                return this.mailFrom;
+            } else {
+                return this.mailFrom;
+            }
+        } catch(ex) {
+            Logger.error("Error getting mail from", ex);
+            return "noreply@dev.kyso.io";
+        }
+    }
+
+
     public async sendRawEmail(to: string, subject: string, text: string) {
         switch(UtilsService.configuredEmailProvider.toLowerCase()) {
             case "smtp":
                 const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                    from: this.mailFrom,
+                    from: await this.getMailFrom(),
                     to: to,
                     subject: subject,
                     text: text
@@ -58,8 +75,8 @@ export class UtilsService {
                             Data: subject
                         }
                     },
-                    Source: this.mailFrom,
-                    ReplyToAddresses: [this.mailFrom]
+                    Source: await this.getMailFrom(),
+                    ReplyToAddresses: [await this.getMailFrom()]
                 }
                 
                 UtilsService.AWS_SES.sendEmail(params).promise()
@@ -77,7 +94,7 @@ export class UtilsService {
         switch(UtilsService.configuredEmailProvider.toLowerCase()) {
             case "smtp":
                 const messageInfo: SentMessageInfo = await this.mailerService.sendMail({
-                    from: this.mailFrom,
+                    from: await this.getMailFrom(),
                     to: to,
                     subject: subject,
                     html: html
@@ -103,8 +120,8 @@ export class UtilsService {
                             Data: subject
                         }
                     },
-                    Source: this.mailFrom,
-                    ReplyToAddresses: [this.mailFrom]
+                    Source: await this.getMailFrom(),
+                    ReplyToAddresses: [await this.getMailFrom()]
                 }
                 
                 console.log(params);
