@@ -33,6 +33,26 @@ export class TeamsController {
         Logger.log(KysoEventEnum.TEAMS_CREATE, TeamsController.name)
         Logger.debug(kysoTeamsCreateEvent, TeamsController.name)
         if (kysoTeamsCreateEvent.team.visibility === TeamVisibilityEnum.PRIVATE) {
+            const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(
+                kysoTeamsCreateEvent.user.id,
+                'new_channel',
+                kysoTeamsCreateEvent.organization.id,
+                kysoTeamsCreateEvent.team.id,
+            )
+            if (sendNotification) {
+                try {
+                    await this.utilsService.sendHandlebarsEmail(kysoTeamsCreateEvent.user.email, `New ${kysoTeamsCreateEvent.team.display_name} channel`, 'new-team', {
+                        notifiedUser: kysoTeamsCreateEvent.user,
+                        user: kysoTeamsCreateEvent.user,
+                        organization: kysoTeamsCreateEvent.organization,
+                        team: kysoTeamsCreateEvent.team,
+                        frontendUrl: kysoTeamsCreateEvent.frontendUrl,
+                    })
+                    await this.utilsService.sleep(2000)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending new team mail to ${kysoTeamsCreateEvent.user.email}`, e, TeamsController.name)
+                }
+            }
             return
         }
         const organizationMembersJoin: OrganizationMemberJoin[] = await this.db
@@ -49,19 +69,13 @@ export class TeamsController {
             const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_channel', kysoTeamsCreateEvent.organization.id, kysoTeamsCreateEvent.team.id)
             if (sendNotification) {
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        user.email,
-                        `New ${kysoTeamsCreateEvent.team.display_name} channel`,
-                        'new-team',
-                        {
-                            notifiedUser: user,
-                            user: kysoTeamsCreateEvent.user,
-                            organization: kysoTeamsCreateEvent.organization,
-                            team: kysoTeamsCreateEvent.team,
-                            frontendUrl: kysoTeamsCreateEvent.frontendUrl,
-                        },
-                    )
+                    await this.utilsService.sendHandlebarsEmail(user.email, `New ${kysoTeamsCreateEvent.team.display_name} channel`, 'new-team', {
+                        notifiedUser: user,
+                        user: kysoTeamsCreateEvent.user,
+                        organization: kysoTeamsCreateEvent.organization,
+                        team: kysoTeamsCreateEvent.team,
+                        frontendUrl: kysoTeamsCreateEvent.frontendUrl,
+                    })
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new team mail to ${user.email}`, e, TeamsController.name)
@@ -78,20 +92,14 @@ export class TeamsController {
         const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'new_member_channel', organization.id, team.id)
         if (sendNotification) {
             try {
-                await this.utilsService.sendHandlebarsEmail(
-                    
-                    userReceivingAction.email,
-                    `You were added to ${team.display_name} channel`,
-                    'team-you-were-added',
-                    {
-                        userCreatingAction,
-                        addedUser: userReceivingAction,
-                        organization,
-                        team,
-                        frontendUrl,
-                    },
-                )
-                
+                await this.utilsService.sendHandlebarsEmail(userReceivingAction.email, `You were added to ${team.display_name} channel`, 'team-you-were-added', {
+                    userCreatingAction,
+                    addedUser: userReceivingAction,
+                    organization,
+                    team,
+                    frontendUrl,
+                })
+
                 await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, TeamsController.name)
@@ -108,21 +116,15 @@ export class TeamsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        user.email,
-                        `A member was added to ${team.display_name} channel`,
-                        'team-new-member',
-                        {
-                            user,
-                            addedUser: userReceivingAction,
-                            organization,
-                            team,
-                            role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
-                            frontendUrl,
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(user.email, `A member was added to ${team.display_name} channel`, 'team-new-member', {
+                        user,
+                        addedUser: userReceivingAction,
+                        organization,
+                        team,
+                        role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
+                        frontendUrl,
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new user in channel mail to ${user.email}`, e, TeamsController.name)
@@ -139,21 +141,15 @@ export class TeamsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        u.email,
-                        `A member was added to ${team.display_name} channel`,
-                        'team-new-member',
-                        {
-                            user: u,
-                            addedUser: userReceivingAction,
-                            organization,
-                            team,
-                            role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
-                            frontendUrl,
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(u.email, `A member was added to ${team.display_name} channel`, 'team-new-member', {
+                        user: u,
+                        addedUser: userReceivingAction,
+                        organization,
+                        team,
+                        role: roles.map((r) => UtilsService.getDisplayTextByChannelRoleName(r)).join(', '),
+                        frontendUrl,
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending new user in channel mail to ${u.email}`, e, TeamsController.name)
@@ -167,19 +163,14 @@ export class TeamsController {
         Logger.log(KysoEventEnum.TEAMS_REMOVE_MEMBER, TeamsController.name)
         Logger.debug(kysoTeamsRemoveMemberEvent, TeamsController.name)
         const { userCreatingAction, user, organization, team, frontendUrl } = kysoTeamsRemoveMemberEvent
-        await this.utilsService.sendHandlebarsEmail(
-                
-                user.email,
-                `You were removed from ${team.display_name} channel`,
-                'team-you-were-removed',
-                {
-                    userCreatingAction,
-                    removedUser: user,
-                    organization,
-                    team,
-                    frontendUrl,
-                },
-            )
+        await this.utilsService
+            .sendHandlebarsEmail(user.email, `You were removed from ${team.display_name} channel`, 'team-you-were-removed', {
+                userCreatingAction,
+                removedUser: user,
+                organization,
+                team,
+                frontendUrl,
+            })
             .catch((err) => {
                 Logger.error(`An error occurrend sending report mail to ${user.email}`, err, TeamsController.name)
             })
@@ -194,21 +185,15 @@ export class TeamsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        userEmail.email,
-                        `A member was removed from ${team.display_name} channel`,
-                        'team-removed-member',
-                        {
-                            user: userEmail,
-                            userCreatingAction,
-                            removedUser: user,
-                            organization,
-                            team,
-                            frontendUrl,
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(userEmail.email, `A member was removed from ${team.display_name} channel`, 'team-removed-member', {
+                        user: userEmail,
+                        userCreatingAction,
+                        removedUser: user,
+                        organization,
+                        team,
+                        frontendUrl,
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending removed user form team mail to ${userEmail.email}`, e, TeamsController.name)
@@ -225,21 +210,15 @@ export class TeamsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        u.email,
-                        `A member was removed from ${team.display_name} channel`,
-                        'team-removed-member',
-                        {
-                            user: u,
-                            userCreatingAction,
-                            removedUser: user,
-                            organization,
-                            team,
-                            frontendUrl,
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(u.email, `A member was removed from ${team.display_name} channel`, 'team-removed-member', {
+                        user: u,
+                        userCreatingAction,
+                        removedUser: user,
+                        organization,
+                        team,
+                        frontendUrl,
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurrend sending removed user form team mail to ${u.email}`, e, TeamsController.name)
@@ -255,22 +234,17 @@ export class TeamsController {
         const { userCreatingAction, userReceivingAction, organization, team, frontendUrl, previousRoles, currentRoles } = kysoTeamsUpdateMemberRolesEvent
         const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(userReceivingAction.id, 'updated_role_in_channel', organization.id, team.id)
         if (sendNotification) {
-            await this.utilsService.sendHandlebarsEmail(
-                    
-                    userReceivingAction.email,
-                    `Your role in ${team.display_name} channel has changed`,
-                    'team-user-role-changed',
-                    {
-                        userCreatingAction,
-                        userReceivingAction,
-                        organization,
-                        team,
-                        frontendUrl,
-                        previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
-                        newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
-                    },
-                )
-                
+            await this.utilsService
+                .sendHandlebarsEmail(userReceivingAction.email, `Your role in ${team.display_name} channel has changed`, 'team-user-role-changed', {
+                    userCreatingAction,
+                    userReceivingAction,
+                    organization,
+                    team,
+                    frontendUrl,
+                    previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                    newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                })
+
                 .catch((err) => {
                     Logger.error(`An error occurred sending team role changed mail to ${userReceivingAction.email}`, err, TeamsController.name)
                 })
@@ -286,23 +260,17 @@ export class TeamsController {
                     continue
                 }
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        user.email,
-                        `A member's role has changed in ${team.display_name} channel`,
-                        'team-member-role-changed',
-                        {
-                            user,
-                            userCreatingAction,
-                            userReceivingAction,
-                            organization,
-                            team,
-                            frontendUrl,
-                            previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
-                            newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(user.email, `A member's role has changed in ${team.display_name} channel`, 'team-member-role-changed', {
+                        user,
+                        userCreatingAction,
+                        userReceivingAction,
+                        organization,
+                        team,
+                        frontendUrl,
+                        previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                        newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurred sending team role changed mail to ${user.email}`, e, TeamsController.name)
@@ -331,20 +299,14 @@ export class TeamsController {
                 continue
             }
             try {
-                await this.utilsService.sendHandlebarsEmail(
-                    
-                    teamUser.email,
-                    `Channel ${team.display_name} was removed`,
-                    'team-deleted',
-                    {
-                        user: teamUser,
-                        userCreatingAction: user,
-                        organization,
-                        team,
-                        frontendUrl: kysoSetting.value,
-                    },
-                )
-                
+                await this.utilsService.sendHandlebarsEmail(teamUser.email, `Channel ${team.display_name} was removed`, 'team-deleted', {
+                    user: teamUser,
+                    userCreatingAction: user,
+                    organization,
+                    team,
+                    frontendUrl: kysoSetting.value,
+                })
+
                 await this.utilsService.sleep(2000)
             } catch (e) {
                 Logger.error(`An error occurred sending team removed mail to ${teamUser.id} ${teamUser.email}`, e, TeamsController.name)
@@ -362,21 +324,15 @@ export class TeamsController {
         for (const admin of organizationAdmins) {
             if (admin) {
                 try {
-                    await this.utilsService.sendHandlebarsEmail(
-                        
-                        admin.email,
-                        `${requesterUser.display_name} requested access for team ${team.display_name}`,
-                        'team-request-access-created',
-                        {
-                            admin,
-                            organization,
-                            team,
-                            requesterUser,
-                            frontendUrl,
-                            request,
-                        },
-                    )
-                    
+                    await this.utilsService.sendHandlebarsEmail(admin.email, `${requesterUser.display_name} requested access for team ${team.display_name}`, 'team-request-access-created', {
+                        admin,
+                        organization,
+                        team,
+                        requesterUser,
+                        frontendUrl,
+                        request,
+                    })
+
                     await this.utilsService.sleep(2000)
                 } catch (e) {
                     Logger.error(`An error occurred sending created request access to team ${team.display_name} to user ${admin.email}`, e, TeamsController.name)
@@ -394,19 +350,13 @@ export class TeamsController {
 
         if (requesterUser && requesterUser.email && requesterUser.display_name) {
             try {
-                await this.utilsService.sendHandlebarsEmail(
-                    
-                    requesterUser.email,
-                    `Your access request to team ${team.display_name} has been rejected`,
-                    'team-request-access-rejected',
-                    {
-                        rejecterUser,
-                        organization,
-                        team,
-                        requesterUser,
-                        frontendUrl,
-                    },
-                )
+                await this.utilsService.sendHandlebarsEmail(requesterUser.email, `Your access request to team ${team.display_name} has been rejected`, 'team-request-access-rejected', {
+                    rejecterUser,
+                    organization,
+                    team,
+                    requesterUser,
+                    frontendUrl,
+                })
 
                 await this.utilsService.sleep(2000)
             } catch (e) {

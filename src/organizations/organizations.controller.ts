@@ -73,6 +73,10 @@ export class OrganizationsController {
                 if (!u) {
                     continue
                 }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'new_member_organization', organization.id)
+                if (!sendNotification) {
+                    continue
+                }
                 await this.sendMailNewMemberInOrganization(kysoOrganizationsAddMemberEvent, u)
                 await this.utilsService.sleep(2000)
             }
@@ -123,6 +127,10 @@ export class OrganizationsController {
             for (const email of centralizedEmails) {
                 const u: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
                 if (!u) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'removed_member_in_organization', organization.id)
+                if (!sendNotification) {
                     continue
                 }
                 await this.utilsService
@@ -188,6 +196,30 @@ export class OrganizationsController {
             for (const email of centralizedEmails) {
                 const u: User = await this.db.collection<User>(Constants.DATABASE_COLLECTION_USER).findOne({ email })
                 if (!u) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_organization', organization.id)
+                if (!sendNotification) {
+                    continue
+                }
+                await this.utilsService
+                    .sendHandlebarsEmail(u.email, `A member's role has changed in ${organization.display_name} organization`, 'organization-member-role-changed', {
+                        admin: u,
+                        user: userReceivingAction,
+                        organization,
+                        frontendUrl,
+                        previousRole: UtilsService.getDisplayTextByOrganizationRoleName(previousRole),
+                        newRole: UtilsService.getDisplayTextByOrganizationRoleName(newRole),
+                    })
+                    .catch((err) => {
+                        Logger.error(`An error occurred sending organization role changed mail to ${u.email}`, err, OrganizationsController.name)
+                    })
+            }
+        } else {
+            const users: User[] = await this.getOrganizationMembers(organization)
+            for (const u of users) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_organization', organization.id)
+                if (!sendNotification) {
                     continue
                 }
                 await this.utilsService
