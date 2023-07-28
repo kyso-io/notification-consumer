@@ -276,6 +276,33 @@ export class TeamsController {
                     Logger.error(`An error occurred sending team role changed mail to ${user.email}`, e, TeamsController.name)
                 }
             }
+        } else {
+            const users: User[] = await this.getTeamMembers(team)
+            for (const u of users) {
+                if (u.id === userReceivingAction.id) {
+                    continue
+                }
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_channel', organization.id, team.id)
+                if (!sendNotification) {
+                    continue
+                }
+                try {
+                    await this.utilsService.sendHandlebarsEmail(u.email, `A member's role has changed in ${team.display_name} channel`, 'team-member-role-changed', {
+                        user: u,
+                        userCreatingAction,
+                        userReceivingAction,
+                        organization,
+                        team,
+                        frontendUrl,
+                        previousRole: previousRoles.length > 0 ? UtilsService.getDisplayTextByChannelRoleName(previousRoles[0]) : '',
+                        newRole: UtilsService.getDisplayTextByChannelRoleName(currentRoles[0]),
+                    })
+
+                    await this.utilsService.sleep(2000)
+                } catch (e) {
+                    Logger.error(`An error occurrend sending new user in channel mail to ${u.email}`, e, TeamsController.name)
+                }
+            }
         }
     }
 
@@ -374,9 +401,9 @@ export class TeamsController {
                 .find({ organization_id: team.organization_id })
                 .toArray()
             organizationMembers.forEach((x: OrganizationMemberJoin) => {
-                const index: number = usersIds.indexOf(x.id)
+                const index: number = usersIds.indexOf(x.member_id)
                 if (index === -1) {
-                    usersIds.push(x.id)
+                    usersIds.push(x.member_id)
                 }
             })
         }
