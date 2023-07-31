@@ -198,6 +198,9 @@ export class OrganizationsController {
                 if (!u) {
                     continue
                 }
+                if (u.id === userReceivingAction.id) {
+                    continue;
+                }
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_organization', organization.id)
                 if (!sendNotification) {
                     continue
