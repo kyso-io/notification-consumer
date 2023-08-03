@@ -21,21 +21,15 @@ export class InlineCommentsController {
 
     private async sendMailReplyInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                userReceiveEmail.email,
-                `New task reply in report ${kysoCommentsCreateEvent.report.title}`,
-                'inline-comment-reply',
-                {
-                    userCreatingAction: kysoCommentsCreateEvent.user,
-                    frontendUrl: kysoCommentsCreateEvent.frontendUrl,
-                    organization: kysoCommentsCreateEvent.organization,
-                    team: kysoCommentsCreateEvent.team,
-                    report: kysoCommentsCreateEvent.report,
-                    comment: kysoCommentsCreateEvent.comment,
-                    parentInlineComment,
-                }
-            );
+            await this.utilsService.sendHandlebarsEmail(userReceiveEmail.email, `New task reply in report ${kysoCommentsCreateEvent.report.title}`, 'inline-comment-reply', {
+                userCreatingAction: kysoCommentsCreateEvent.user,
+                frontendUrl: kysoCommentsCreateEvent.frontendUrl,
+                organization: kysoCommentsCreateEvent.organization,
+                team: kysoCommentsCreateEvent.team,
+                report: kysoCommentsCreateEvent.report,
+                comment: kysoCommentsCreateEvent.comment,
+                parentInlineComment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending new reply inline comment mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
@@ -77,7 +71,10 @@ export class InlineCommentsController {
                 return
             }
             // The user who created the main inline comment
-            users.push(userParentInlineComment)
+            const index: number = users.findIndex((u: User) => u.id === userParentInlineComment.id)
+            if (index === -1) {
+                users.push(userParentInlineComment)
+            }
             if (report.author_ids.length > 0) {
                 // The authors of the report
                 const reportAuthors: User[] = await this.db
@@ -102,20 +99,14 @@ export class InlineCommentsController {
 
     private async sendMailNewInlineCommentInReport(kysoCommentsCreateEvent: KysoCommentsCreateEvent, userReceiveEmail: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                userReceiveEmail.email,
-                `New task in report ${kysoCommentsCreateEvent.report.title}`,
-                'inline-comment-new',
-                {
-                    userCreatingAction: kysoCommentsCreateEvent.user,
-                    frontendUrl: kysoCommentsCreateEvent.frontendUrl,
-                    organization: kysoCommentsCreateEvent.organization,
-                    team: kysoCommentsCreateEvent.team,
-                    report: kysoCommentsCreateEvent.report,
-                    comment: kysoCommentsCreateEvent.comment,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(userReceiveEmail.email, `New task in report ${kysoCommentsCreateEvent.report.title}`, 'inline-comment-new', {
+                userCreatingAction: kysoCommentsCreateEvent.user,
+                frontendUrl: kysoCommentsCreateEvent.frontendUrl,
+                organization: kysoCommentsCreateEvent.organization,
+                team: kysoCommentsCreateEvent.team,
+                report: kysoCommentsCreateEvent.report,
+                comment: kysoCommentsCreateEvent.comment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending new inline comment mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
@@ -166,20 +157,14 @@ export class InlineCommentsController {
 
     private async sendMailInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, userReceiveEmail: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                userReceiveEmail.email,
-                `Task edited in report ${kysoCommentsUpdateEvent.report.title}`,
-                'inline-comment-updated',
-                {
-                    userCreatingAction: kysoCommentsUpdateEvent.user,
-                    frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
-                    organization: kysoCommentsUpdateEvent.organization,
-                    team: kysoCommentsUpdateEvent.team,
-                    report: kysoCommentsUpdateEvent.report,
-                    comment: kysoCommentsUpdateEvent.comment,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(userReceiveEmail.email, `Task edited in report ${kysoCommentsUpdateEvent.report.title}`, 'inline-comment-updated', {
+                userCreatingAction: kysoCommentsUpdateEvent.user,
+                frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
+                organization: kysoCommentsUpdateEvent.organization,
+                team: kysoCommentsUpdateEvent.team,
+                report: kysoCommentsUpdateEvent.report,
+                comment: kysoCommentsUpdateEvent.comment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending inline comment updated mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
@@ -201,21 +186,15 @@ export class InlineCommentsController {
                     statusTo = value.labels[inlineCommentStatusHistoryDto.to_status]
                 }
             }
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `Task status changed in report ${kysoCommentsUpdateEvent.report.title}`,
-                'inline-comment-status-changed',
-                {
-                    frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
-                    organization: kysoCommentsUpdateEvent.organization,
-                    team: kysoCommentsUpdateEvent.team,
-                    report: kysoCommentsUpdateEvent.report,
-                    comment: inlineComment,
-                    statusFrom,
-                    statusTo,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(email, `Task status changed in report ${kysoCommentsUpdateEvent.report.title}`, 'inline-comment-status-changed', {
+                frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
+                organization: kysoCommentsUpdateEvent.organization,
+                team: kysoCommentsUpdateEvent.team,
+                report: kysoCommentsUpdateEvent.report,
+                comment: inlineComment,
+                statusFrom,
+                statusTo,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending inline comment status changed mail to ${email}`, e, InlineCommentsController.name)
         }
@@ -223,21 +202,15 @@ export class InlineCommentsController {
 
     private async sendMailReplyInlineCommentUpdated(kysoCommentsUpdateEvent: KysoCommentsUpdateEvent, parentInlineComment: InlineComment, userReceiveEmail: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                userReceiveEmail.email,
-                `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`,
-                'inline-comment-reply-updated',
-                {
-                    userCreatingAction: kysoCommentsUpdateEvent.user,
-                    frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
-                    organization: kysoCommentsUpdateEvent.organization,
-                    team: kysoCommentsUpdateEvent.team,
-                    report: kysoCommentsUpdateEvent.report,
-                    comment: kysoCommentsUpdateEvent.comment,
-                    parentInlineComment,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(userReceiveEmail.email, `Task reply edited in report ${kysoCommentsUpdateEvent.report.title}`, 'inline-comment-reply-updated', {
+                userCreatingAction: kysoCommentsUpdateEvent.user,
+                frontendUrl: kysoCommentsUpdateEvent.frontendUrl,
+                organization: kysoCommentsUpdateEvent.organization,
+                team: kysoCommentsUpdateEvent.team,
+                report: kysoCommentsUpdateEvent.report,
+                comment: kysoCommentsUpdateEvent.comment,
+                parentInlineComment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending inline comment updated mail to ${userReceiveEmail.email}`, e, InlineCommentsController.name)
         }
@@ -362,20 +335,14 @@ export class InlineCommentsController {
 
     private async sendMailDeleteInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `Deleted task in report ${kysoCommentsDeleteEvent.report.title}`,
-                'inline-comment-deleted',
-                {
-                    user: kysoCommentsDeleteEvent.user,
-                    frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
-                    organization: kysoCommentsDeleteEvent.organization,
-                    team: kysoCommentsDeleteEvent.team,
-                    report: kysoCommentsDeleteEvent.report,
-                    comment: kysoCommentsDeleteEvent.comment,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(email, `Deleted task in report ${kysoCommentsDeleteEvent.report.title}`, 'inline-comment-deleted', {
+                user: kysoCommentsDeleteEvent.user,
+                frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
+                organization: kysoCommentsDeleteEvent.organization,
+                team: kysoCommentsDeleteEvent.team,
+                report: kysoCommentsDeleteEvent.report,
+                comment: kysoCommentsDeleteEvent.comment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending deleted inline comment mail to ${email}`, e, InlineCommentsController.name)
         }
@@ -383,21 +350,15 @@ export class InlineCommentsController {
 
     private async sendMailDeleteReplyInlineCommentInReport(kysoCommentsDeleteEvent: KysoCommentsDeleteEvent, parentInlineComment: InlineComment, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `Deleted task reply in report ${kysoCommentsDeleteEvent.report.title}`,
-                'inline-comment-reply-deleted',
-                {
-                    userCreatingAction: kysoCommentsDeleteEvent.user,
-                    frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
-                    organization: kysoCommentsDeleteEvent.organization,
-                    team: kysoCommentsDeleteEvent.team,
-                    report: kysoCommentsDeleteEvent.report,
-                    comment: kysoCommentsDeleteEvent.comment,
-                    parentInlineComment,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(email, `Deleted task reply in report ${kysoCommentsDeleteEvent.report.title}`, 'inline-comment-reply-deleted', {
+                userCreatingAction: kysoCommentsDeleteEvent.user,
+                frontendUrl: kysoCommentsDeleteEvent.frontendUrl,
+                organization: kysoCommentsDeleteEvent.organization,
+                team: kysoCommentsDeleteEvent.team,
+                report: kysoCommentsDeleteEvent.report,
+                comment: kysoCommentsDeleteEvent.comment,
+                parentInlineComment,
+            })
         } catch (e) {
             Logger.error(`An error occurred sending deleted inline comment reply mail to ${email}`, e, InlineCommentsController.name)
         }
