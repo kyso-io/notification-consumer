@@ -220,6 +220,10 @@ export class OrganizationsController {
             }
         } else {
             const users: User[] = await this.getOrganizationMembers(organization)
+            const index: number = users.findIndex((u) => u.id === userReceivingAction.id)
+            if (index > -1) {
+                users.splice(index, 1)
+            }
             for (const u of users) {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(u.id, 'updated_role_in_organization', organization.id)
                 if (!sendNotification) {
