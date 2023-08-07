@@ -152,11 +152,11 @@ export class UtilsService {
 
         switch (role.toLowerCase()) {
             case 'team-admin':
-                return `Can administer this channel's settings`
+                return `Full access all channels - Can administer this channel's settings`
             case 'team-contributor':
-                return `Can create content within this channel`
+                return `Can edit all channels - Can create content within this channel`
             case 'team-reader':
-                return 'Can read, create comments & tasks on reports in this channel'
+                return 'Can comment all channels - Can read, create comments & tasks on reports in this channel'
             default:
                 return ''
         }
@@ -169,13 +169,13 @@ export class UtilsService {
 
         switch (role.toLowerCase()) {
             case 'organization-admin':
-                return 'Full control of everything in the organization'
+                return 'Admin of this organization - Full control of everything in the organization'
             case 'team-admin':
-                return `Can administer all channels within this organization`
+                return `Full access all channels - Can administer all channels within this organization`
             case 'team-contributor':
-                return `Can create content within this organization`
+                return `Can edit all channels - Can create content within this organization`
             case 'team-reader':
-                return 'Can read, create comments & tasks on reports in this organization'
+                return 'Can comment all channels - Can read, create comments & tasks on reports in this organization'
             default:
                 return ''
         }
