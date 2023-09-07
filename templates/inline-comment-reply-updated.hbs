@@ -40,7 +40,7 @@
                                                                         <tr style='border-collapse:collapse;'>
                                                                             <td valign='top' style='padding:10px 5px;border-collapse:collapse;text-align:center;'>
                                                                                 <img
-                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.svg'
+                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.png'
                                                                                     width='150'
                                                                                     height='150'
                                                                                     alt=''
@@ -89,7 +89,8 @@
                                                                                             style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
                                                                                             valign='top'
                                                                                         >
-                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>A task replay was updated in {{report.title}}</a>
+                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;'>A task reply was updated in
+                                                                                                {{report.title}}</a>
                                                                                         </td>
                                                                                     </tr>
                                                                                     <tr style='border-collapse:collapse;'>
@@ -109,10 +110,11 @@
                                                                                         >
                                                                                             <p>
                                                                                                 <a
-                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
-                                                                                                href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
-                                                                                            </a>
-                                                                                                made an update to an existing task reply on the report 
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >{{userCreatingAction.display_name}}
+                                                                                                </a>
+                                                                                                made an update to an existing task reply on the report
                                                                                                 <a
                                                                                                     style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}'
@@ -127,13 +129,14 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                <br/>
-                                                                                                <a  style='font-weight: normal; text-decoration:none; color:#5046e5'
+                                                                                                <br />
+                                                                                                <a
+                                                                                                    style='font-weight: normal; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}/{{team.sluglified_name}}/{{report.sluglified_name}}?taskId={{comment.id}}&cell={{comment.cell_id}}'
                                                                                                 >
                                                                                                     "{{comment.text}}"
                                                                                                 </a>
-                                                                                                <br/><br/>
+                                                                                                <br /><br />
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -143,7 +146,9 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Respond to {{userCreatingAction.display_name}} if this requires your attention. Keep track of the task as it evolves.
+                                                                                                Respond to
+                                                                                                {{userCreatingAction.display_name}}
+                                                                                                if this requires your attention. Keep track of the task as it evolves.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -194,9 +199,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
-                                                                                             kyso.io
-                                                                                             </a>
+                                                                                                            <a href='https://kyso.io' target='_blank' style='text-decoration:none; color:#5046e5'>
+                                                                                                                kyso.io
+                                                                                                            </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>

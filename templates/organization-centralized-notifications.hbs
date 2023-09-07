@@ -40,7 +40,7 @@
                                                                         <tr style='border-collapse:collapse;'>
                                                                             <td valign='top' style='padding:10px 5px;border-collapse:collapse;text-align:center;'>
                                                                                 <img
-                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.svg'
+                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.png'
                                                                                     width='150'
                                                                                     height='150'
                                                                                     alt=''
@@ -91,8 +91,12 @@
                                                                                             style='line-height:34px;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:24px;font-weight:700;letter-spacing:-.4px;color:#151515;border-collapse:collapse;'
                                                                                             valign='top'
                                                                                         >
-                                                                                            <a style='text-decoration:none;color:#151515;font-size:22px;' href='{{frontendUrl}}/{{organization.sluglified_name}}'>
-                                                                                                Centralised communications configured for {{organization.display_name}}.
+                                                                                            <a
+                                                                                                style='text-decoration:none;color:#151515;font-size:22px;'
+                                                                                                href='{{frontendUrl}}/{{organization.sluglified_name}}'
+                                                                                            >
+                                                                                                Centralised communications configured for
+                                                                                                {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -112,25 +116,28 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello {{receiver.display_name}},
+                                                                                                Hello
+                                                                                                {{receiver.display_name}},
                                                                                                 <br /><br />
                                                                                                 <b>{{user.display_name}}</b>
-                                                                                                recently configured centralised communications for 
-                                                                                                <a 
+                                                                                                recently configured centralised communications for
+                                                                                                <a
                                                                                                     style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}'
                                                                                                 >
-                                                                                                {{organization.display_name}}.</a>
-                                                                                                 This means that all future Kyso event communications will flow through a specific email address.
+                                                                                                    {{organization.display_name}}.</a>
+                                                                                                This means that all future Kyso event communications will flow through a specific email address.
                                                                                                 <br /><br />
                                                                                             </p>
                                                                                             <p>
-                                                                                                You're receiving this update because you have administrative rights to <b>{{organization.display_name}}.</b>
+                                                                                                You're receiving this update because you have administrative rights to
+                                                                                                <b>{{organization.display_name}}.</b>
                                                                                                 If this change is expected, you can ignore this email. If not, please contact
                                                                                                 <a
-                                                                                                style='font-weight: bold; text-decoration:none; color:#5046e5'
-                                                                                                href='{{frontendUrl}}/user/{{user.username}}'>{{user.display_name}}
-                                                                                            </a>
+                                                                                                    style='font-weight: bold; text-decoration:none; color:#5046e5'
+                                                                                                    href='{{frontendUrl}}/user/{{user.username}}'
+                                                                                                >{{user.display_name}}
+                                                                                                </a>
                                                                                                 <br /><br />
                                                                                             </p>
                                                                                             <p>
@@ -186,9 +193,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
-                                                                                             kyso.io
-                                                                                             </a>
+                                                                                                            <a href='https://kyso.io' target='_blank' style='text-decoration:none; color:#5046e5'>
+                                                                                                                kyso.io
+                                                                                                            </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>

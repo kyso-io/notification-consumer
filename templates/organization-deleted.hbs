@@ -40,7 +40,7 @@
                                                                         <tr style='border-collapse:collapse;'>
                                                                             <td valign='top' style='padding:10px 5px;border-collapse:collapse;text-align:center;'>
                                                                                 <img
-                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.svg'
+                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.png'
                                                                                     width='150'
                                                                                     height='150'
                                                                                     alt=''
@@ -92,7 +92,8 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                                {{organization.display_name}} was deleted
+                                                                                                {{organization.display_name}}
+                                                                                                was deleted
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -112,15 +113,17 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello {{user.display_name}},
+                                                                                                Hello
+                                                                                                {{user.display_name}},
                                                                                                 <br /><br />
                                                                                                 {{organization.display_name}}
                                                                                                 was recently deleted by
-                                                                                                {{userCreatingAction.display_name}}.
-                                                                                                All content inside that Organisation no longer exits. If you have any questions, get in touch with 
+                                                                                                {{userCreatingAction.display_name}}. All content inside that Organisation no longer exits. If you have
+                                                                                                any questions, get in touch with
                                                                                                 <a
                                                                                                     style='font-weight: bold; text-decoration:none; color:#5046e5'
-                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'>{{userCreatingAction.display_name}}
+                                                                                                    href='{{frontendUrl}}/user/{{userCreatingAction.username}}'
+                                                                                                >{{userCreatingAction.display_name}}
                                                                                                 </a>
                                                                                             </p>
                                                                                         </td>
@@ -172,9 +175,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
-                                                                                             kyso.io
-                                                                                             </a>
+                                                                                                            <a href='https://kyso.io' target='_blank' style='text-decoration:none; color:#5046e5'>
+                                                                                                                kyso.io
+                                                                                                            </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>

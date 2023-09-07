@@ -40,7 +40,7 @@
                                                                         <tr style='border-collapse:collapse;'>
                                                                             <td valign='top' style='padding:10px 5px;border-collapse:collapse;text-align:center;'>
                                                                                 <img
-                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.svg'
+                                                                                    src='{{frontendUrl}}/assets/images/kyso-logo-and-name-dark.png'
                                                                                     width='150'
                                                                                     height='150'
                                                                                     alt=''
@@ -92,7 +92,7 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <a style='text-decoration:none;color:#151515;font-size:22px;'>
-                                                                                               {{user.display_name}}'s role has changed in
+                                                                                                {{user.display_name}}'s role has changed in
                                                                                                 {{organization.display_name}}.
                                                                                             </a>
                                                                                         </td>
@@ -113,19 +113,22 @@
                                                                                             valign='top'
                                                                                         >
                                                                                             <p>
-                                                                                                Hello {{admin.display_name}},
+                                                                                                Hello
+                                                                                                {{admin.display_name}},
                                                                                                 <br /><br />
                                                                                                 The user's role for
                                                                                                 {{user.display_name}}
                                                                                                 in
-                                                                                                <a 
+                                                                                                <a
                                                                                                     href='{{frontendUrl}}/{{organization.sluglified_name}}'
                                                                                                     style='font-weight: bold; text-decoration:none; color:#5046e5'
                                                                                                 >
                                                                                                     {{organization.display_name}}
                                                                                                 </a>
                                                                                                 organization has changed from
-                                                                                                <b>{{previousRole}}</b> to <b>{{newRole}}</b>.
+                                                                                                <b>{{previousRole}}</b>
+                                                                                                to
+                                                                                                <b>{{newRole}}</b>.
                                                                                             </p>
                                                                                         </td>
                                                                                     </tr>
@@ -176,9 +179,9 @@
                                                                                                 <tbody>
                                                                                                     <tr>
                                                                                                         <td width='33' align='center'>
-                                                                                                             <a href='https://kyso.io' target='_blank'  style='text-decoration:none; color:#5046e5'>
-                                                                                             kyso.io
-                                                                                             </a>
+                                                                                                            <a href='https://kyso.io' target='_blank' style='text-decoration:none; color:#5046e5'>
+                                                                                                                kyso.io
+                                                                                                            </a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </tbody>
