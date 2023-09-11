@@ -76,7 +76,7 @@ export class ReportsController {
     async handleReportsMove(kysoReportsMoveEvent: KysoReportsMoveEvent) {
         Logger.log(KysoEventEnum.REPORTS_MOVE, ReportsController.name)
         Logger.debug(kysoReportsMoveEvent, ReportsController.name)
-        const { targetOrganization, targetTeam, report } = kysoReportsMoveEvent
+        const { sourceOrganization, sourceTeam, targetOrganization, targetTeam } = kysoReportsMoveEvent
         const centralizedMails: boolean = targetOrganization?.options?.notifications?.centralized || false
         const emails: string[] = targetOrganization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
@@ -84,19 +84,28 @@ export class ReportsController {
                 await this.sendMailReportMoved(kysoReportsMoveEvent, email)
             }
         } else {
-            const users: User[] = await this.db
-                .collection<User>(Constants.DATABASE_COLLECTION_USER)
-                .find({
-                    id: {
-                        $in: report.author_ids,
-                    },
-                })
-                .toArray()
-            for (const user of users) {
-                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_moved', targetOrganization.id, targetTeam.id)
+            const usersSource: User[] = await this.getUsersToNotify(sourceOrganization, sourceTeam)
+            for (const user of usersSource) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_moved', sourceOrganization.id, sourceTeam.id)
                 if (sendNotification) {
                     await this.sendMailReportMoved(kysoReportsMoveEvent, user.email)
                 }
+            }
+            const usersTarget: User[] = await this.getUsersToNotify(targetOrganization, targetTeam)
+            for (const user of usersTarget) {
+                const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_moved', targetOrganization.id, targetTeam.id)
+                if (!sendNotification) {
+                    continue
+                }
+                // Avoid sending duplicated mails
+                const index: number = usersSource.findIndex((u: User) => u.id === user.id)
+                if (index !== -1) {
+                    const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'report_moved', sourceOrganization.id, sourceTeam.id)
+                    if (sendNotification) {
+                        continue
+                    }
+                }
+                await this.sendMailReportMoved(kysoReportsMoveEvent, user.email)
             }
         }
     }
