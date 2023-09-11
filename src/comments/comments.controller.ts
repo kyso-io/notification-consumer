@@ -22,6 +22,7 @@ export class CommentsController {
                 team: kysoCommentsCreateEvent.team,
                 report: kysoCommentsCreateEvent.report,
                 comment: kysoCommentsCreateEvent.comment,
+                user: kysoCommentsCreateEvent.user,
             })
             Logger.log(`New reply comment mail ${messageInfo.messageId} sent to ${email}`, CommentsController.name)
         } catch (e) {
