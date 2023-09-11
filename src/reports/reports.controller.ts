@@ -6,7 +6,12 @@ import {
     KysoReportsMoveEvent,
     KysoReportsNewMentionEvent,
     KysoReportsNewVersionEvent,
+    Organization,
+    OrganizationMemberJoin,
     Report,
+    Team,
+    TeamMemberJoin,
+    TeamVisibilityEnum,
     User,
 } from '@kyso-io/kyso-model'
 import { Controller, Inject, Logger } from '@nestjs/common'
@@ -25,19 +30,13 @@ export class ReportsController {
 
     private async sendMailNewReport(kysoReportsCreateEvent: KysoReportsCreateEvent, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `New report '${kysoReportsCreateEvent.report.title}' published`,
-                'report-new',
-                {
-                    user: kysoReportsCreateEvent.user,
-                    organization: kysoReportsCreateEvent.organization,
-                    team: kysoReportsCreateEvent.team,
-                    report: kysoReportsCreateEvent.report,
-                    frontendUrl: kysoReportsCreateEvent.frontendUrl,
-                },
-            )
+            await this.utilsService.sendHandlebarsEmail(email, `New report '${kysoReportsCreateEvent.report.title}' published`, 'report-new', {
+                user: kysoReportsCreateEvent.user,
+                organization: kysoReportsCreateEvent.organization,
+                team: kysoReportsCreateEvent.team,
+                report: kysoReportsCreateEvent.report,
+                frontendUrl: kysoReportsCreateEvent.frontendUrl,
+            })
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -47,7 +46,7 @@ export class ReportsController {
     async handleReportsCreate(kysoReportsCreateEvent: KysoReportsCreateEvent) {
         Logger.log(KysoEventEnum.REPORTS_CREATE, ReportsController.name)
         Logger.debug(kysoReportsCreateEvent, ReportsController.name)
-        const { organization, team, report } = kysoReportsCreateEvent
+        const { organization, team } = kysoReportsCreateEvent
         const centralizedMails: boolean = organization?.options?.notifications?.centralized || false
         const emails: string[] = organization?.options?.notifications?.emails || []
         if (centralizedMails && Array.isArray(emails) && emails.length > 0) {
@@ -55,14 +54,7 @@ export class ReportsController {
                 await this.sendMailNewReport(kysoReportsCreateEvent, email)
             }
         } else {
-            const users: User[] = await this.db
-                .collection<User>(Constants.DATABASE_COLLECTION_USER)
-                .find({
-                    id: {
-                        $in: report.author_ids,
-                    },
-                })
-                .toArray()
+            const users: User[] = await this.getUsersToNotify(organization, team)
             for (const user of users) {
                 const sendNotification: boolean = await this.utilsService.canUserReceiveNotification(user.id, 'new_report', organization.id, team.id)
                 if (sendNotification) {
@@ -74,14 +66,7 @@ export class ReportsController {
 
     private async sendMailReportMoved(kysoReportsMoveEvent: KysoReportsMoveEvent, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `Report '${kysoReportsMoveEvent.report.title}' moved`,
-                'report-moved',
-                kysoReportsMoveEvent,
-            )
-            
+            await this.utilsService.sendHandlebarsEmail(email, `Report '${kysoReportsMoveEvent.report.title}' moved`, 'report-moved', kysoReportsMoveEvent)
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -124,20 +109,13 @@ export class ReportsController {
 
     private async sendMailNewReportVersion(kysoReportsNewVersionEvent: KysoReportsNewVersionEvent, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`,
-                'report-updated',
-                {
-                    userCreatingAction: kysoReportsNewVersionEvent.user,
-                    organization: kysoReportsNewVersionEvent.organization,
-                    team: kysoReportsNewVersionEvent.team,
-                    report: kysoReportsNewVersionEvent.report,
-                    frontendUrl: kysoReportsNewVersionEvent.frontendUrl,
-                },
-            )
-            
+            await this.utilsService.sendHandlebarsEmail(email, `Existing report '${kysoReportsNewVersionEvent.report.title}' updated`, 'report-updated', {
+                userCreatingAction: kysoReportsNewVersionEvent.user,
+                organization: kysoReportsNewVersionEvent.organization,
+                team: kysoReportsNewVersionEvent.team,
+                report: kysoReportsNewVersionEvent.report,
+                frontendUrl: kysoReportsNewVersionEvent.frontendUrl,
+            })
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${email}`, e, ReportsController.name)
         }
@@ -174,21 +152,14 @@ export class ReportsController {
 
     private async sendMailReportDeleted(kysoReportsDeleteEvent: KysoReportsDeleteEvent, userReceivingAction: User): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                userReceivingAction.email,
-                `Report '${kysoReportsDeleteEvent.report.title}' deleted`,
-                'report-delete',
-                {
-                    userReceivingAction: userReceivingAction,
-                    userCreatingAction: kysoReportsDeleteEvent.user,
-                    organization: kysoReportsDeleteEvent.organization,
-                    team: kysoReportsDeleteEvent.team,
-                    report: kysoReportsDeleteEvent.report,
-                    frontendUrl: kysoReportsDeleteEvent.frontendUrl,
-                },
-            )
-            
+            await this.utilsService.sendHandlebarsEmail(userReceivingAction.email, `Report '${kysoReportsDeleteEvent.report.title}' deleted`, 'report-delete', {
+                userReceivingAction: userReceivingAction,
+                userCreatingAction: kysoReportsDeleteEvent.user,
+                organization: kysoReportsDeleteEvent.organization,
+                team: kysoReportsDeleteEvent.team,
+                report: kysoReportsDeleteEvent.report,
+                frontendUrl: kysoReportsDeleteEvent.frontendUrl,
+            })
         } catch (e) {
             Logger.error(`An error occurrend sending report mail to ${userReceivingAction.email}`, e, ReportsController.name)
         }
@@ -232,16 +203,9 @@ export class ReportsController {
         Logger.debug(kysoReportsCreateEvent, ReportsController.name)
 
         const { user } = kysoReportsCreateEvent
-        await this.utilsService.sendHandlebarsEmail(
-                
-                user.email,
-                'Error creating report',
-                'report-error-permissions',
-                {}
-            )
-            .catch((err) => {
-                Logger.error(`Error sending mail 'Invalid permissions for creating report' to ${user.display_name}`, err, ReportsController.name)
-            })
+        await this.utilsService.sendHandlebarsEmail(user.email, 'Error creating report', 'report-error-permissions', {}).catch((err) => {
+            Logger.error(`Error sending mail 'Invalid permissions for creating report' to ${user.display_name}`, err, ReportsController.name)
+        })
     }
 
     @EventPattern(KysoEventEnum.REPORTS_NEW_MENTION)
@@ -253,19 +217,14 @@ export class ReportsController {
         if (!sendNotification) {
             return
         }
-        await this.utilsService.sendHandlebarsEmail(
-                
-                user.email,
-                'You have been mentioned in a report',
-                'report-mention',
-                {
-                    creator,
-                    organization,
-                    team,
-                    report,
-                    frontendUrl,
-                },
-            )
+        await this.utilsService
+            .sendHandlebarsEmail(user.email, 'You have been mentioned in a report', 'report-mention', {
+                creator,
+                organization,
+                team,
+                report,
+                frontendUrl,
+            })
             .catch((err) => {
                 Logger.error(`An error occurrend sending mention in report mail to ${user.email}`, err, ReportsController.name)
             })
@@ -273,20 +232,14 @@ export class ReportsController {
 
     private async sendMailMentionsInReport(kysoReportsMentionsEvent: KysoReportsMentionsEvent, email: string): Promise<void> {
         try {
-            await this.utilsService.sendHandlebarsEmail(
-                
-                email,
-                'Mentions in a report',
-                'report-mentions',
-                {
-                    creator: kysoReportsMentionsEvent.creator,
-                    users: kysoReportsMentionsEvent.users.map((u: User) => u.display_name).join(','),
-                    organization: kysoReportsMentionsEvent.organization,
-                    team: kysoReportsMentionsEvent.team,
-                    report: kysoReportsMentionsEvent.report,
-                    frontendUrl: kysoReportsMentionsEvent.frontendUrl,
-                },
-            );
+            await this.utilsService.sendHandlebarsEmail(email, 'Mentions in a report', 'report-mentions', {
+                creator: kysoReportsMentionsEvent.creator,
+                users: kysoReportsMentionsEvent.users.map((u: User) => u.display_name).join(','),
+                organization: kysoReportsMentionsEvent.organization,
+                team: kysoReportsMentionsEvent.team,
+                report: kysoReportsMentionsEvent.report,
+                frontendUrl: kysoReportsMentionsEvent.frontendUrl,
+            })
         } catch (e) {
             Logger.error(`An error occurrend sending mention in report mail to ${email}`, e, ReportsController.name)
         }
@@ -311,5 +264,43 @@ export class ReportsController {
             }
             await this.sendMailMentionsInReport(kysoReportsMentionsEvent, email)
         }
+    }
+
+    private async getUsersToNotify(organization: Organization, team: Team): Promise<User[]> {
+        let userIds: string[] = []
+        switch (team.visibility) {
+            case TeamVisibilityEnum.PUBLIC:
+            case TeamVisibilityEnum.PROTECTED:
+                const organizationMembers: OrganizationMemberJoin[] = await this.db
+                    .collection<OrganizationMemberJoin>(Constants.DATABASE_COLLECTION_ORGANIZATION_MEMBER)
+                    .find({ organization_id: organization.id })
+                    .toArray()
+                userIds = organizationMembers.map((om: OrganizationMemberJoin) => om.member_id)
+                break
+            case TeamVisibilityEnum.PRIVATE:
+                const teamMembers: TeamMemberJoin[] = await this.db.collection<TeamMemberJoin>(Constants.DATABASE_COLLECTION_TEAM_MEMBER).find({ id: team.id }).toArray()
+                userIds = teamMembers.map((tm: TeamMemberJoin) => tm.member_id)
+                break
+            default:
+                break
+        }
+        if (userIds.length === 0) {
+            return []
+        }
+        let users: User[] = []
+        const OFFSET = 50
+        for (let i = 0; i < userIds.length; i++) {
+            const usersOffset: User[] = await this.db
+                .collection<User>(Constants.DATABASE_COLLECTION_USER)
+                .find({ id: { $in: userIds.slice(i * OFFSET, (i + 1) * OFFSET) } })
+                .toArray()
+            for (const user of usersOffset) {
+                const index: number = users.findIndex((u: User) => u.id === user.id)
+                if (index === -1) {
+                    users.push(user)
+                }
+            }
+        }
+        return users
     }
 }
