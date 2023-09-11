@@ -169,7 +169,7 @@ export class CommentsController {
                 }
             }
         } else {
-            const users: User[] = [user]
+            const users: User[] = []
             if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
                 const authors: User[] = await this.db
                     .collection<User>(Constants.DATABASE_COLLECTION_USER)
@@ -177,7 +177,7 @@ export class CommentsController {
                     .toArray()
                 for (const author of authors) {
                     const index: number = users.findIndex((u: User) => u.id === author.id)
-                    if (index === -1) {
+                    if (index === -1 && author.id !== user.id) {
                         users.push(author)
                     }
                 }
