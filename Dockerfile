@@ -1,22 +1,16 @@
-# Global Dockerfile Arguments (in our CI can be overriden in ./.build-args)
-ARG BUILDER_IMG=registry.kyso.io/kyso-io/consumers/notification-consumer
-ARG BUILDER_TAG=builder
-ARG SERVICE_IMG=registry.kyso.io/docker/node-service
-ARG SERVICE_TAG=latest
-
 # Builder image
-FROM ${BUILDER_IMG}:${BUILDER_TAG} AS builder
+FROM node:16.15.1-alpine3.16 AS builder
 # Change the working directory to /app
 WORKDIR /app
 # Copy files required to build the application
 COPY . .
 # Execute `npm ci` with an externally mounted npmrc
-RUN --mount=type=secret,id=npmrc,target=/app/.npmrc,required npm ci
+RUN npm install
 # Now do the build
 RUN npm run build
 
 ## Production image
-FROM ${SERVICE_IMG}:${SERVICE_TAG} AS service
+FROM node:16.15.1-alpine3.16 AS service
 # Set the NODE_ENV value from the args
 ARG NODE_ENV=production
 ## Export the NODE_ENV to the container environment
